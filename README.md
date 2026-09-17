@@ -171,8 +171,8 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 |---|---|---|---|---|---|---|---|
 | `joy2know-mr` | 晓得·表达条理与可视化专家 | 专家 | 1.1.0 | `joy2know-clarify` 1.1.0 | — | 739.5 KB | **已提交** ·【本地升级】 |
 | `joy2know-code-scholar` | 晓得·代码考古学家 | 专家 | 1.1.0 | `joy2know-codebase` 1.1.0 | — | 736.1 KB | 待上传 |
-| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.1.0 | `joy2know-storyboard` 1.1.0、`joy2know-character` 1.1.0、`joy2know-musician` 1.1.0 | 7 角色 | 4256.4 KB | 待上传 |
-| `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.1.0 | `joy2know-clarify` 1.1.0、`joy2know-humanize` 1.1.0、`joy2know-deck` 1.1.0、`joy2know-dashboard` 1.1.0 | 5 角色（1 主理 + 4 成员） | 3918.3 KB | 待上传 |
+| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.1.0 | `joy2know-storyboard` 1.1.0、`joy2know-character` 1.1.0、`joy2know-musician` 1.1.0 | 7 角色 | 4256.7 KB | 待上传（已补 `settings.json`） |
+| `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.1.0 | `joy2know-clarify` 1.1.0、`joy2know-humanize` 1.1.0、`joy2know-deck` 1.1.0、`joy2know-dashboard` 1.1.0 | 5 角色（1 主理 + 4 成员） | 3918.6 KB | 待上传（已补 `settings.json`） |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 
@@ -239,6 +239,18 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 
 > 本轮**没有修改任何技能内容或专家人设**，纯版本号抬升 + 图标落地 —— 对应「字段或包结构改动」以外的口径说明：这是一次**基线对齐**，把全部包统一到同一条版本线上，便于后续做「平台上是哪一版」的比对。
 > `joy2know-humanize` 的**规则表版本**（`scripts/rules.py` 的 `VERSION`、及其生成的 `references/rules.md`）**保持 1.0.0 未动** —— 它是规则集自身的版本，与技能包版本是两个独立概念，本轮规则内容零改动。
+
+### 2026-09-17 · 深夜（专家团 `settings.json` 补齐 · 修复平台解析失败）
+
+| 对象 | 类型 | 变更 | 版本 |
+|---|---|---|---|
+| `joy2know-cine-team`、`joy2know-polish-team` | 修复 | **补齐根目录 `settings.json`**（内容与 `setting.json` 相同，各 36 / 38 字节）。上传平台报 `解析失败：settings.json 不存在或无法读取（Team 型专家必须在 plugin root 下提供 settings.json）` —— 此前只放了无 s 的 `setting.json` | 1.1.0 |
+| 两个团包内 `README.md` | 修正 | 目录结构补上 `settings.json` 一行并注明两者并存的原因；顺带修正 `cine-team` 的计数错误 —— 原写「1 主理人 + 5 成员」（实为 6）、「团队头像 + 6 角色头像」（实为 7） | — |
+| `selfcheck.py`（技能侧，仓库外） | 新增门禁 | 新增专家团根文件校验：`settings.json` 与 `setting.json` **都必须存在、必须是合法 JSON、`agent` 必须等于主理人、两份内容必须一致**。此前门禁完全没覆盖这个文件，所以平台报的错在本地一路绿灯放过了。**已做反向验证**：删掉 `settings.json`、把 `agent` 改成错名，两种情况都被红灯抓住 | — |
+| `dist/*.zip` | 重建 | 18 个包全部重新打包，两个团包自检 41 / 40 项、**0 项未通过** | 1.1.0 |
+
+> **根因：官方自己两套说法打架。** 开放平台文档的目录树写的是 `settings.json`，而官方可下载模板 `trading-team.zip` 里用的是 `setting.json`。本仓库当初按模板实物取名 —— 结论「官方文档正文误写成 `settings.json`」并写进了维护技能，**实为反了：平台校验器认的是 `settings.json`**。现在的做法是两个名字都放（各几十字节），谁认哪个都不落空。
+> 两个包**未抬版本号**：平台侧从未成功解析过 1.1.0，本次是让 1.1.0 能通过解析，不构成新版本。
 
 ---
 

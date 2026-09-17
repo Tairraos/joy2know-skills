@@ -62,9 +62,10 @@ Phase 5  汇编为《定稿》（闻山）
 ```
 joy2know-polish-team/
 ├── .codebuddy-plugin/plugin.json   # 配置（expertType: team）
-├── setting.json                    # 主理人声明
+├── settings.json                   # 主理人声明（平台校验器查这个名）
+├── setting.json                    # 内容同上，沿用官方模板名，兼容保留
 ├── agents/                         # 1 主理人 + 4 成员
-├── avatars/                        # 团队头像 + 4 角色头像
+├── avatars/                        # 团队头像 + 5 角色头像
 ├── skills/                         # 内置：讲明白 + 凡人腔调 + 讲得清 + 一页看懂
 └── README.md
 ```

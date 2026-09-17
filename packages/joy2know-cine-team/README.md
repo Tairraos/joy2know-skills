@@ -40,9 +40,10 @@ Phase 6  汇编为《分镜包》（雷导）
 ```
 joy2know-cine-team/
 ├── .codebuddy-plugin/plugin.json   # 配置（expertType: team）
-├── setting.json                    # 主理人声明
-├── agents/                         # 1 主理人 + 5 成员
-├── avatars/                        # 团队头像 + 6 角色头像
+├── settings.json                   # 主理人声明（平台校验器查这个名）
+├── setting.json                    # 内容同上，沿用官方模板名，兼容保留
+├── agents/                         # 1 主理人 + 6 成员
+├── avatars/                        # 团队头像 + 7 角色头像
 ├── skills/                         # 内置：分镜工 + 角色档案
 └── README.md
 ```
