@@ -1,0 +1,15 @@
+{
+  "name": "joy2know-skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "晓得 / joy2know —— WorkBuddy 开放平台资产包仓库（Skill / Expert / 专家团）",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "list": "node scripts/build.mjs --list"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "晓得乐"
+}

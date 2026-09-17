@@ -1,0 +1,20 @@
+# ---- 构建产物（zip 由 `pnpm build` 生成，不入库） ----
+dist/
+
+# ---- WorkBuddy 运行时数据（会话记录、记忆等，不入库） ----
+.workbuddy/
+private
+
+# ---- 图标工具的本地副产物（预览副本 / 原图备份，不入库） ----
+avatars/.shrunk/
+avatars/.originals/
+
+# ---- 依赖与系统文件 ----
+node_modules/
+.DS_Store
+__MACOSX/
+*.log
+
+# ---- Python 缓存 ----
+__pycache__/
+*.pyc
