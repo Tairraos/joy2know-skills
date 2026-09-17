@@ -1,0 +1,6 @@
+{
+  "$comment": "本包内嵌的技能。源文件不在本目录，构建时从 packages/<名字>/ 复制真实技能进来（唯一真源）。",
+  "skills": [
+    "joy2know-codebase"
+  ]
+}

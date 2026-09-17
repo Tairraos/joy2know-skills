@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-code-scholar",
+  "version": "1.1.0",
+  "description": "A codebase archaeologist that turns an unfamiliar repository into an architecture map, entry-point traces, data flow and a ranked change-risk list — without reading every file",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-code-scholar.md"
+  ],
+  "skills": [
+    "./skills/joy2know-codebase"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-code-scholar",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Codebase Archaeologist",
+    "zh": "晓得·代码考古学家"
+  },
+  "displayDescription": {
+    "en": "Point at any repository and get an architecture map, entry-point traces, key data models and a ranked list of where it is safe to change and where it is not — built from the 20 files that actually matter, not all of them",
+    "zh": "指向陌生仓库，产出架构地图、入口链路与「哪里能动、哪里是雷区」的改造风险清单，只读关键文件不全量通读。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "02-Engineering",
+  "defaultInitPrompt": {
+    "zh": "帮我搞清楚这个仓库是怎么回事",
+    "en": "Help me understand this repository"
+  },
+  "plugin": "joy2know-code-scholar",
+  "tags": [
+    {
+      "en": "Codebase",
+      "zh": "代码考古"
+    },
+    {
+      "en": "Onboarding",
+      "zh": "项目接手"
+    },
+    {
+      "en": "Risk Map",
+      "zh": "改造风险"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Help me understand this repository",
+      "zh": "帮我搞清楚这个仓库是怎么回事"
+    },
+    {
+      "en": "Where is it safe to change, and where is it not?",
+      "zh": "这个仓库哪里能放心改，哪里是雷区？"
+    },
+    {
+      "en": "Trace the main entry point and request flow",
+      "zh": "追一遍主入口和请求链路"
+    }
+  ]
+}
