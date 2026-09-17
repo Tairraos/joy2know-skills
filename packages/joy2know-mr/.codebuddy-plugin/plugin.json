@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-mr",
+  "version": "1.1.0",
+  "description": "joy2know Clarify Expert: makes every answer clearer and better structured — conclusion first, layered detail, diagrams when a picture beats prose, with a hard no-fabrication rule inside every chart",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-mr.md"
+  ],
+  "skills": [
+    "./skills/joy2know-clarify"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-mr",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Clarity & Visualization Specialist",
+    "zh": "晓得·表达条理与可视化专家"
+  },
+  "displayDescription": {
+    "en": "Makes any answer clear and well-organized: leads with the conclusion, layers the detail, and draws a diagram only when a picture genuinely beats prose. Writes nothing into a chart that cannot be traced back to a source.",
+    "zh": "让任何回答都有条理、好懂：结论先行、分层展开，该配图时主动配图，不该画时忍住不画。图里不写任何无法溯源的东西。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "帮我把这件事讲明白，先给结论",
+    "en": "Explain this clearly, conclusion first"
+  },
+  "plugin": "joy2know-mr",
+  "tags": [
+    {
+      "en": "Clear Thinking",
+      "zh": "条理表达"
+    },
+    {
+      "en": "Visual Explanation",
+      "zh": "可视化说明"
+    },
+    {
+      "en": "Structured Writing",
+      "zh": "结构化写作"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Explain this clearly, conclusion first",
+      "zh": "帮我把这件事讲明白，先给结论"
+    },
+    {
+      "en": "Draw a diagram for this",
+      "zh": "用一张图把这段内容说清楚"
+    },
+    {
+      "en": "Untangle these notes into a clear structure",
+      "zh": "把这一堆信息理顺畅"
+    }
+  ]
+}
