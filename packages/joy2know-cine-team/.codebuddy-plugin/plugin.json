@@ -1,0 +1,175 @@
+{
+  "name": "joy2know-cine-team",
+  "version": "1.1.0",
+  "description": "A six-role AI video production team that turns one creative idea into an executable shot list, per-shot prompts, a consistency anchor sheet and a ready-to-paste Suno theme song",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-cine-lead.md",
+    "./agents/cine-narrative.md",
+    "./agents/cine-shot.md",
+    "./agents/cine-prompt.md",
+    "./agents/cine-consistency.md",
+    "./agents/cine-post.md",
+    "./agents/cine-music.md"
+  ],
+  "skills": [
+    "./skills/joy2know-storyboard",
+    "./skills/joy2know-character",
+    "./skills/joy2know-musician"
+  ],
+  "expertType": "team",
+  "agentName": "joy2know-cine-lead",
+  "teamInfo": {
+    "leadAgent": "joy2know-cine-lead",
+    "memberAgents": [
+      "cine-narrative",
+      "cine-shot",
+      "cine-prompt",
+      "cine-consistency",
+      "cine-post",
+      "cine-music"
+    ]
+  },
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know AI Video Production Team",
+    "zh": "晓得·AI 视频生产团队"
+  },
+  "displayDescription": {
+    "en": "Five roles turn one idea into a shootable package: story structure, shot list, model-ready prompts, consistency anchors and post-production notes — so you stop burning credits on trial and error",
+    "zh": "编导、分镜、提示词、一致性、音乐、后期六角色协作，把创意变成能开拍的分镜表、逐镜提示词、角色锚点与主题曲，省试错费。"
+  },
+  "avatar": "avatars/team.png",
+  "categoryId": "00-ExpertTeam",
+  "defaultInitPrompt": {
+    "zh": "我有一个创意，帮我做成能开拍的分镜方案",
+    "en": "I have an idea — turn it into a shootable shot plan"
+  },
+  "plugin": "joy2know-cine-team",
+  "tags": [
+    {
+      "en": "AI Video",
+      "zh": "AI 视频"
+    },
+    {
+      "en": "Storyboard",
+      "zh": "分镜"
+    },
+    {
+      "en": "Consistency",
+      "zh": "一致性"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "I have an idea — turn it into a shootable shot plan",
+      "zh": "我有一个创意，帮我做成能开拍的分镜方案"
+    },
+    {
+      "en": "Split this white-model animation into shots and write the prompts",
+      "zh": "把这段白模动画切成分镜并写好提示词"
+    },
+    {
+      "en": "Build a character card so the same face appears in every shot",
+      "zh": "给主角建一张角色卡，保证每镜长得一样"
+    }
+  ],
+  "members": [
+    {
+      "id": "joy2know-cine-lead",
+      "name": {
+        "en": "Rex",
+        "zh": "雷导"
+      },
+      "profession": {
+        "en": "Team Lead & Director",
+        "zh": "主理人·总导演"
+      },
+      "avatar": "avatars/cine-lead.png",
+      "role": "lead"
+    },
+    {
+      "id": "cine-narrative",
+      "name": {
+        "en": "Nora",
+        "zh": "诺拉"
+      },
+      "profession": {
+        "en": "Narrative Director",
+        "zh": "编导"
+      },
+      "avatar": "avatars/cine-narrative.png",
+      "role": "member"
+    },
+    {
+      "id": "cine-shot",
+      "name": {
+        "en": "Shawn",
+        "zh": "尚恩"
+      },
+      "profession": {
+        "en": "Storyboard Artist",
+        "zh": "分镜师"
+      },
+      "avatar": "avatars/cine-shot.png",
+      "role": "member"
+    },
+    {
+      "id": "cine-prompt",
+      "name": {
+        "en": "Percy",
+        "zh": "珀西"
+      },
+      "profession": {
+        "en": "Prompt Engineer",
+        "zh": "提示词工程师"
+      },
+      "avatar": "avatars/cine-prompt.png",
+      "role": "member"
+    },
+    {
+      "id": "cine-consistency",
+      "name": {
+        "en": "Cora",
+        "zh": "柯拉"
+      },
+      "profession": {
+        "en": "Consistency Keeper",
+        "zh": "一致性管理员"
+      },
+      "avatar": "avatars/cine-consistency.png",
+      "role": "member"
+    },
+    {
+      "id": "cine-post",
+      "name": {
+        "en": "Otto",
+        "zh": "奥托"
+      },
+      "profession": {
+        "en": "Post-production Advisor",
+        "zh": "后期顾问"
+      },
+      "avatar": "avatars/cine-post.png",
+      "role": "member"
+    },
+    {
+      "id": "cine-music",
+      "name": {
+        "en": "Melody",
+        "zh": "小音"
+      },
+      "profession": {
+        "en": "Musician",
+        "zh": "音乐人"
+      },
+      "avatar": "avatars/cine-music.png",
+      "role": "member"
+    }
+  ]
+}
