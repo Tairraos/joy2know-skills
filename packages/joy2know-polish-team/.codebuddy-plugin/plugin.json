@@ -1,0 +1,146 @@
+{
+  "name": "joy2know-polish-team",
+  "version": "1.1.0",
+  "description": "A four-editor polishing team that takes what you already have — a finished draft, a long report, a spreadsheet — and hands back something you can actually send. It diagnoses the material first, then routes it: untangle the structure, cut a long report into talkable pages, turn a spreadsheet into a one-page interactive dashboard, and strip the machine tone out of the final wording. Every edit is traceable to a named rule, and a gate script blocks anything that changes meaning, numbers or structure.",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-polish-lead.md",
+    "./agents/polish-clarity.md",
+    "./agents/polish-distill.md",
+    "./agents/polish-visual.md",
+    "./agents/polish-tone.md"
+  ],
+  "skills": [
+    "./skills/joy2know-clarify",
+    "./skills/joy2know-humanize",
+    "./skills/joy2know-deck",
+    "./skills/joy2know-dashboard"
+  ],
+  "expertType": "team",
+  "agentName": "joy2know-polish-lead",
+  "teamInfo": {
+    "leadAgent": "joy2know-polish-lead",
+    "memberAgents": [
+      "polish-clarity",
+      "polish-distill",
+      "polish-visual",
+      "polish-tone"
+    ]
+  },
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Copy Polishing Team",
+    "zh": "晓得·文案打磨团"
+  },
+  "displayDescription": {
+    "en": "The draft is ready — only delivery is left. Four editors each own one leg: untangle, distill into talkable pages, build a one-page dashboard, and strip machine tone last. A diagnosis decides who steps in, not all four.",
+    "zh": "稿子写完了只差交付：理清条理、压成能讲的、做成能发的看板，最后改掉机器腔调。上哪几棒由体检决定，不是全上。"
+  },
+  "avatar": "avatars/team.png",
+  "categoryId": "00-ExpertTeam",
+  "defaultInitPrompt": {
+    "zh": "稿子写完了，帮我改成能直接交出去的版本",
+    "en": "My draft is done — make it a version I can send"
+  },
+  "plugin": "joy2know-polish-team",
+  "tags": [
+    {
+      "en": "Copy Polishing",
+      "zh": "文案打磨"
+    },
+    {
+      "en": "De-AI Tone",
+      "zh": "去 AI 味"
+    },
+    {
+      "en": "Delivery Ready",
+      "zh": "交付成稿"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "My draft is done — make it a version I can send",
+      "zh": "稿子写完了，帮我改成能直接交出去的版本"
+    },
+    {
+      "en": "This report is too long — cut it into talkable pages",
+      "zh": "这份报告太长，压成能讲的十页"
+    },
+    {
+      "en": "Turn this spreadsheet into a one-page dashboard",
+      "zh": "把这份表格做成一页能发出去的看板"
+    }
+  ],
+  "members": [
+    {
+      "id": "joy2know-polish-lead",
+      "name": {
+        "en": "Wenshan",
+        "zh": "闻山"
+      },
+      "profession": {
+        "en": "Team Lead & Editor-in-Chief",
+        "zh": "主理人·总编审"
+      },
+      "avatar": "avatars/polish-lead.png",
+      "role": "lead"
+    },
+    {
+      "id": "polish-clarity",
+      "name": {
+        "en": "Linzhi",
+        "zh": "林知"
+      },
+      "profession": {
+        "en": "Structure Editor",
+        "zh": "条理编辑"
+      },
+      "avatar": "avatars/polish-clarity.png",
+      "role": "member"
+    },
+    {
+      "id": "polish-distill",
+      "name": {
+        "en": "Jianning",
+        "zh": "简宁"
+      },
+      "profession": {
+        "en": "Distillation Editor",
+        "zh": "提炼编辑"
+      },
+      "avatar": "avatars/polish-distill.png",
+      "role": "member"
+    },
+    {
+      "id": "polish-visual",
+      "name": {
+        "en": "Fangcun",
+        "zh": "方寸"
+      },
+      "profession": {
+        "en": "Data Visualization Editor",
+        "zh": "数据可视化编辑"
+      },
+      "avatar": "avatars/polish-visual.png",
+      "role": "member"
+    },
+    {
+      "id": "polish-tone",
+      "name": {
+        "en": "Subai",
+        "zh": "苏白"
+      },
+      "profession": {
+        "en": "Language Editor",
+        "zh": "语言编辑"
+      },
+      "avatar": "avatars/polish-tone.png",
+      "role": "member"
+    }
+  ]
+}
