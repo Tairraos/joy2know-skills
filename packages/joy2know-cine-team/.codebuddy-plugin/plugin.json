@@ -45,7 +45,7 @@
     "zh": "编导、分镜、提示词、一致性、音乐、后期六角色协作，把创意变成能开拍的分镜表、逐镜提示词、角色锚点与主题曲，省试错费。"
   },
   "avatar": "avatars/team.png",
-  "categoryId": "00-ExpertTeam",
+  "categoryId": "06-ContentCreative",
   "defaultInitPrompt": {
     "zh": "我有一个创意，帮我做成能开拍的分镜方案",
     "en": "I have an idea — turn it into a shootable shot plan"

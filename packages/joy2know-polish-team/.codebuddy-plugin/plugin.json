@@ -42,7 +42,7 @@
     "zh": "稿子写完了只差交付：理清条理、压成能讲的、做成能发的看板，最后改掉机器腔调。上哪几棒由体检决定，不是全上。"
   },
   "avatar": "avatars/team.png",
-  "categoryId": "00-ExpertTeam",
+  "categoryId": "06-ContentCreative",
   "defaultInitPrompt": {
     "zh": "稿子写完了，帮我改成能直接交出去的版本",
     "en": "My draft is done — make it a version I can send"
