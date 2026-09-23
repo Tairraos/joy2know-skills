@@ -34,19 +34,46 @@ REQUIRED_SECTIONS = ["Intro", "Chorus", "Outro", "End"]
 # 粤语强特征字（卡死语系用）
 CANTONESE_MARKERS = list("嘅咗嗰啲唔冇系哋佢边点咩而阵仲喎啩嘞呢睇瞓攞揸企")
 
-# 一旦出现在粤语歌词里就是语系污染
-MANDARIN_LEAKS = ["的时候", "我们", "什么", "是的", "不了", "了吗", "这儿", "那儿",
-                  "是不是", "有没有", "觉得好", "一样的"]
+# 一旦出现在粤语歌词里就是语系污染。
+# 注：只收「粤语里根本不会这么说」的词，不收「時候」这类两地都用的词（粤语也说「呢個時候」），
+#     否则会把合规粤语歌词误报成污染。
+# 简繁成对列出：粤语常用繁体书写，只收简体会**静默漏报**（2026-09-23 修复）。
+MANDARIN_LEAKS = [
+    "的时候", "的時候",
+    "我们", "我們",
+    "什么", "什麼",
+    "了吗", "了嗎",
+    "这儿", "這兒",
+    "那儿", "那兒",
+    "有没有", "有沒有",
+    "觉得好", "覺得好",
+    "一样的", "一樣的",
+    "是的",           # 简繁同形
+    "不了",           # 简繁同形
+    "是不是",         # 简繁同形
+]
 
 # 入声/爆破风险字（长音易破）
 # 注：必须是「粤语里也能用更平顺的说法替代」的字。像「食」「十」「八」这类高频生活字
 #     虽然也是入声，但替代成本高、误报烦人，不列入——规则自相矛盾比没规则更糟。
 CANTONESE_RISKY = list("不白哭失湿速急出黑拍血识百七")
 
-# 普通话虚词（非方言模式下用于提示「语系是否被指定」）
+# 已内置特征字表的方言 → 其特征字集合
 DIALECT_MARKERS = {
     "cantonese": CANTONESE_MARKERS,
 }
+
+# 已识别但尚未内置特征字表的方言：传这些值不会因 argparse 直接报错，
+# 而是照常做结构与污染检查、跳过「特征字密度」这一项并提示补充。
+# （原实现 choices 只放 DIALECT_MARKERS 的 key，导致下游「未内置字表」分支**永远不可达**，2026-09-23 修复。）
+KNOWN_UNMAPPED_DIALECTS = [
+    "hakka",          # 客家话
+    "hokkien",        # 闽南语
+    "teochew",        # 潮州话
+    "sichuanese",     # 四川话
+    "shanghainese",   # 上海话
+    "northeastern",   # 东北话
+]
 
 
 def is_cjk(ch):
@@ -134,11 +161,13 @@ def check(text, dialect, style):
     # 6. 方言检查
     if dialect:
         markers = DIALECT_MARKERS.get(dialect)
+        body = "\n".join(
+            l for l in lines if not re.match(r"^\s*\[", l))          # 排除标签行
         if markers is None:
-            warns.append(f"未内置 {dialect} 的特征字表，跳过方言检查（可在脚本 DIALECT_MARKERS 中补充）")
+            warns.append(
+                f"未内置 {dialect} 的特征字表，跳过「特征字密度」检查"
+                f"（结构与普通话污染检查照常执行；可在脚本 DIALECT_MARKERS 中补充字表）")
         else:
-            body = "\n".join(
-                l for l in lines if not re.match(r"^\s*\[", l))       # 排除标签行
             cjk_chars = [c for c in body if is_cjk(c)]
             if not cjk_chars:
                 warns.append("歌词正文里没有中文字符，方言检查跳过")
@@ -152,14 +181,16 @@ def check(text, dialect, style):
                         f"请通篇使用「{'、'.join(markers[:8])}」等强特征字")
                 elif density < 0.06:
                     warns.append(f"特征字密度 {density:.1%} 偏低，仍有跑偏风险，建议加强")
-                for leak in MANDARIN_LEAKS:
-                    if leak in body:
-                        warns.append(f"混入普通话表达「{leak}」，会造成语系污染")
                 risky_hit = sorted({c for c in cjk_chars if c in CANTONESE_RISKY})
                 if risky_hit:
                     warns.append(
                         f"命中入声/爆破风险字：{'、'.join(risky_hit)} —— "
                         f"换平顺字或用 (ah)/(oh...) 做声调补偿")
+        # 污染检查与特征字表无关：任何方言都不该混入普通话虚词，
+        # 所以放在 markers 分支之外 —— 未内置字表的方言同样要查（否则又是一处静默跳过）。
+        for leak in MANDARIN_LEAKS:
+            if leak in body:
+                warns.append(f"混入普通话表达「{leak}」，会造成语系污染")
         if style and "Smooth vocals" not in style and "Polished production" not in style:
             warns.append("方言歌建议在 Style 中加 `Smooth vocals, Polished production` 防破音")
         if style and re.search(r"distorted|bitcrushed", style, re.I):
@@ -171,13 +202,18 @@ def check(text, dialect, style):
 def main():
     ap = argparse.ArgumentParser(description="Suno 歌曲包结构校验")
     ap.add_argument("file", help="歌词文件（纯文本）")
-    ap.add_argument("--dialect", choices=list(DIALECT_MARKERS), help="方言模式")
+    ap.add_argument("--dialect", choices=list(DIALECT_MARKERS) + KNOWN_UNMAPPED_DIALECTS,
+                    help="方言模式（已内置特征字表的：cantonese；其余已知方言会跳过字表检查）")
     ap.add_argument("--style", help="Style 文本（用于检查语言锁与冲突指令）")
     ap.add_argument("--json", action="store_true", help="输出 JSON")
     args = ap.parse_args()
 
     try:
         text = open(args.file, encoding="utf-8").read()
+    except UnicodeDecodeError as e:
+        print(f"[读取失败] {args.file}: 不是 UTF-8 文本（{e.reason}，位置 {e.start}）。"
+              f"请转存为 UTF-8 后重试。", file=sys.stderr)
+        sys.exit(2)
     except OSError as e:
         print(f"[读取失败] {args.file}: {e}", file=sys.stderr)
         sys.exit(2)

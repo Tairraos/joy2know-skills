@@ -18,7 +18,7 @@ description_en: >-
   tonal compensation to stop AI from drifting, cracking or breaking on pronunciation. Outputs prompts only —
   it does not call any music generation API and cannot guarantee identical results.
 category: writing
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -62,7 +62,9 @@ author: 晓得乐
 4. **搭歌词骨架。** 段落顺序：`[Intro] → [Verse 1] → [Pre-Chorus] → [Chorus] → [Verse 2] → [Instrumental Break] → [Bridge] → [Chorus] → [Outro] → [End]`。
    **用户要求精简时可砍段，但 `[Intro]`、`[Chorus]`、`[Outro]`、`[End]` 不可省。**
 5. **填正文。** 按第四节的创作标准写：主歌写实、副歌造张力、意象做重组（详见规则 4–6）。
-6. **方言自检（仅 C 路径）。** 跑 `scripts/suno_check.py --dialect cantonese` 检查特征字密度与风险字。
+6. **方言自检（仅 C 路径）。** 跑 `scripts/suno_check.py --dialect cantonese` 检查特征字密度、风险字与普通话污染。
+   其他方言（客家/闽南/潮州/四川/上海/东北话）可传对应的 `--dialect` 值：脚本会照常做结构检查与
+   **普通话污染检查**，只跳过「特征字密度」一项并提示字表待补 —— 不要因为「密度查不了」就连污染也不查。
 7. **结构校验。** 跑 `scripts/suno_check.py <歌词文件>`，按报告修掉结构问题。
 8. **纯净输出。** 收齐信息后**严禁解释**，直接输出三段（见第五节）。
 
