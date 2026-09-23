@@ -14,7 +14,7 @@ description_en: >-
   messy information, comparing options, and documenting flows. Never fabricates data, relationships
   or hierarchy inside a diagram. Not for raw data lookups, poster or UI deliverables, or code itself.
 category: writing
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -144,7 +144,10 @@ L2 及以上默认用这个骨架：
 | 7 | 每段都强行凑 3 点 | "三点式"是最常见的空洞来源；有几点写几点 |
 | 8 | 输出完不核对数字 | 见第六节，编造数字是本技能最严重的失败 |
 
-改前／改后的完整对照见 `@references/patterns.md`。
+改前／改后的对照见 `@references/patterns.md`（**12 例真实失败与改法**，不是本表 8 条的逐条镜像）。
+对应关系：#1 → `01`、#3 → `11`、#5 → `07`、#6 → `08`、#7 → `09`、#8 → `05`/`06`；
+**#2 「为了显得专业而配图」与 #4 「标题层级堆到四五层」在 `patterns.md` 中没有独立条目**，按本表「为什么禁」自行判定。
+另列出 `02`/`03`/`04`/`10`/`12` 五例本表未收录的失败（结论埋在后面、该图示时堆文字、该说清的没说清、结构吃掉重点、用户说"简单说"之后）。
 
 ## 八、输出前自检六问
 
