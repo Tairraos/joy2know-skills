@@ -7,8 +7,11 @@ description: >-
   哪张是废片、改了八版哪版最好，于是反复重生成、白白烧钱。提示词可以直接从 ComfyUI / Stable Diffusion 生成的图里读出来
   （含被压缩过的元数据块），不用回头手工补；按创作意图（角色/场景/用途/是否废片/版本/是否可商用）检索，不是按文件属性；
   文件名与生成时间相近的素材会被推断成「同一批」，一键分版；还能渲染成单文件 HTML 看板，带缩略图与筛选。
+  另外与同系列联动：接上「晓得·角色档案」的角色卡，能查出哪几张图的提示词漏了角色锚点短语（生成后的一致性校验）；
+  接上「晓得·分镜工」的产出，首帧图与片段自动带上对应镜头的提示词和时长。
   触发词：素材台账、建索引、归档生成记录、找某角色的图、可商用素材、分辨够的图、废片标记、第几版最好、素材检索、
-  提示词丢了、从图里读提示词、同一批素材、生成记录归档、asset ledger、index my generations、find by character、list scrap。
+  提示词丢了、从图里读提示词、同一批素材、生成记录归档、角色一致吗、锚点漏了没、分镜首帧对不上、
+  asset ledger、index my generations、find by character、list scrap。
   不适用于：单纯按文件名/大小/修改时间整理文件（那是文件管理器，本技能不干）；找重复文件；删空白/模糊的批量清理。
 description_zh: 给生成素材建可检索台账，能从图里直挖提示词，按创作意图找图而非文件属性，推断批次并出 HTML 看板。
 description_en: >-
@@ -69,8 +72,12 @@ author: 晓得乐
    `ledger.py query --index ledger.jsonl --role lina --commercial true --min-res 1024`
    `ledger.py query --index ledger.jsonl --grep-prompt "umbrella"`（在提示词全文里搜）
    `ledger.py query --index ledger.jsonl --batch lina#1`（捞某一批）
-8. **体检 / 出图。** `ledger.py stats --index ledger.jsonl`；`ledger.py render --index ledger.jsonl --out ledger.html`。
-9. **回报。** 列命中条数、命中文件路径、哪些因缺字段被忽略。
+   `ledger.py query --index ledger.jsonl --shot shot_001`（捞某一镜的全部素材：片段 + 首帧）
+8. **联动（可选，两个都能单独用）。**
+   - 有「晓得·角色档案」产出的角色卡目录 → `--characters <characters目录>`：校验 `role` 是否在卡里，并逐条比对**锚点短语**是否进了提示词。
+   - 有「晓得·分镜工」的产出 → `--storyboard <shots目录>`：`shot_*` 素材自动带上对应镜头的提示词与时长。
+9. **体检 / 出图。** `ledger.py stats --index ledger.jsonl`；`ledger.py render --index ledger.jsonl --out ledger.html`。
+10. **回报。** 列命中条数、命中文件路径、哪些因缺字段被忽略。
 
 > 脚本的完整参数见 `python scripts/ledger.py <子命令> --help`。五个子命令：`scan` `query` `set` `stats` `render`。
 
@@ -111,11 +118,20 @@ author: 晓得乐
 
 **规则 5：与角色档案分工明确**
 
-- 触发条件：用户混淆「建角色卡」和「建素材台账」。
+- 触发条件：用户混淆「建角色卡」和「建素材台账」，或想借台账保证角色一致性。
 - 硬性动作：`joy2know-character` 管**生成前**的一致性（角色卡/锚点短语，让图长得像）；本技能管**生成后**的可检索（把已生成的素材按意图捞出来）。两者不重叠。
-- 正例：✓ 先用角色卡生成，生成完归档进台账，检索时按角色过滤。
-- 反例：✗ 在台账里重写一套角色设定去「保证一致」——那不是台账的活。
+- **联动的正确姿势（`--characters`）：只校验、只报告，不代填。** 台账**不会**因为文件名里有 `lina` 就自动写 `role: lina`（那正是规则 2 禁止的推断）。它只回答两件事：① 这个角色名在卡里吗（不在报 `unknown-role`）；② 生成这张图的提示词**带上了卡里的锚点短语吗**（一条没命中报 `anchor-miss`，部分命中报 `anchor-partial`）。
+- 正例：✓ 用角色卡生成 → 归档进台账 → 带 `--characters` 一扫，发现 3 张图的提示词漏了 `locked_anchors`，回头补生成。
+- 反例：✗ 在台账里重写一套角色设定去「保证一致」；✗ 因为卡里有 `lina`，就把 `lina_01.png` 的 `role` 自动填上。
 - 降级路径：两个都要 → 先建角色卡（生成前），再归档（生成后），顺序不乱。
+
+**规则 7：分镜产物照收，但不替它改写**
+
+- 触发条件：被扫目录里有「晓得·分镜工」的产出（`shot_NNN*` 文件 + `manifest.json`），或用户带上了 `--storyboard`。
+- 硬性动作：`shot_*` 素材按镜头号接上清单（`manifest.json`）里的**实测时长**与提示词包（`prompts.md`）里的**原样提示词**，镜头号记进 `shot_id`。**禁止**改写分镜提示词，也**禁止**替它推断镜头数或时长。
+- 正例：✓ `shot_001_firstframe.png` 接上 shot_001 的提示词与 3.2s 时长，检索时能一并看到。
+- 反例：✗ 在台账里给首帧图「优化」一版提示词 —— 分镜提示词归分镜工管。
+- 降级路径：文件名里的镜头号对不上清单 → 记进报告（「有 shot 文件名对不上分镜清单」），不硬塞、不猜。
 
 **规则 6：批次是推断，必须标出来（不是事实）**
 
@@ -152,6 +168,7 @@ author: 晓得乐
 | `batch_family` | 命名族（文件名去尾部版本/序号）—— **[推断]** |
 | `batch_id` | 具体批次，形如 `lina#1` —— **[推断]** |
 | `batch_basis` | 批次依据：`filename+time` / `filename-only` |
+| `shot_id` | 关联的分镜镜头号（如 `shot_001`，来自「晓得·分镜工」的清单） |
 | `meta_source` | 提示词等核心字段的来源：`embedded` 图内元数据 / `sidecar` 同源文件 / `user` 人工给定 / `none` 未提供。**补 role、用途、废片标记不会改动本字段**，人工介入记在 `flags` 的 `user-edited` |
 | `meta_tool` | 认出的工具：`comfyui` / `a1111` / `invokeai` / `fooocus/novelai` / `generic` |
 | `flags` | 内部标记（如 `meta-has-local-path`、`suspect-rename`），供排查用 |
@@ -172,6 +189,9 @@ author: 晓得乐
 | 6 | 分辨率靠文件名推断 | 不可靠，图片头部才是真相 |
 | 7 | 手改台账文件补字段 | 应用 `set`，否则来源标记与批次会失真 |
 | 8 | 把推断批次说成事实 | 推断就是推断，标出来 |
+| 9 | 角色卡里有就自动填 `role` | 那仍是凭文件名推断，规则 2 禁止；联动只校验、不代填 |
+| 10 | 替分镜改写提示词 | 分镜提示词归分镜工管，台账只照收 |
+| 11 | 用文件属性当检索条件 | 与 #1 同源：大小/时间只能做推断线索，不能做滤镜 |
 
 ## 六、防幻觉（硬约束，优先级最高）
 

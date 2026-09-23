@@ -45,12 +45,13 @@ VIDEO_EXTS = {".mp4", ".mov", ".webm", ".mkv", ".avi"}
 CREATIVE_FIELDS = ["role", "scene", "purpose", "prompt", "model",
                    "params", "tags", "is_scrap", "version", "commercial"]
 TECH_FIELDS = ["file_path", "type", "resolution", "duration", "created_at"]
-DERIVED_FIELDS = ["batch_family", "batch_id", "batch_basis",
+DERIVED_FIELDS = ["batch_family", "batch_id", "batch_basis", "shot_id",
                   "meta_source", "meta_tool", "raw_meta", "flags"]
 CSV_COLUMNS = ["file_path", "type", "role", "scene", "purpose", "prompt",
                "model", "params", "tags", "is_scrap", "version", "commercial",
                "resolution", "duration", "created_at",
-               "batch_family", "batch_id", "batch_basis", "meta_source", "meta_tool"]
+               "batch_family", "batch_id", "batch_basis", "shot_id",
+               "meta_source", "meta_tool"]
 # CSV 也要带上增量判定键，否则二次扫描会重复入库
 CSV_KEY_COLUMNS = ["_size", "_mtime"]
 
@@ -475,6 +476,7 @@ def make_record(path, root, allow_probe=True, embed=True, keep_raw_meta=False):
         "batch_family": None,
         "batch_id": None,
         "batch_basis": None,
+        "shot_id": None,
         "meta_source": "none",
         "meta_tool": None,
         "raw_meta": None,
@@ -725,6 +727,219 @@ def assign_batches(records, window=DEFAULT_BATCH_WINDOW):
     return groups
 
 
+# ============================================================ 与角色档案 / 分镜工联动
+
+def _addflag(rec, flag):
+    """幂等写标记：同前缀的旧值先清掉，重复 scan 不会越堆越多。"""
+    rec.setdefault("flags", [])
+    pre = flag.split(":")[0]
+    rec["flags"] = [f for f in rec["flags"] if f != flag and not f.startswith(pre + ":")]
+    rec["flags"].append(flag)
+
+
+def _extract_anchors(text):
+    """取角色卡的 locked_anchors 列表项。YAML（`locked_anchors:`）与 Markdown
+    （`## 连续性锁`）两种等价格式都认，遇下一个非列表行即认为块结束。
+
+    **只用正则取这一个块**，不假装能解析任意 YAML —— 角色卡的实际字段就这几个。
+    """
+    out = []
+    capturing = False
+    for raw in text.split("\n"):
+        ln = raw.rstrip()
+        if re.search(r"连续性锁", ln) or re.match(r"^\s*locked_anchors\s*:", ln):
+            inline = re.search(r"\[(.+?)\]", ln)
+            if inline:  # 行内数组写法 locked_anchors: [a, b]
+                return [x.strip().strip("'\"") for x in inline.group(1).split(",") if x.strip()]
+            capturing = True
+            continue
+        if not capturing or not ln.strip():
+            continue
+        m = re.match(r"^\s*[-*]\s+(.+)$", ln)
+        if m:
+            v = re.sub(r"（[^）]*）\s*$", "", m.group(1).strip()).strip().strip("'\"")
+            if v:
+                out.append(v)
+            continue
+        break  # 不是列表项也不是空行 → 块结束
+    return out
+
+
+def load_character_cards(directory):
+    """读「晓得·角色档案」产出的角色卡目录，返回 {角色名: [锚点短语]}。
+
+    角色卡落在 `characters/char_<name>.yaml` 或 `.md`。这里只取 `name` 与
+    `locked_anchors` 两个字段，**不引入 YAML 依赖**。
+    """
+    cards = {}
+    if not directory:
+        return cards
+    if not os.path.isdir(directory):
+        print("提示：--characters 指定的目录不存在：%s" % directory)
+        return cards
+    for fn in sorted(os.listdir(directory)):
+        if not fn.startswith("char_") or not fn.endswith((".yaml", ".yml", ".md")):
+            continue
+        try:
+            with open(os.path.join(directory, fn), "r", encoding="utf-8") as f:
+                text = f.read()
+        except Exception:
+            continue
+        names = [m.group(1).strip().strip("'\"")
+                 for m in re.finditer(r"^\s*name:\s*([^\s#]+)", text, re.M)]
+        if not names:
+            m = re.search(r"[-*]\s*代号[：:]\s*(\S+)", text)
+            if m:
+                names = [m.group(1).strip()]
+        if not names:
+            # 兜底取文件名里的 name —— 这是角色卡的命名约定，不是「凭文件名猜角色」
+            names = [os.path.splitext(fn)[0][len("char_"):]]
+        anchors = _extract_anchors(text)
+        for n in names:
+            if n:
+                cards.setdefault(n, anchors)
+    return cards
+
+
+def _parse_prompts_md(text):
+    """解析「晓得·分镜工」的 shots/prompts.md：按 `## shot_001` 分段取条目。"""
+    out, cur = {}, None
+    for ln in text.split("\n"):
+        m = re.match(r"^##\s+(shot_\d+)\s*$", ln)
+        if m:
+            cur = m.group(1)
+            out[cur] = {}
+            continue
+        if not cur:
+            continue
+        m2 = re.match(r"^[-*]\s*([^：:]+)[：:]\s*(.+)$", ln)
+        if not m2:
+            continue
+        k, v = m2.group(1).strip(), m2.group(2).strip()
+        if "提示词" in k:
+            out[cur]["prompt"] = v
+        elif "景别" in k or "运镜" in k:
+            out[cur]["shot_language"] = v
+        elif "锚点" in k:
+            out[cur]["anchors_text"] = v
+    return out
+
+
+def load_storyboard(target):
+    """读「晓得·分镜工」的产出目录（或其 manifest.json），返回 {shot_001: {...}}。
+
+    清单 `manifest.json` 给的是实测值（起止、时长、首帧路径）；`prompts.md`
+    给的是该镜的提示词。两者合并后，首帧图能自动带上它对应的分镜提示词。
+    """
+    shots = {}
+    if not target:
+        return shots
+    manifest_path = os.path.join(target, "manifest.json") if os.path.isdir(target) else target
+    if not os.path.isfile(manifest_path):
+        print("提示：--storyboard 没找到 manifest.json：%s" % manifest_path)
+        return shots
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        print("提示：分镜清单解析失败：%s" % manifest_path)
+        return shots
+    for s in (data.get("shots") or []) if isinstance(data, dict) else []:
+        tag = s.get("tag")
+        if tag:
+            shots[tag] = {"duration": s.get("duration"), "start": s.get("start"),
+                          "end": s.get("end"), "prompt": None}
+    prompts_md = os.path.join(os.path.dirname(manifest_path), "prompts.md")
+    if os.path.isfile(prompts_md):
+        try:
+            with open(prompts_md, "r", encoding="utf-8") as f:
+                parsed = _parse_prompts_md(f.read())
+        except Exception:
+            parsed = {}
+        for tag, body in parsed.items():
+            shots.setdefault(tag, {"duration": None})
+            shots[tag]["prompt"] = body.get("prompt")
+            if body.get("shot_language"):
+                shots[tag]["shot_language"] = body["shot_language"]
+    return shots
+
+
+def apply_links(records, cards, shots):
+    """把角色卡与分镜清单的信息接进台账。返回一份联动报告。
+
+    两条边界（都与规则 1、规则 2 一致）：
+      · 角色名**只做校验**（在不在卡里），绝不因为文件名含某角色就自动填 `role`；
+      · 锚点短语逐条比对提示词，命中情况记进 flags，作为「生成时有没有照角色卡来」的证据。
+    """
+    report = {"unknown_role": [], "anchor_miss": [], "anchor_partial": [],
+              "no_prompt": [], "storyboard_hit": 0, "storyboard_unknown": []}
+    for r in records:
+        role = r.get("role")
+        if role and cards:
+            anchors = cards.get(role)
+            if anchors is None:
+                _addflag(r, "unknown-role")
+                report["unknown_role"].append((r.get("file_path"), role))
+            elif anchors:
+                prompt = r.get("prompt") or ""
+                if not prompt:
+                    report["no_prompt"].append(r.get("file_path"))
+                else:
+                    hit = sum(1 for a in anchors if a.lower() in prompt.lower())
+                    if hit == 0:
+                        _addflag(r, "anchor-miss:%s(0/%d)" % (role, len(anchors)))
+                        report["anchor_miss"].append(r.get("file_path"))
+                    elif hit < len(anchors):
+                        _addflag(r, "anchor-partial:%s(%d/%d)" % (role, hit, len(anchors)))
+                        report["anchor_partial"].append(r.get("file_path"))
+
+        base = os.path.basename(r.get("file_path") or "")
+        m = re.search(r"(shot_\d{3})", base)
+        if m and shots is not None and shots:
+            tag = m.group(1)
+            info = shots.get(tag)
+            if not info:
+                report["storyboard_unknown"].append(tag)
+                continue
+            r["shot_id"] = tag
+            report["storyboard_hit"] += 1
+            if not r.get("duration") and info.get("duration") is not None:
+                r["duration"] = str(info["duration"])
+                _addflag(r, "duration-from-storyboard")
+            if not r.get("prompt") and info.get("prompt"):
+                r["prompt"] = info["prompt"]
+                if r.get("meta_source") == "none":
+                    r["meta_source"] = "sidecar"
+                r["meta_tool"] = r.get("meta_tool") or "storyboard"
+                _addflag(r, "prompt-from-storyboard")
+    return report
+
+
+def _print_link_report(report, cards, shots):
+    if not cards and not shots:
+        return
+    print("  联动：", end="")
+    bits = []
+    if cards:
+        bits.append("角色卡 %d 张" % len(cards))
+    if shots:
+        bits.append("分镜 %d 镜，台账命中 %d" % (len(shots), report["storyboard_hit"]))
+    print(" · ".join(bits))
+    if report["unknown_role"]:
+        names = sorted({n for _, n in report["unknown_role"]})
+        print("    ⚠ %d 条素材的角色不在角色卡里（可能是改名/拼错）：%s"
+              % (len(report["unknown_role"]), ", ".join(names[:6])))
+    if report["anchor_miss"]:
+        print("    ⚠ %d 条素材的提示词一条锚点短语都没命中 —— 生成时可能没用角色卡" % len(report["anchor_miss"]))
+        for p in report["anchor_miss"][:5]:
+            print("      %s" % p)
+    if report["anchor_partial"]:
+        print("    · %d 条只命中了部分锚点（改了造型或提示词被压缩）" % len(report["anchor_partial"]))
+    if report["storyboard_unknown"]:
+        tags = sorted(set(report["storyboard_unknown"]))
+        print("    ⚠ 有 shot 文件名对不上分镜清单：%s" % ", ".join(tags[:6]))
+
+
 # ============================================================ 检索条件
 
 def _as_bool(v):
@@ -760,6 +975,7 @@ def filter_records(records, args):
     tag = args.tag
     version = args.version
     batch = getattr(args, "batch", None)
+    shot = getattr(args, "shot", None)
     grep = getattr(args, "grep_prompt", None)
     scrap = _as_bool(args.scrap) if args.scrap is not None else None
     all_scrap = getattr(args, "all", False)
@@ -780,6 +996,8 @@ def filter_records(records, args):
         if version and str(r.get("version") or "") != str(version):
             continue
         if batch and (r.get("batch_id") or "") != batch and (r.get("batch_family") or "") != batch:
+            continue
+        if shot and (r.get("shot_id") or "") != shot:
             continue
         if grep:
             hay = (r.get("prompt") or "")
@@ -842,8 +1060,16 @@ def cmd_scan(args):
     if not args.no_batch:
         groups = assign_batches(records, args.batch_window)
 
+    cards = load_character_cards(getattr(args, "characters", None))
+    shots = load_storyboard(getattr(args, "storyboard", None))
+    link = apply_links(records, cards, shots)
+
     meta["root"] = root_abs
     meta["updated_at"] = _now()
+    if cards:
+        meta["characters_dir"] = os.path.abspath(args.characters)
+    if shots:
+        meta["storyboard"] = os.path.abspath(args.storyboard)
     save_index(records, args.index, args.format, meta)
 
     emb = sum(1 for r in records if r.get("meta_source") == "embedded")
@@ -856,6 +1082,7 @@ def cmd_scan(args):
         batched = sum(1 for r in records if r.get("batch_id"))
         print("  批次 [推断]：%d 组，覆盖 %d 条（同族判定窗口 %d 秒）"
               % (groups, batched, args.batch_window))
+    _print_link_report(link, cards, shots)
     leak = sum(1 for r in records if "meta-has-local-path" in (r.get("flags") or []))
     if leak:
         print("  ⚠ %d 条素材的内嵌元数据含本机绝对路径（可能带用户名）—— "
@@ -1051,8 +1278,34 @@ def cmd_stats(args):
     if args.show_fields:
         print("\n全部字段名：")
         print("  创作 " + " ".join(CREATIVE_FIELDS))
-        print("  技术 " + " ".join(TECH_FIELDS))
+        print("  技术 " + " ".join(TECH_FIELDS + ["shot_id"]))
         print("  派生 " + " ".join(DERIVED_FIELDS))
+
+    def flagged(pre):
+        return [r for r in records
+                if any(f == pre or f.startswith(pre + ":")
+                       for f in (r.get("flags") or []))]
+
+    unknown, miss, partial = flagged("unknown-role"), flagged("anchor-miss"), flagged("anchor-partial")
+    shot = [r for r in records if r.get("shot_id")]
+    if unknown or miss or partial or shot or meta.get("characters_dir"):
+        print("\n联动（由 scan --characters / --storyboard 写入）")
+        if meta.get("characters_dir"):
+            print("  角色卡目录   %s" % meta["characters_dir"])
+        if unknown:
+            names = sorted({r.get("role") for r in unknown})
+            print("  角色不在卡里 %d 条 → %s" % (len(unknown), ", ".join(str(n) for n in names[:6])))
+        if miss:
+            print("  锚点全未命中 %d 条（提示词里没有角色卡的锚点短语）" % len(miss))
+            for r in miss[:5]:
+                print("    %s" % r.get("file_path"))
+        if partial:
+            print("  锚点部分命中 %d 条（改了造型，或提示词被压缩）" % len(partial))
+        if shot:
+            ids = sorted({r.get("shot_id") for r in shot})
+            print("  已接分镜     %d 条素材，覆盖 %d 个镜头" % (len(shot), len(ids)))
+        if meta.get("storyboard") and not shot:
+            print("  分镜清单里没有与台账文件名匹配的 shot_*")
 
 
 def _now():
@@ -1285,6 +1538,10 @@ def main():
     p_scan.add_argument("--no-ffprobe", action="store_true", help="跳过 ffprobe 探测视频分辨率 / 时长")
     p_scan.add_argument("--no-embed", action="store_true", help="不从图内元数据挖提示词与参数")
     p_scan.add_argument("--no-batch", action="store_true", help="不做批次推断")
+    p_scan.add_argument("--characters", metavar="DIR",
+                        help="角色卡目录（晓得·角色档案的产出 char_*.yaml）：校验 role 是否已知，并比对锚点短语是否进了提示词")
+    p_scan.add_argument("--storyboard", metavar="PATH",
+                        help="分镜产出目录或其 manifest.json（晓得·分镜工）：shot_* 素材自动带上对应镜头的提示词与时长")
     p_scan.add_argument("--batch-window", type=int, default=DEFAULT_BATCH_WINDOW,
                         help="同族判定窗口（秒），默认 %d" % DEFAULT_BATCH_WINDOW)
     p_scan.add_argument("--keep-raw-meta", action="store_true",
@@ -1301,6 +1558,7 @@ def main():
     p_q.add_argument("--tag", help="按标签过滤（命中即匹配）")
     p_q.add_argument("--version", help="按版本号过滤")
     p_q.add_argument("--batch", help="按批次或命名族过滤（[推断]）")
+    p_q.add_argument("--shot", help="按分镜镜头号过滤（如 shot_001）")
     p_q.add_argument("--grep-prompt", help="在提示词全文里搜关键词")
     p_q.add_argument("--scrap", help="是否废片：true / false")
     p_q.add_argument("--all", action="store_true", help="不按废片过滤（默认排除废片）")
