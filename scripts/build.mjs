@@ -398,9 +398,13 @@ function zipCommand() {
 
 function makeZip(stageParent, name, zipPath) {
   if (exists(zipPath)) fs.rmSync(zipPath);
+  // __pycache__ / *.pyc 是跑过 Python 脚本就会冒出来的运行时产物，
+  // 一旦进包会被深度自检判为「含临时文件」，故在打包层统一排除。
   execFileSync(
     'zip',
-    ['-rq', zipPath, name, '-x', '*.DS_Store', '-x', '__MACOSX/*'],
+    ['-rq', zipPath, name,
+      '-x', '*.DS_Store', '-x', '__MACOSX/*',
+      '-x', '*/__pycache__/*', '-x', '*.pyc', '-x', '*.pyo'],
     { cwd: stageParent }
   );
 }
