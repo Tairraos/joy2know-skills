@@ -20,7 +20,7 @@ description_en: >-
   explanations and risks only; it does not auto-refactor. Not for one-line bug
   fixes or for binary/encrypted repositories with no source to read.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -35,7 +35,8 @@ author: 晓得乐
 |---|---|---|
 | **入口文件** | 程序启动或被框架加载的第一个文件（main / index / app / server / __main__） | 优先级最高，必须首先定位并读 |
 | **核心模块** | 被大量其他文件引用、含路由/控制器/模型/服务关键字 | 次优先，构成主流程骨架 |
-| **噪音文件** | 锁文件、构建产物、node_modules、dist、vendor、超大固件 JSON | **禁止**纳入阅读，自动跳过 |
+| **噪音文件** | 锁文件、构建产物、node_modules、dist、vendor | **禁止**纳入阅读，自动跳过 |
+| **超大文件** | 体积远超常规（固件 / 数据导出类 JSON 等） | **不跳过**，但**降权**（分数 −8），排在清单末位 |
 | **改造风险** | 动它容易出事 vs 动了无碍的区域 | 单独分级输出，见第五节 |
 
 **最容易犯的错：** 试图从头读遍几千个文件。结果上下文被撑爆、重点被淹没，半小时什么也没产出。

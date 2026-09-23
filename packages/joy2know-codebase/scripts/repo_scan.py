@@ -206,9 +206,81 @@ def score_files(root, files, ref_counter, max_depth):
     return scored
 
 
+try:  # Python 3.11+ 标准库；拿不到就退回正则（见 _pyproject_deps）
+    import tomllib
+except ImportError:  # pragma: no cover
+    tomllib = None
+
+
+def _split_req(spec):
+    """把 'fastapi>=0.110' / 'pkg[extra]; python_version>="3.9"' 切成包名。"""
+    return re.split(r"[<>=!~\[; ]", str(spec).strip(), maxsplit=1)[0]
+
+
+def _pyproject_deps(text):
+    """从 pyproject.toml 取依赖名。
+
+    优先用标准库 tomllib 按 TOML **结构**取值 —— 这样 `[project]` 下的
+    `name` / `version` / `dependencies` 这些**表键不会被当成依赖**（原实现用
+    `^\\s*key\\s*=` 正则抓，会把它们一起抓出来）。
+    覆盖：PEP 621 `[project].dependencies` 与 `optional-dependencies`、
+    PEP 735 `[dependency-groups]`、Poetry `[tool.poetry*.dependencies]`。
+    """
+    names = []
+    if tomllib is not None:
+        try:
+            data = tomllib.loads(text)
+        except Exception:
+            data = None
+        if isinstance(data, dict):
+            proj = data.get("project") or {}
+            for dep in proj.get("dependencies") or []:
+                nm = _split_req(dep)
+                if nm:
+                    names.append(nm)
+            for group in (proj.get("optional-dependencies") or {}).values():
+                for dep in group or []:
+                    nm = _split_req(dep)
+                    if nm:
+                        names.append(nm)
+            for group in (data.get("dependency-groups") or {}).values():
+                for dep in group or []:
+                    if not isinstance(dep, str):
+                        continue
+                    nm = _split_req(dep)
+                    if nm:
+                        names.append(nm)
+            poetry = (data.get("tool") or {}).get("poetry") or {}
+            for key in ("dependencies", "dev-dependencies"):
+                for nm in (poetry.get(key) or {}):
+                    if nm.lower() != "python":
+                        names.append(nm)
+            for grp in (poetry.get("group") or {}).values():
+                for nm in ((grp or {}).get("dependencies") or {}):
+                    if nm.lower() != "python":
+                        names.append(nm)
+            if names:
+                return names
+    # 退回：只从 dependencies 数组里取字符串字面量，不再按 `key =` 抓表键
+    for block in re.finditer(r"(?ms)^\s*dependencies\s*=\s*\[(.*?)\]", text):
+        for lit in re.findall(r"""["']([^"']+)["']""", block.group(1)):
+            nm = _split_req(lit)
+            if nm:
+                names.append(nm)
+    for head in re.finditer(
+            r"(?m)^\s*\[tool\.poetry[^\]]*dependencies[^\]]*\]\s*$", text):
+        seg = text[head.end():]
+        nxt = re.search(r"(?m)^\s*\[", seg)
+        seg = seg[: nxt.start()] if nxt else seg
+        for mm in re.finditer(r"(?m)^\s*([a-zA-Z0-9_.\-]+)\s*=", seg):
+            if mm.group(1).lower() != "python":
+                names.append(mm.group(1))
+    return names
+
+
 def parse_dependencies(root):
     """解析受支持的依赖清单，返回 {ecosystem: [name, ...]}。"""
-    deps = {}
+    deps = {}  # eco -> set(names)；多文件同生态必须**合并**，不能覆盖
     for fname, eco in DEP_FILES.items():
         full = os.path.join(root, fname)
         if not os.path.isfile(full):
@@ -232,10 +304,17 @@ def parse_dependencies(root):
                 line = line.split("#")[0].strip()
                 if not line or line.startswith("-"):
                     continue
-                names.append(re.split(r"[=<>!~ ]", line, 1)[0])
+                names.append(re.split(r"[=<>!~ ]", line, maxsplit=1)[0])
         elif fname == "pyproject.toml":
-            for m in re.finditer(r"^\s*([a-zA-Z0-9_.\-]+)\s*[=~<>]", text, re.M):
-                names.append(m.group(1))
+            names += _pyproject_deps(text)
+        elif fname == "Gemfile":
+            # `gem "rails", "~> 7.0"` / `gem 'pg'`。原实现让 Gemfile 落进最后的 else
+            # 分支（按空格取首词），于是输出 `gem` / `source` 这类关键字而非真实依赖。
+            for line in text.splitlines():
+                line = line.split("#")[0].strip()
+                gm = re.match(r"""gem\s+["']([^"']+)["']""", line)
+                if gm:
+                    names.append(gm.group(1))
         elif fname == "go.mod":
             for m in re.finditer(r"^\s*([a-zA-Z0-9_./\-]+)\s+v[\d]", text, re.M):
                 names.append(m.group(1))
@@ -268,8 +347,10 @@ def parse_dependencies(root):
                 if line and not line.startswith("#"):
                     names.append(line.split()[0])
         if names:
-            deps[eco] = sorted(set(names))
-    return deps
+            # 合并而非覆盖：requirements.txt 与 pyproject.toml 同属 python 生态，
+            # 原实现 `deps[eco] = ...` 会让后解析的那个把前一个的依赖**静默丢掉**。
+            deps.setdefault(eco, set()).update(names)
+    return {eco: sorted(v) for eco, v in deps.items()}
 
 
 def build_tree(files, max_depth):
