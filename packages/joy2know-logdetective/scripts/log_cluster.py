@@ -14,6 +14,7 @@
 """
 
 import argparse
+import datetime
 import gzip
 import json
 import re
@@ -38,6 +39,16 @@ JSON_HEAD_RE = re.compile(r"^\s*[{\[]")  # 可能是 JSON 行
 ISO_RE = re.compile(
     r"(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:Z|[+-]\d{2}:?\d{2})?)")
 SYSLOG_RE = re.compile(MONTHS + r"\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}")
+
+# ---------- 时间比较键：所有时间戳先归一成 'YYYY-MM-DDTHH:MM:SS' 再比较 ----------
+# 直接拿显示用的字符串做字典序比较是不可靠的：'2026-09-23T10:00:00' 与
+# '2026-09-23 23:59:59' 在第 11 位就分出大小（'T'=0x54 > ' '=0x20），
+# 于是「同一天」的 --since/--until 判定全部反过来。故统一走 time_key()。
+ISO_KEY_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})")
+SYSLOG_KEY_RE = re.compile(
+    r"\b(" + MONTHS + r")\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\b")
+MONTH_NUM = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
+             "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
 
 # JSON 日志常见字段
 TS_KEYS = ("timestamp", "time", "ts", "@timestamp", "date", "datetime", "logged_at")
@@ -149,19 +160,65 @@ def bucket_key(ts_str, bucket):
     return ts_str[:16] if len(ts_str) >= 16 else ts_str  # 分钟
 
 
-def parse_filter(dt_str):
+def time_key(ts_str, default_year=None):
+    """把任意时间戳归一成可比较的 'YYYY-MM-DDTHH:MM:SS'；无法判定返回 None。
+
+    归一化只用于**比较**，不改变输出里显示的时间戳原文。
+    syslog 格式（`Sep 23 10:00:00`）不带年份 —— 用 default_year（默认当前年）补全，
+    否则它跟 ISO 时间戳放在一起比较毫无意义。
+    """
+    if not ts_str:
+        return None
+    m = ISO_KEY_RE.search(ts_str)
+    if m:
+        y, mo, d, hh, mi, ss = m.groups()
+        return "%s-%s-%sT%s:%s:%s" % (y, mo, d, hh, mi, ss)
+    m = SYSLOG_KEY_RE.search(ts_str)
+    if m:
+        mon, d, hh, mi, ss = m.groups()
+        year = default_year or datetime.date.today().year
+        return "%04d-%02d-%02dT%s:%s:%s" % (year, MONTH_NUM[mon], int(d), hh, mi, ss)
+    return None
+
+
+def parse_filter(dt_str, is_until=False):
+    """把 `--since` / `--until` 的取值归一成与 time_key() 同格式的比较键。
+
+    - 纯日期 `YYYY-MM-DD`：作下界视作当天 `00:00:00`，作上界视作当天 **`23:59:59`**
+      —— 即上界日整天都算在窗口内。（原实现让上界日整天报废，是本次修复的核心缺陷。）
+    - 到分钟 `YYYY-MM-DDTHH:MM`：补 `:00`
+    - 其它写法：交给 time_key() 兜底；解析不出则**忽略该条件并告警**（不静默当没过滤）
+    """
     if not dt_str:
         return None
-    # 接受 YYYY-MM-DD 或 YYYY-MM-DDTHH:MM:SS
-    return dt_str.replace("T", " ")
+    s = dt_str.strip().replace("/", "-")
+    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})$", s)
+    if m:
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        return "%04d-%02d-%02dT%s" % (y, mo, d, "23:59:59" if is_until else "00:00:00")
+    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?$", s)
+    if m:
+        y, mo, d, hh, mi, ss = m.groups()
+        return "%04d-%02d-%02dT%02d:%s:%s" % (int(y), int(mo), int(d), int(hh), mi, ss or "00")
+    key = time_key(s)
+    if key is None:
+        # R1 降级必须留痕：条件无效必须说出来，不能静默当成「没有过滤」
+        sys.stderr.write("[警告] 无法解析时间条件 %r，该条件已忽略\n" % dt_str)
+    return key
 
 
 def in_range(ts_str, since, until):
-    if not ts_str:
-        return True  # 无法判定时间的记录默认保留
-    if since and ts_str < since:
+    """判断记录是否落在 [since, until] 窗口内（含两端）。
+
+    - `since` / `until` 是 parse_filter() 产出的比较键
+    - 无法判定时间的记录**默认保留**（沿用原行为）
+    """
+    key = time_key(ts_str)
+    if key is None:
+        return True
+    if since and key < since:
         return False
-    if until and ts_str > until:
+    if until and key > until:
         return False
     return True
 
@@ -182,6 +239,15 @@ def stream_clusters(path, top, context, bucket, since, until, aggressive=False):
     def flush():
         nonlocal cur_raw_parts, cur_time, cur_template, record_open, cur_start_line
         if not cur_raw_parts:
+            record_open = False
+            return
+        # 时间窗口按「逐条记录」过滤。原实现是对聚类结果按「类首现时间」过滤 ——
+        # 一个类只要首现在窗口外就整类丢掉，哪怕它在窗口内有上万条，语义是错的。
+        if (since or until) and not in_range(cur_time, since, until):
+            cur_raw_parts = []
+            cur_time = None
+            cur_template = None
+            cur_start_line = None
             record_open = False
             return
         raw = "".join(cur_raw_parts).rstrip("\n")
@@ -235,15 +301,16 @@ def stream_clusters(path, top, context, bucket, since, until, aggressive=False):
                     record_open = True
         flush()
 
-    # 时间过滤（按首现时间）
-    if since or until:
-        clusters = {k: v for k, v in clusters.items()
-                    if in_range(v["first"], since, until) or v["first"] is None}
+    # 时间过滤已在 flush() 里逐条完成（见上），此处不再按「类首现时间」二次过滤。
     return clusters
 
 
-def collect_context(path, need_lines, context):
-    """第二遍流式：只为 top 模板的首现行号收集前后上下文（内存安全）。"""
+def collect_context(path, need_lines, context, since=None, until=None):
+    """第二遍流式：只为 top 模板的首现行号收集前后上下文（内存安全）。
+
+    给了时间窗口时，窗口外的行**不进入上下文** —— 否则用户按时间过滤后，
+    上下文里仍会看到被过滤掉的行，会误判「过滤没生效」。
+    """
     ctx_map = {}
     lo = {ln - context for ln in need_lines if ln is not None}
     hi = {ln + context for ln in need_lines if ln is not None}
@@ -258,12 +325,16 @@ def collect_context(path, need_lines, context):
                 continue
             if line_no > max_ln + 1:
                 break
+            if (since or until) and not in_range(extract_time(line), since, until):
+                continue
             buf[line_no] = line.rstrip("\n")
     for ln in need_lines:
         if ln is None:
             continue
-        before = [buf.get(i, "") for i in range(max(1, ln - context), ln)]
-        after = [buf.get(i, "") for i in range(ln + 1, ln + context + 1)]
+        # 被时间窗口滤掉的位置在 buf 里不存在，取出来是空串 —— 丢掉，
+        # 于是「前后 N 行」自然收窄为「窗口内的相邻 N 行」。
+        before = [x for x in (buf.get(i, "") for i in range(max(1, ln - context), ln)) if x]
+        after = [x for x in (buf.get(i, "") for i in range(ln + 1, ln + context + 1)) if x]
         ctx_map[ln] = (before, after)
     return ctx_map
 
@@ -290,7 +361,8 @@ def main(argv=None):
         print("错误：文件不存在 -> %s" % args.path, file=sys.stderr)
         return 2
 
-    since, until = parse_filter(args.since), parse_filter(args.until)
+    since = parse_filter(args.since, is_until=False)
+    until = parse_filter(args.until, is_until=True)
     clusters = stream_clusters(args.path, args.top, args.context,
                                args.bucket, since, until, args.aggressive)
     if not clusters:
@@ -300,7 +372,8 @@ def main(argv=None):
     ranked = sorted(clusters.items(), key=lambda kv: kv[1]["count"], reverse=True)
     top_items = ranked[:args.top]
     need_lines = [v["first_line"] for _, v in top_items]
-    ctx_map = {} if args.no_context else collect_context(args.path, need_lines, args.context)
+    ctx_map = {} if args.no_context else collect_context(
+        args.path, need_lines, args.context, since, until)
 
     mode = "激进（--aggressive：额外归一化 长度>=8 且含字母+数字的独立 token）" \
         if args.aggressive else "保守（默认：仅 UUID/IP/email/path/hex/长哈希/key=value 归一）"

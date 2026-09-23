@@ -18,7 +18,7 @@ description_en: >-
   auto-remediate, and never asserts a single definitive root cause — only ranked
   hypotheses with how to verify them.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -46,6 +46,11 @@ author: 晓得乐
 | **B. 只关心某时段** | 「看今天上午那波」 | 加 `--since/--until` 时间过滤 | 时段内聚类 |
 | **C. 要某类前后文** | 「这个错第一次出现前后在干啥」 | 加 `--context` 取首现前后 N 行 | 上下文片段 |
 | **D. 只要数字** | 「错误一共分几类、各多少次」 | 降级：只给聚类计数表 | 计数表 |
+
+> `--since` / `--until` 接受 `YYYY-MM-DD` 或 `YYYY-MM-DDTHH:MM:SS`；**纯日期作上界时含当天**
+> （`--until 2026-09-23` 包含 9/23 全天，不会把上界日整天丢掉）。过滤按**逐条记录**生效，
+> 不是按「类首现时间」—— 否则首现在窗口外的类会把窗口内的记录一并带走。syslog 格式
+> （`Sep 23 10:00:00`）不带年份，按**当前年**补全后参与比较。
 
 **降级判定：** 日志只有几行、用户只要一句结论 → 直接读，不跑脚本、不展开九章节。
 
