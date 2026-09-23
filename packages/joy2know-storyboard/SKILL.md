@@ -17,7 +17,7 @@ description_en: >-
   first frames, and over-limit durations. Requires a rendered blockout video as input; not for editing finished
   footage or writing prompts with no visual reference.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -54,10 +54,14 @@ author: 晓得乐
 1. **先验 ffmpeg。** 运行脚本前先确认 `ffmpeg` 与 `ffprobe` 在 PATH；缺失按第六节降级并给安装提示。
 2. **切片 + 抽首帧。** 执行 `python scripts/split_shots.py <视频路径> --output-dir shots --scene-thresh 0.3`。脚本产出：每个镜头的片段 `shot_001.mp4`、首帧 `shot_001_firstframe.png`、清单 `shots/manifest.json`。
 3. **读清单。** 从 `manifest.json` 取每个镜头的起止时间、时长、首帧路径，作为写提示词的依据。
+   **先看来源标记**：`duration_source` 为 `ffprobe` 时 `duration` 是实测值，可直接引用；
+   为 `inferred` 时说明 ffprobe 没取到时长，`duration` 为 `null`、`duration_used` 是按切换点推断的切分依据 ——
+   此时**不得把该时长当实测值写进提示词**，须标 `[推断]`（详见规则 6）。
 4. **选目标模型语法。** 用户指定模型后，读 `@references/model-syntax.md` 取对应模板与**时长上限**；未指定时默认追问一次，给 Seedance 作默认。
 5. **确认连续锚点。** 跨镜头时，角色外观、服装、场景用上一镜已锁定的锚点描述（连续性锁机制见同品牌的「晓得·角色档案」技能，本技能只负责把它接进分镜提示词）。
 6. **写提示词包。** 每个镜头按模板填语义内容 + 运镜（术语见 `@references/shot-language.md`）+ 时长（≤ 上限），输出 `shots/prompts.md`。
-7. **回报。** 列镜头数、各镜时长是否越限、哪些首帧需要人工核对。
+7. **回报。** 列镜头数、各镜时长是否越限、哪些首帧需要人工核对，**以及哪些片段 `clip` 为 `null`**
+   （`clip_error` 里写了失败原因）—— 片段缺失属于必须告知用户的事实，不得因为「首帧抽到了」就略过。
 
 ## 四、核心规则
 

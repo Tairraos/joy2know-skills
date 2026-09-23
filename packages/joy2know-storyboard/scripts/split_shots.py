@@ -77,10 +77,18 @@ def detect_cuts(video, thresh):
 
 
 def build_segments(cuts, duration):
-    """把切换点拼成 [start, end] 片段列表。"""
+    """把切换点拼成 [start, end] 片段列表。
+
+    返回 `(segs, basis, source)`：
+      - `basis`：实际用于切分的总时长（ffprobe 取不到时按切换点推断）
+      - `source`：`'ffprobe'`（实测）或 `'inferred'`（推断）—— R1 要求推断值必须
+        可辨识，不得与实测值同形输出（原实现把推断值直接当实测值写进 manifest）。
+    """
     if not duration or duration <= 0:
-        duration = (cuts[-1] + 5.0) if cuts else 10.0
-    bounds = [0.0] + cuts + [duration]
+        basis, source = ((cuts[-1] + 5.0) if cuts else 10.0), "inferred"
+    else:
+        basis, source = duration, "ffprobe"
+    bounds = [0.0] + cuts + [basis]
     # 去重并排序，防止浮点抖动导致反向区间
     cleaned = []
     for b in bounds:
@@ -91,7 +99,7 @@ def build_segments(cuts, duration):
     segs = []
     for i in range(len(cleaned) - 1):
         segs.append((cleaned[i], cleaned[i + 1]))
-    return segs
+    return segs, basis, source
 
 
 def extract_first_frame(video, start, out_path):
@@ -104,7 +112,11 @@ def extract_first_frame(video, start, out_path):
 
 
 def extract_clip(video, start, end, out_path):
-    """切出 [start, end) 片段，重新编码保证边界干净。"""
+    """切出 [start, end) 片段，重新编码保证边界干净。
+
+    返回 `(ok, err)`。原实现 `check=False` 且不看返回值，失败只落 `clip=null`
+    而**没有任何提示**（R1 不允许静默失败）—— 用户可能在不知情下拿到空片段目录。
+    """
     dur = max(end - start, 0.1)
     cmd = [
         "ffmpeg", "-ss", "%.4f" % start, "-i", video,
@@ -112,7 +124,14 @@ def extract_clip(video, start, end, out_path):
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
         "-c:a", "aac", "-y", out_path,
     ]
-    subprocess.run(cmd, capture_output=True, text=True, check=False)
+    proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    if proc.returncode != 0:
+        tail = (proc.stderr or "").strip().splitlines()
+        return False, ("ffmpeg exit %d%s" % (proc.returncode,
+                                             ("：" + tail[-1][:160]) if tail else ""))
+    if not (os.path.isfile(out_path) and os.path.getsize(out_path) > 0):
+        return False, "ffmpeg 返回 0 但产物为空"
+    return True, None
 
 
 def main():
@@ -139,12 +158,14 @@ def main():
 
     print("正在检测镜头切换点（阈值 %.2f）..." % args.scene_thresh)
     cuts = detect_cuts(args.video, args.scene_thresh)
-    segments = build_segments(cuts, duration)
+    segments, basis, duration_source = build_segments(cuts, duration)
 
     manifest = {
         "source": os.path.abspath(args.video),
         "scene_thresh": args.scene_thresh,
-        "duration": duration,
+        "duration": duration,                      # ffprobe 实测值；取不到为 null
+        "duration_source": duration_source,        # 'ffprobe' | 'inferred'（R1）
+        "duration_used": round(basis, 3),          # 实际用于切分的总时长
         "shot_count": len(segments),
         "shots": [],
     }
@@ -158,9 +179,10 @@ def main():
         extract_first_frame(args.video, start, firstframe)
         ok_frame = os.path.isfile(firstframe) and os.path.getsize(firstframe) > 0
         clip_path = None
+        clip_error = None
         if not args.no_clips:
-            extract_clip(args.video, start, end, clip)
-            if os.path.isfile(clip) and os.path.getsize(clip) > 0:
+            ok_clip, clip_error = extract_clip(args.video, start, end, clip)
+            if ok_clip:
                 clip_path = clip
 
         manifest["shots"].append({
@@ -169,8 +191,10 @@ def main():
             "start": round(start, 3),
             "end": round(end, 3),
             "duration": round(end - start, 3),
+            "duration_source": duration_source,
             "firstframe": firstframe if ok_frame else None,
             "clip": clip_path,
+            "clip_error": clip_error,
         })
 
     manifest_path = os.path.join(out_dir, "manifest.json")
@@ -181,6 +205,11 @@ def main():
     misses = [s["tag"] for s in manifest["shots"] if not s["firstframe"]]
     if misses:
         print("警告：以下镜头首帧抽取失败，请人工核对：%s" % ", ".join(misses), file=sys.stderr)
+    if not args.no_clips:
+        clip_misses = [s["tag"] for s in manifest["shots"] if not s["clip"]]
+        if clip_misses:
+            print("警告：以下镜头片段抽取失败，请人工核对：%s" % ", ".join(clip_misses),
+                  file=sys.stderr)
 
 
 if __name__ == "__main__":
