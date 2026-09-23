@@ -1,4 +1,4 @@
-# 晓得先生 · joy2know
+# 晓得先生（joy2know-mr）
 
 > 表达条理与可视化专家 —— 让任何回答都有条理、好读，该配图时配图，图里不写任何无法溯源的东西。
 
@@ -24,8 +24,8 @@
 joy2know-mr/
 ├── .codebuddy-plugin/plugin.json    核心配置
 ├── agents/joy2know-mr.md            角色定义（系统提示词）
-├── avatars/expert.png               头像 512×512
-├── skills/joy2know-clarify/         内置技能（方法论主体）
+├── avatars/expert.png               头像 512×512（由构建注入）
+├── skills/joy2know-clarify/         内置技能（方法论主体，由构建注入）
 │   ├── SKILL.md
 │   └── references/
 │       ├── chart-selection.md       11 类图种的实现细则
@@ -34,6 +34,11 @@ joy2know-mr/
 ```
 
 **方法论主体在 `skills/joy2know-clarify/`，与独立上架的技能包同源。** 角色定义只规定流程与验收标准，不重复技能内容——避免同一份规则两处维护导致版本漂移。
+
+> **形态说明**：上面的目录树是**构建后所得包的形态**。仓库里的**源包**只有
+> `.codebuddy-plugin/plugin.json`、`agents/joy2know-mr.md`、`skills.json` 与 `README.md` ——
+> `avatars/` 由构建从仓库根 `avatars/joy2know-mr.png` 注入；`skills/` 由构建按 `skills.json` 声明的名单，
+> 从 `packages/<技能名>/` 复制**唯一真源**（本包内不存副本，避免同一技能两份、改一处漏一处）。
 
 ## 怎么用
 
@@ -50,7 +55,7 @@ joy2know-mr/
 
 ## 版本
 
-1.1.0 · 作者：晓得乐
+1.2.0 · 作者：晓得乐
 
 ## 署名
 
