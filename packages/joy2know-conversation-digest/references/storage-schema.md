@@ -40,7 +40,8 @@ con = sqlite3.connect("file:%s?mode=ro" % db, uri=True)   # ★ 只读打开
 
 | 表 | 关键字段 | 用途 |
 |---|---|---|
-| `sessions` | `id` `cwd` `title` `custom_title` `status` `created_at` `updated_at` `deleted_at` | **`cwd` 就是"空间归属"**；界面按它分组。`deleted_at` 非空=已删 |
+| `sessions` | `id` `cwd` `title` `custom_title` `status` `created_at` `updated_at` `deleted_at` | **`cwd` 就是"空间归属"**；**客户端界面**按它分组。`deleted_at` 非空=已删。
+> 注意：`scripts/extract_flow.py` **不读这张表** —— 它按每个 jsonl 里带 `cwd` 的记录分组。此表用于**交叉核对**（例如界面显示的空间与脚本列出的对不上时） |
 | `workspaces` | 空间登记 | 与 `workspace-display-names.json` 互为佐证 |
 
 > **纪律：归纳任务永远用只读模式打开。** 改 `sessions.cwd` 属于"搬家"操作，会牵动 `edge-sync-mapping-v4.db` 里的云同步映射，有被云端按原空间拉回的风险。归档/归纳都不需要它。

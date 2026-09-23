@@ -69,17 +69,23 @@ def is_aux_prompt(text):
     return norm_prompt(text) in AUX_PROMPTS
 
 
+# 静默跳过必须留痕（R1）：按「文件 + 行号」去重，避免同一文件被多遍读取时重复计数
+BAD_LINES = set()
+
+
 def iter_records(path):
     if not os.path.isfile(path):
         return
     with open(path, encoding="utf-8", errors="replace") as fh:
-        for line in fh:
+        for lineno, line in enumerate(fh, 1):
             line = line.strip()
             if not line:
                 continue
             try:
                 yield json.loads(line)
             except json.JSONDecodeError:
+                # 坏行无法解析，只能跳过 —— 但记下位置，收尾时统一报警
+                BAD_LINES.add((os.path.abspath(path), lineno))
                 continue
 
 
@@ -109,7 +115,7 @@ def project_dirs_for_workspace(ws_path):
 
 
 def extract(path, preview=600):
-    users, answers, products = [], [], []
+    users, answers, products, skipped = [], [], [], []
     for d in iter_records(path):
         ty = d.get("type")
 
@@ -136,9 +142,18 @@ def extract(path, preview=600):
         # ★ 工具调用是 function_call，不是 tool_call
         elif ty == "function_call":
             if d.get("name") in WRITE_TOOLS:
+                raw_args = d.get("arguments")
                 try:
-                    args = json.loads(d.get("arguments") or "{}")
-                except json.JSONDecodeError:
+                    args = json.loads(raw_args or "{}")
+                except json.JSONDecodeError as e:
+                    # 原实现把这条写文件调用**静默丢弃**（R1 违规）：用户会漏看一次真实写文件。
+                    # 现在记入 skipped_writes，收尾时在 stderr 报警并写进 manifest。
+                    skipped.append({
+                        "tool": d.get("name"),
+                        "timestamp": d.get("timestamp", 0),
+                        "reason": "arguments 不是合法 JSON：%s" % e,
+                        "raw_head": (raw_args or "")[:120],
+                    })
                     args = {}
                 p = args.get("file_path") or args.get("path") or ""
                 if p:
@@ -175,6 +190,8 @@ def extract(path, preview=600):
         "effective_user_count": len(effective),
         "answer_blocks": len(answers),
         "write_calls": len(products),
+        "skipped_writes": skipped,
+        "skipped_write_count": len(skipped),
     }
 
 
@@ -232,6 +249,7 @@ def cmd_list():
                 "prompts": r["effective_user_count"],
                 "products": len(r["products"]),
                 "size_kb": round(os.path.getsize(f) / 1024),
+                "skipped_writes": r["skipped_write_count"],
             })
 
     if not by_cwd:
@@ -247,10 +265,18 @@ def cmd_list():
         print("路径：%s" % cwd)
         print("-" * 78)
         for it in sorted(items, key=lambda x: x["start"]):
-            print("  %s  %s → %s  提问%3d  产物%3d  %6dKB" % (
+            extra = "" if not it["skipped_writes"] else "  ⚠跳过写文件%2d" % it["skipped_writes"]
+            print("  %s  %s → %s  提问%3d  产物%3d  %6dKB%s" % (
                 it["id"][:8], it["start"][5:16], it["end"][5:16],
-                it["prompts"], it["products"], it["size_kb"]))
+                it["prompts"], it["products"], it["size_kb"], extra))
         print()
+
+    skipped_total = sum(i["skipped_writes"] for items in by_cwd.values() for i in items)
+    if skipped_total:
+        print("[警告] 共 %d 条写文件调用因 `arguments` 不是合法 JSON 而跳过（已在对应对话后标 ⚠）。"
+              % skipped_total, file=sys.stderr)
+    if BAD_LINES:
+        print("[警告] 有 %d 行会话记录不是合法 JSON，已跳过。" % len(BAD_LINES), file=sys.stderr)
 
 
 # ---------------------------------------------------------------- 主流程
@@ -371,13 +397,17 @@ def main():
             "answer_blocks": r["answer_blocks"],
             "write_calls": r["write_calls"],
             "products": r["products"],
+            "skipped_writes": r["skipped_writes"],
         })
         totals["raw_user_count"] += r["raw_user_count"]
         totals["dedup_user_count"] += r["dedup_user_count"]
         totals["effective_user_count"] += r["effective_user_count"]
         totals["products"] += len(r["products"])
+        totals["skipped_writes"] += r["skipped_write_count"]
 
     manifest["totals"] = dict(totals)
+    # 跳过的坏行也要进 manifest —— 注意必须在 json.dump **之前** 赋值
+    manifest["bad_lines"] = len(BAD_LINES)
 
     for name, buf in (("users.md", users_out), ("answers.md", ans_out), ("products.txt", prod_out)):
         with open(os.path.join(args.out, name), "w", encoding="utf-8") as fh:
@@ -388,6 +418,16 @@ def main():
     print("对话 %d 个｜实质提问 %d 条｜唯一产物 %d 个"
           % (len(files), totals["effective_user_count"], totals["products"]))
     print("已输出到：%s" % args.out)
+
+    # 留痕（R1）：跳过的内容必须让用户看得见，否则「少了一条」会被当成「本来就没有」
+    if totals.get("skipped_writes"):
+        print("\n[警告] 有 %d 条写文件调用因 `arguments` 不是合法 JSON 而无法解析，"
+              "已跳过并记入 manifest 的 `skipped_writes`。\n"
+              "  影响：这些写文件动作**不会**出现在 products.txt 里，产物清单可能少项。"
+              % totals["skipped_writes"], file=sys.stderr)
+    if BAD_LINES:
+        print("\n[警告] 有 %d 行会话记录不是合法 JSON，已跳过（按「文件+行号」去重计数）。\n"
+              "  影响：该行承载的提问/回答/写文件动作不计入统计。" % len(BAD_LINES), file=sys.stderr)
 
 
 if __name__ == "__main__":

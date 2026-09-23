@@ -4,7 +4,7 @@ display_name: 晓得·对话归纳
 display_name_en: joy2know Conversation Digest
 description: >-
   把你自己在 WorkBuddy 里的对话归纳成一份可交付的「学习流水 / 复盘文档」——我提了什么、AI 怎么答的、产出了哪些文件。
-  ★ 只归纳 WorkBuddy 的对话：数据源只有本机 WorkBuddy 会话记录（~/.workbuddy/projects/*.jsonl 与 workbuddy.db）。
+  ★ 只归纳 WorkBuddy 的对话：数据源只有本机 WorkBuddy 会话记录。**脚本实际读的是 `~/.workbuddy/projects/*.jsonl`**；`workbuddy.db` 只用于交叉核对空间归属，脚本不读它。
   非 WorkBuddy 的对话一律不接：ChatGPT / Claude 等平台的对话导出、微信 / QQ / 飞书 / 钉钉聊天记录、会议纪要与录音转写、
   邮件往来，以及 PDF / Word / 图片 / 粘贴文本里的对话内容——都没有 WorkBuddy 记录可读，归纳不了，也不许假装能归纳。
   触发词：对话归纳、知识归纳、归纳对话、对话总结、会话总结、学习流水、复盘对话、提取提示词、我当初提了什么、
@@ -18,7 +18,7 @@ description_en: >-
   Feishu/DingTalk chat logs, meeting transcripts, emails, or conversations pasted as PDF/Word/image/text,
   because none of those have readable WorkBuddy records.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -161,7 +161,7 @@ diff -r "<源目录>" "<目标目录>"        # 目录递归比对
 | 要找什么 | 去哪里 |
 |---|---|
 | **空间显示名 → 真实路径** | `~/.workbuddy/workspace-display-names.json`（取 `workspaces.<path>.displayName`） |
-| **空间包含哪些会话** | `~/.workbuddy/workbuddy.db` → 表 `sessions` → 字段 `cwd`（NOT NULL，空间绝对路径）。界面就是靠 `cwd` 分组的 |
+| **空间包含哪些会话** | **脚本读的是 jsonl 记录里的 `cwd` 字段**：每个会话文件里带 `cwd` 的那条记录即该会话所属空间，`scripts/extract_flow.py` 的 `--list` / `--workspace` 分组全靠它，**不打开 `workbuddy.db`**。客户端界面另用 `~/.workbuddy/workbuddy.db` 的 `sessions.cwd` 分组（二者取值一致，db 可作交叉核对，见 `@references/storage-schema.md`） |
 | **会话正文** | `~/.workbuddy/projects/<cwd 里的 "/" 全换成 "-">/<sessionUuid>.jsonl`，**一行一 JSON** |
 | 会话运行态 | 同目录 `<uuid>.meta.json` |
 | 文件回滚记录 | 同目录 `<uuid>.file-rollback.ndjson` |
@@ -258,8 +258,10 @@ if d.get("type") == "function_call" and d.get("name") in ("Write", "Edit", "Mult
 
 需要时再读，不要一上来全读：
 
-- `@references/storage-schema.md` —— 存储结构、记录字段、解析坑的完整版（要写解析代码、遇到异常记录时读）
-- `@references/deliverable-spec.md` —— 交付文档的详细骨架、HTML 视觉规范、校验命令（写文档时读）
+- **`@references/deliverable-spec.md` §三「写完必做的两道校验」—— 交付前必跑**（写完归纳文档就对照跑一遍，别跳）
+- **`@references/storage-schema.md` §四「坑清单（按踩坑频率排序）」—— 写解析逻辑前必读**（每条都对应一个真实踩过的坑）
+- `@references/storage-schema.md` §一~§三、§五 —— 存储结构、记录字段、环境纪律的完整版（要写解析代码、遇到异常记录时读）
+- `@references/deliverable-spec.md` §一、§二、§四 —— 交付文档的详细骨架、HTML 视觉规范、表达约定（写文档时读）
 
 ---
 
