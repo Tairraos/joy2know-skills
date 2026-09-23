@@ -17,7 +17,7 @@ description_en: >-
   touch regex/CLI/SQL and need something copy-paste safe. Produces the command only; does not connect to
   databases or run destructive operations without explicit confirmation.
 category: writing
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -75,10 +75,14 @@ author: 晓得乐
 
 - 触发条件：产出任何会改数据 / 文件的命令或 SQL。
 - 硬性动作：必须标注 安全 / 谨慎 / 危险 / 极高危 之一并给依据：
-  - 极高危 = 不可逆删除或覆盖：`rm -rf` / `DROP` / `TRUNCATE` / 无 WHERE 的 `DELETE`·`UPDATE` / `git reset --hard` / 格式化
-  - 危险 = 批量修改或覆盖：`mv` 批量 / `sed -i` / `git push --force`
-  - 谨慎 = 影响可控但有副作用：有 WHERE 的 `UPDATE` / 单文件写入 / `chmod`
+  - 极高危 = 不可逆删除或覆盖，**或使系统/服务不可逆失效**：`rm -rf` / `DROP` / `TRUNCATE` / 无 WHERE 的 `DELETE`·`UPDATE` /
+    `git reset --hard` / 格式化 / **`chmod`·`chown` 递归作用于根目录**
+  - 危险 = 批量修改或覆盖，**或覆盖已存在文件致其原内容不可逆丢失**：`mv` 批量 / `sed -i` / `git push --force` /
+    **`:> f`·`> f`（截断）/ `cp a b`（b 已存在）/ `mysqldump > 已有备份`**
+  - 谨慎 = 影响可控但有副作用（**不含「覆盖已有内容」**）：有 WHERE 的 `UPDATE` / **写入不存在的文件或追加** /
+    **非递归、目标明确的** `chmod`·`chown` / `kill` 指定 PID
   - 安全 = 只读：`grep` / `SELECT` / `cat` / 正则匹配
+  - **判据只看两条：① 是否覆盖已有内容 → 危险；② 是否递归作用于根/系统级路径 → 极高危。命令族本身不决定等级。**
 - 正例：✓ 「极高危：`rm -rf /tmp/old` —— 不可逆删除，确认路径后再执行」
 - 反例：✗ 给出 `rm -rf` 却不标等级、不提示风险。
 - 降级路径：无法判断等级 → 默认按更高一级标注并说明「未能确认影响范围，按 X 级处理」。
@@ -101,6 +105,9 @@ author: 晓得乐
 - 正例：✓ `^1\d{9}$` → `^` 行首、`1` 首位是 1、`\d{9}` 9 位数字、`$` 行尾
 - 反例：✗ 只丢一句「用这个正则」无任何解释。
 - 降级路径：表达式很长 → 分块拆解，每块单独说明，不得整体跳过。
+- **优先级**：用户明确要求「最短答案 / 只要命令」时可省去拆解，但**必须留一行**
+  「未逐段拆解，需要时回复『展开』」—— 直接丢掉拆解而不留痕等于把规则 4 悄悄废掉。
+  （本条不适用危险命令：规则 3 的前置保护动作**任何时候都不得省略**。）
 
 **规则 5：先确认环境再给方案（禁止跨环境臆测）**
 
@@ -163,7 +170,10 @@ author: 晓得乐
 
 只在遇到对应问题时读取：
 
-- 危险命令模式库、四级危险等级完整清单、对应的安全替代写法 → `@references/danger-patterns.md`
+- **正则表达式安全注意** → `@references/danger-patterns.md`（§三）—— 产出正则前必读（灾难性回溯 / 贪婪 / 锚点）。
+- **SQL 影响范围自查清单** → `@references/danger-patterns.md`（§四）—— 任何含 WHERE 判定的 SQL 产出前必跑。
+- 危险命令模式库与四级定级完整清单、安全替代写法、二次确认话术、dry-run 对照表、扩展高危库
+  → `@references/danger-patterns.md`（§一、§二、§五、§六、§七）
 
 ## 八、完成判据
 
