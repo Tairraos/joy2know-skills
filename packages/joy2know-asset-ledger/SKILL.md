@@ -4,18 +4,22 @@ display_name: 晓得·素材台账
 display_name_en: joy2know Asset Ledger
 description: >-
   给生成过的图片/视频/提示词建一份可检索的台账，解决「生成完就找不到了」——攒了几千个文件后不知道哪张用什么提示词生成、
-  哪张是废片、改了八版哪版最好，于是反复重生成、白白烧钱。按创作意图（角色/场景/用途/是否废片/版本/是否可商用）检索，不是按文件属性。
+  哪张是废片、改了八版哪版最好，于是反复重生成、白白烧钱。提示词可以直接从 ComfyUI / Stable Diffusion 生成的图里读出来
+  （含被压缩过的元数据块），不用回头手工补；按创作意图（角色/场景/用途/是否废片/版本/是否可商用）检索，不是按文件属性；
+  文件名与生成时间相近的素材会被推断成「同一批」，一键分版；还能渲染成单文件 HTML 看板，带缩略图与筛选。
   触发词：素材台账、建索引、归档生成记录、找某角色的图、可商用素材、分辨够的图、废片标记、第几版最好、素材检索、
-  asset ledger、index my generations、find by character、list scrap、filter by resolution。
+  提示词丢了、从图里读提示词、同一批素材、生成记录归档、asset ledger、index my generations、find by character、list scrap。
   不适用于：单纯按文件名/大小/修改时间整理文件（那是文件管理器，本技能不干）；找重复文件；删空白/模糊的批量清理。
-description_zh: 给生成素材建可检索台账，按创作意图找图，不按文件属性。
+description_zh: 给生成素材建可检索台账，能从图里直挖提示词，按创作意图找图而非文件属性，推断批次并出 HTML 看板。
 description_en: >-
   Build a searchable ledger for generated images/videos/prompts so creators can find assets by creative intent
-  (character, scene, purpose, scrap flag, version, commercial license) instead of by file properties. It stops
-  the "generated thousands of files and lost control" problem that forces costly regenerations. Not a file
-  manager: it does not organize by name/size/mtime or dedupe files.
+  (character, scene, purpose, scrap flag, version, commercial license) instead of by file properties. Prompts can be
+  recovered straight from ComfyUI / Stable Diffusion PNG metadata, including compressed chunks, so nothing has to be
+  re-typed. Files sharing a name family and close timestamps are inferred as one batch, and the ledger renders into a
+  single-file HTML board with thumbnails and filters. Not a file manager: it does not organize by name/size/mtime or
+  dedupe files.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -32,6 +36,8 @@ author: 晓得乐
 | **文件管理器** | 围绕文件属性（大小/扩展名/修改时间） | **不是**本技能，做了就跑偏 |
 | **废片** | 生成失败/不可用，但仍有参考价值 | 显式标 `is_scrap=true`，不删不混 |
 | **版本** | 同一构思改了 N 版中的第几版 | 记 `version`，便于找回「最好的那版」 |
+| **命名族** | 文件名去掉尾部版本/序号后相同的一群（`lina_01` `lina_02` → `lina`） | 记 `batch_family`，**推断**所得 |
+| **批次** | 同一命名族里、生成时间也相邻的一小撮 | 记 `batch_id`，**推断**所得 |
 | **创作维度** | 角色/场景/用途/可商用/分辨率够不够 | 检索只走这些维度 |
 
 **最容易犯的错：** 做成「又一个文件管理器」——按大小、扩展名、修改时间建维度。用户要的是「找出所有用某角色生成、可商用、分辨率够的图」，不是「列出所有大于 2MB 的 png」。
@@ -40,56 +46,68 @@ author: 晓得乐
 
 | 情形 | 判定信号 | 走哪条 |
 |---|---|---|
-| **A. 首次归档** | 有一批生成文件还没索引 | 扫描目录 → 读同名 .txt/.json → 写台账 |
-| **B. 增量归档** | 之前建过台账，又生成了新图 | 增量扫描，只入库新增，不重复 |
-| **C. 检索** | 「找用 lina 生成、可商用的图」 | 按创作维度过滤台账 |
-| **D. 只看结构** | 「台账长啥样」 | 给第五节字段表即停 |
+| **A. 首次归档** | 有一批生成文件还没索引 | `scan`：扫描目录 → 读同源文件 + 图内元数据 → 写台账 |
+| **B. 增量归档** | 之前建过台账，又生成了新图 | `scan` 同一目录，自动增量，不重复 |
+| **C. 检索** | 「找用 lina 生成、可商用的图」 | `query` 按创作维度过滤 |
+| **D. 补字段** | 「这几张标成废片」「这批是封面用途」 | `set` 写入，不要手改台账文件 |
+| **E. 体检** | 「我有多少废片」「哪个角色素材最多」 | `stats` |
+| **F. 要给人看** | 「导出一份能看的清单」 | `render` 出单文件 HTML 看板 |
+| **G. 只看结构** | 「台账长啥样」 | 给第五节的字段表即停 |
 
 **降级判定：** 用户只要快速看「有哪些角色/标签」→ 只输出维度去重清单，不跑完整检索。
 
 ## 三、工作流
 
-1. **扫描目录。** 运行 `python scripts/ledger.py scan <目录> --index ledger.jsonl`（可加 `--recursive`；视频分辨率/时长由可选 `ffprobe` 探测，不需要可加 `--no-ffprobe`）。
-2. **读同源元数据。** 对每个图片/视频，脚本自动找同名 `.txt`（提示词正文）与 `.json`（结构化字段）一并入库。
-3. **补维度。** 缺角色/用途等字段时，从 `.json` 或用户补充读取；缺失标 `未提供`，不猜。
-4. **写台账。** 落盘为 `ledger.jsonl`（每行一条）或 `--format csv` 的 `ledger.csv`。
-5. **增量。** 再次 scan 同一目录，脚本比对路径+大小+修改时间，跳过已入库项。
-6. **检索。** 运行 `python scripts/ledger.py query --role lina --commercial true --min-res 1024 --scrap false`。
-7. **回报。** 列命中条数、命中文件路径、哪些因缺字段被忽略。
+1. **扫描目录。** `python scripts/ledger.py scan <目录> --index ledger.jsonl`（可加 `--recursive`）。
+2. **拿提示词。** 两条来源，脚本自动按优先级取：**同源 `.txt`/`.json`** 优先 → 没有就读**图内元数据**（ComfyUI / Stable Diffusion 生成的图自带提示词与参数）。都不给就标 `未提供`。
+3. **视频分辨率。** 由可选 `ffprobe` 探测（`--no-ffprobe` 可关）；没装就留空，不报错。
+4. **补维度。** 缺角色/用途等，用 `set` 补，别去手改台账文件：
+   `ledger.py set --index ledger.jsonl --path lina_03.png --role lina --purpose poster --is-scrap true`
+5. **写台账。** 落盘为 `ledger.jsonl`（每行一条）或 `--format csv` 的 `ledger.csv`。
+6. **增量。** 再次 scan 同一目录，脚本比对路径+大小+修改时间，跳过已入库项。
+7. **检索。**
+   `ledger.py query --index ledger.jsonl --role lina --commercial true --min-res 1024`
+   `ledger.py query --index ledger.jsonl --grep-prompt "umbrella"`（在提示词全文里搜）
+   `ledger.py query --index ledger.jsonl --batch lina#1`（捞某一批）
+8. **体检 / 出图。** `ledger.py stats --index ledger.jsonl`；`ledger.py render --index ledger.jsonl --out ledger.html`。
+9. **回报。** 列命中条数、命中文件路径、哪些因缺字段被忽略。
+
+> 脚本的完整参数见 `python scripts/ledger.py <子命令> --help`。五个子命令：`scan` `query` `set` `stats` `render`。
 
 ## 四、核心规则
 
 **规则 1：检索维度只围绕创作意图（红线）**
 
 - 触发条件：设计台账字段或写检索功能时。
-- 硬性动作：维度必须是角色/场景/用途/是否废片/版本/是否可商用/分辨率够不够。**禁止**以大小、扩展名、修改时间作为检索主维度。
-- 正例：✓ `query --role lina --commercial true --min-res 1024`。
-- 反例：✗ 「按文件大小排序列出 png」——这是文件管理器，不是台账。
+- 硬性动作：维度必须是角色/场景/用途/是否废片/版本/是否可商用/分辨率够不够。**禁止**把大小、扩展名、修改时间做成检索滤镜（禁止出现 `--min-size` / `--mtime` 一类开关）。
+- **边界说明（别过度执行）：** 文件名与时间**可以**用来**推断创作的批次**（见规则 6），因为「同一批」本身就是创作概念；不可以的是把它们直接当检索条件暴露给用户。判断标准：**它产出的是创作维度还是文件属性？**
+- 正例：✓ `query --role lina --commercial true --min-res 1024`；✓ 用文件名族 + 时间推断出 `lina#1` 这一批。
+- 反例：✗ 「按文件大小排序列出 png」；✗ 加一个 `--modified-after 2026-09-01` 的检索开关。
 - 降级路径：用户坚持要按文件属性看 → 明确说「这超出台账定位，用系统文件管理器」，不在此技能内实现。
 
-**规则 2：元数据优先读同源文件，不得编造**
+**规则 2：元数据优先读同源文件与图内信息，不得编造**
 
 - 触发条件：填台账中任意字段。
-- 硬性动作：角色/提示词/模型/参数必须来自同名 `.txt`/`.json` 或用户给定。**禁止**凭文件名推断角色或提示词。
-- 正例：✓ `lina_03.png` 配 `lina_03.json` 读到 `role: lina`。
+- 硬性动作：角色/提示词/模型/参数必须来自**同名 `.txt`/`.json`**、**图内元数据**，或**用户给定**。**禁止**凭文件名推断角色或提示词。
+- 正例：✓ `lina_03.png` 配 `lina_03.json` 读到 `role: lina`；✓ 从 PNG 的 `parameters` 块里读出完整提示词。
 - 反例：✗ 文件名含 lina 就写 `role: lina` 而文件里其实写的是 mike——张冠李戴。
-- 降级路径：无同源文件且用户没给 → 字段标 `未提供`，不臆造。
+- 降级路径：三处都没有 → 字段标 `未提供`，不臆造。
 
 **规则 3：废片显式标注，不删不混（红线）**
 
 - 触发条件：某条素材不可用。
-- 硬性动作：必须标 `is_scrap=true` 并保留入库。**禁止**默默删除，也**禁止**和可用图混在一起无标记。
-- 正例：✓ 废片入库带 `is_scrap=true`，检索默认排除，需要时 `--scrap true` 可找回参考。
+- 硬性动作：必须标 `is_scrap=true` 并保留入库（用 `set --is-scrap true`）。**禁止**默默删除，也**禁止**和可用图混在一起无标记。**检索默认排除废片**，要找回用 `--scrap true` 或 `--all`。
+- 正例：✓ 废片入库带 `is_scrap=true`，平时检索看不到，需要翻车参考时能捞回来。
 - 反例：✗ 直接删掉「丑图」——之后想看「当时哪里翻车」就没了。
-- 降级路径：用户要求物理删除 → 提示删除不可逆，确认后再动，台账仍留一条 `deleted` 记录。
+- 降级路径：用户要求物理删除 → 提示删除不可逆，确认后再动，台账仍留一条记录。
 
 **规则 4：增量扫描不重复入库**
 
 - 触发条件：对同一目录二次及以后扫描。
-- 硬性动作：以路径+文件大小+修改时间判定已存在项，**必须**跳过，不得重复写入。
+- 硬性动作：以路径+文件大小+修改时间判定已存在项，**必须**跳过，不得重复写入。JSONL 与 CSV 两种格式都要成立（CSV 也需要写出增量键，不能只写给人看的列）。
 - 正例：✓ 第二次 scan 只新增 12 条，旧 500 条不动。
-- 反例：✗ 每次都全量重扫，台账里同一文件出现 N 次。
-- 降级路径：文件被改名 → 视为新文件入库，并在备注标「疑似 rename，待人工合并」。
+- 反例：✗ 每次全量重扫，台账里同一文件出现 N 次。
+- 降级路径：文件被改名 → 视为新文件入库，并标 `suspect-rename` 提示人工合并。
 
 **规则 5：与角色档案分工明确**
 
@@ -97,7 +115,18 @@ author: 晓得乐
 - 硬性动作：`joy2know-character` 管**生成前**的一致性（角色卡/锚点短语，让图长得像）；本技能管**生成后**的可检索（把已生成的素材按意图捞出来）。两者不重叠。
 - 正例：✓ 先用角色卡生成，生成完归档进台账，检索时按角色过滤。
 - 反例：✗ 在台账里重写一套角色设定去「保证一致」——那不是台账的活。
-- 降级路径：用户两个都要 → 先建角色卡（生成前），再归档（生成后），顺序不乱。
+- 降级路径：两个都要 → 先建角色卡（生成前），再归档（生成后），顺序不乱。
+
+**规则 6：批次是推断，必须标出来（不是事实）**
+
+- 触发条件：给素材分批次，或用户问「这几张是不是同一批」。
+- 硬性动作：批次只能由「**文件名族相同 + 生成时间相邻**」推出，且**必须**呈现为 `[推断]`。台账里 `batch_basis` 记清依据：
+  - `filename+time` —— 同族且时间相邻，可信度较高
+  - `filename-only` —— 同族但时间差得远，只是可能有关系，**不成批**
+- 硬性动作续：**不得**把推断出的批次当既成事实写进用户可见的结论（说「推断为同一批」，不说「这是同一批」）。
+- 正例：✓ 「`lina#1` 推断含 3 张（文件名族 lina + 生成时间相邻 90 秒内）」。
+- 反例：✗ 因为「都在今天下午生成的」就把不同角色的图并成一批——时间近只是信号之一，命名族对不上不算。
+- 降级路径：文件名毫无规律（如时间戳命名）→ 不做批次，`batch_basis` 留空，直说「文件名无规律，无法推断批次」。
 
 ## 五、输出格式
 
@@ -105,58 +134,73 @@ author: 晓得乐
 
 | 字段 | 含义 |
 |---|---|
-| `file_path` | 文件绝对/相对路径 |
+| `file_path` | 文件相对路径（相对扫描根目录） |
 | `type` | image / video |
-| `role` | 关联角色（来自角色卡 `name`） |
+| `role` | 关联角色（来自角色卡或元数据） |
 | `scene` | 场景标签 |
 | `purpose` | 用途标签（如 封面/头像/海报） |
-| `prompt` | 提示词全文（读自同名 .txt） |
+| `prompt` | 提示词全文（同源 `.txt` 或图内元数据） |
 | `model` | 生成模型 |
-| `params` | 参数（seed/steps 等，读自 .json） |
+| `params` | 参数（seed/steps/cfg/sampler 等） |
 | `tags` | 自由标签列表 |
 | `is_scrap` | 是否废片（bool） |
 | `version` | 版本号（同构思第几版） |
 | `commercial` | 是否可商用（bool） |
 | `resolution` | 宽x高（图片由标准库解析头部，无需 Pillow；视频由可选 `ffprobe` 探测） |
-| `duration` | 视频时长（仅视频，由 `ffprobe` 探测；未装 ffprobe 则留空） |
-| `created_at` | 生成时间（取文件时间或 .json 内值） |
+| `duration` | 视频时长（仅视频，由 `ffprobe` 探测） |
+| `created_at` | 生成时间（取文件时间或元数据内值） |
+| `batch_family` | 命名族（文件名去尾部版本/序号）—— **[推断]** |
+| `batch_id` | 具体批次，形如 `lina#1` —— **[推断]** |
+| `batch_basis` | 批次依据：`filename+time` / `filename-only` |
+| `meta_source` | 创作字段来源：`embedded` 图内元数据 / `sidecar` 同源文件 / `user` 人工补录 / `none` 未提供 |
+| `meta_tool` | 认出的工具：`comfyui` / `a1111` / `invokeai` / `fooocus/novelai` / `generic` |
+| `flags` | 内部标记（如 `meta-has-local-path`、`suspect-rename`），供排查用 |
 
 > 视频的 `resolution` 与 `duration` 依赖本机是否安装 `ffprobe`：装了就自动填入，没装或探测失败则显示「未提供」，**不报错、不中断**。此时「按分辨率筛选」仅对图片生效。可用 `--no-ffprobe` 强制跳过探测。
+
+> 图内元数据能读出什么，取决于生成工具写了什么 —— 各工具的落点与结构见 @references/metadata-sources.md 。
 
 **反模式禁止清单：**
 
 | # | 反模式 | 为什么禁 |
 |---|---|---|
-| 1 | 按大小/扩展名/时间建维度 | 这是文件管理器，不是台账 |
-| 2 | 无同源文件就猜角色 | 张冠李戴 |
+| 1 | 按大小/扩展名/时间建检索维度 | 这是文件管理器，不是台账 |
+| 2 | 无来源就猜角色 | 张冠李戴 |
 | 3 | 废片直接删 | 失去翻车参考，且无法找回 |
 | 4 | 每次全量重扫 | 台账膨胀重复 |
 | 5 | 在台账里重写角色设定 | 那是 character 技能的活 |
 | 6 | 分辨率靠文件名推断 | 不可靠，图片头部才是真相 |
+| 7 | 手改台账文件补字段 | 应用 `set`，否则来源标记与批次会失真 |
+| 8 | 把推断批次说成事实 | 推断就是推断，标出来 |
 
 ## 六、防幻觉（硬约束，优先级最高）
 
 **本节优先于以上所有格式与流程要求。**
 
-1. **字段值只来自同源文件或用户给定。** 禁止用文件名猜角色/提示词/模型。
+1. **字段值只来自同源文件、图内元数据或用户给定。** 禁止用文件名猜角色/提示词/模型。
 2. **缺字段标「未提供」。** 不因为「要输出完整」而补全信息；不用「约」「大概」掩盖缺失。
-3. **三种来源分清：** 用户给定 / 同源 .txt/.json 读到（注明文件）/ 我推断（标 [推断]）。
-4. **分辨率以图片头部解析为准**，不靠文件名里的数字。
+3. **四种来源分清：** 用户给定 / 同源 `.txt`/`.json` / 图内元数据（注明工具）/ 我推断（标 `[推断]`）。台账里由 `meta_source` 承载。
+4. **分辨率以图片头部解析为准**，不靠文件名里的数字，也不靠元数据里声明的生成尺寸。
 5. **检索命中数为真实计数**，不估「大概二十来张」。
+6. **批次是推断**，一律带 `[推断]`，并说清依据（命名族 + 时间窗口）。
+7. **元数据里挖出的本机绝对路径**（常带用户名）要在报告里提示，不静默带过。
 
 ## 七、按需知识
 
-本技能无附加参考文件，全部规则与字段见正文。脚本用法见 `scripts/ledger.py` 的 `--help`。
+- @references/metadata-sources.md —— **各大生成工具把提示词藏在图的哪里**：PNG 三种文本块（`tEXt` / `zTXt` / `iTXt`）的区别、ComfyUI 的 `prompt`/`workflow` JSON 结构与取值路径、Automatic1111 的 `parameters` 文本结构与其解析陷阱、InvokeAI / Fooocus / NovelAI 的落点、以及**已知不支持**的情况与手工验证方法。
+- 脚本用法见 `scripts/ledger.py` 的 `--help`。
 
 ## 八、完成判据
 
-**算做完：** 目录已扫描入库（或增量已合并）+ 每条含 `file_path`/`type`/`is_scrap` + 维度字段缺失已标 `未提供` + 能用创作维度检索出正确结果。
+**算做完：** 目录已扫描入库（或增量已合并）+ 每条含 `file_path`/`type`/`is_scrap` + 维度字段缺失已标 `未提供` + 能用创作维度检索出正确结果 + 批次已标 `[推断]`（或已说明为何无法推断）。
 
 **不自动做：** 不自动调用生成模型；不自动删除任何文件（含废片）；不自动改写用户已有的角色卡。
 
 ## 九、降级与跨轮次
 
-- **无同源 .txt/.json：** 字段标 `未提供`，仅入库文件本身的类型与解析出的分辨率。
+- **既无同源文件也无图内元数据：** 字段标 `未提供`，仅入库文件本身的类型与解析出的分辨率。
+- **图内元数据是压缩块：** 脚本会解压（`zTXt` / 压缩的 `iTXt`）；解压失败按无元数据处理，不中断整批。
+- **元数据格式不认识：** 把文本块名记进 `flags`，需要原文时用 `--keep-raw-meta` 落一份（截断 4000 字符）。
 - **分辨率解析失败（罕见封装）：** 标 `resolution: 未提供`，不报错中断整批。
 - **信息不全的唯一降级：** 假设 + 就地标注 + 继续；最多追问一次并给默认值。
 - **跨轮次：** 再次 scan 同一目录自动增量；检索时默认排除废片，需要时显式 `--scrap true`。

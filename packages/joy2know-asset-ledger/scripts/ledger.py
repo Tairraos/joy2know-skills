@@ -1,63 +1,95 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ledger.py —— 晓得·素材台账 配套脚本（纯标准库，零第三方依赖，无需 Pillow）
+ledger.py —— 晓得·素材台账 配套脚本 v1.2.0
 
-功能：
-  1. 扫描目录，识别图片/视频文件
-  2. 读取同名 .txt（提示词正文）与 .json（结构化元数据）作为同源信息
-  3. 用标准库解析 PNG/JPEG 头部得到分辨率（不引入 Pillow）
-  4. 落盘为 JSONL 或 CSV 索引
-  5. 支持按创作意图检索：角色/场景/用途/标签/模型/是否废片/是否可商用/最小分辨率/版本
-  6. 增量扫描：以 路径+大小+修改时间 判定已入库项，跳过不重复
+纯标准库，零第三方依赖，不需要 Pillow。视频分辨率/时长走可选的系统 ffprobe，缺了就降级。
 
-用法：
-  python scripts/ledger.py scan ./outputs --index ledger.jsonl [--recursive] [--format jsonl|csv]
-  python scripts/ledger.py query --index ledger.jsonl --role lina --commercial true --min-res 1024 --scrap false
-  python scripts/ledger.py query --index ledger.jsonl --tag poster
+子命令
+  scan     扫描目录建立 / 增量更新台账（默认自动尝试从图内元数据挖提示词与参数）
+  query    按创作意图检索，另支持提示词全文检索与批次过滤
+  set      人工补字段 / 标废片 / 改可商用 —— 补上「文档里有、脚本没有」的写入入口
+  stats    台账体检：总量、废片率、字段完整度、分布、隐私提醒
+  render   渲染单文件浅色 HTML 看板（缩略图网格 + 前端筛选 + 统计条）
+
+三条设计底线
+  1) 检索维度只围绕创作意图；文件名与时间只用于「推断批次」，不作检索滤镜。
+  2) 值只来自同源文件 / 图内元数据 / 用户给定，三者在 meta_source 里分开记，不猜。
+  3) 废片显式标注入库，检索默认排除，需要时用 --scrap true 找回。
+
+用法
+  python scripts/ledger.py scan ./outputs --index ledger.jsonl [--recursive]
+  python scripts/ledger.py query --index ledger.jsonl --role lina --commercial true --min-res 1024
+  python scripts/ledger.py query --index ledger.jsonl --grep-prompt "rain, umbrella"
+  python scripts/ledger.py set --index ledger.jsonl --path out/lina_03.png --purpose poster --scrap true
+  python scripts/ledger.py stats --index ledger.jsonl
+  python scripts/ledger.py render --index ledger.jsonl --out ledger.html
 """
 
 import argparse
 import csv
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
+import zlib
 
+TOOL_VERSION = "1.2.0"
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
 VIDEO_EXTS = {".mp4", ".mov", ".webm", ".mkv", ".avi"}
 
+# 台账字段（顺序即 JSONL / CSV 的写出顺序）
+CREATIVE_FIELDS = ["role", "scene", "purpose", "prompt", "model",
+                   "params", "tags", "is_scrap", "version", "commercial"]
+TECH_FIELDS = ["file_path", "type", "resolution", "duration", "created_at"]
+DERIVED_FIELDS = ["batch_family", "batch_id", "batch_basis",
+                  "meta_source", "meta_tool", "raw_meta", "flags"]
+CSV_COLUMNS = ["file_path", "type", "role", "scene", "purpose", "prompt",
+               "model", "params", "tags", "is_scrap", "version", "commercial",
+               "resolution", "duration", "created_at",
+               "batch_family", "batch_id", "batch_basis", "meta_source", "meta_tool"]
+# CSV 也要带上增量判定键，否则二次扫描会重复入库
+CSV_KEY_COLUMNS = ["_size", "_mtime"]
 
-def parse_image_dimensions(path):
-    """用标准库解析 PNG/JPEG 头部得到 (宽, 高)；不支持或解析失败返回 None。"""
+DEFAULT_BATCH_WINDOW = 600  # 秒；同一命名族内，间隔不超过这个值视为同一批
+
+# 本机绝对路径的样子（用于隐私提醒：内嵌元数据里常混进作者家目录）
+LOCAL_PATH_RE = re.compile(r"(/Users/|/home/|[A-Za-z]:\\\\)")
+
+
+# ============================================================ 图片 / 视频解析
+
+def parse_image_dimensions(path, head_limit=2 * 1024 * 1024):
+    """用标准库解析 PNG / JPEG 头部得到 (宽, 高)；不支持或解析失败返回 None。"""
     try:
         with open(path, "rb") as f:
             head = f.read(64)
         if len(head) < 24:
             return None
-        # PNG: 8 字节签名 + IHDR(4长度+4类型) 后 宽高各 4 字节大端
+        # PNG: 8 字节签名 + IHDR(4 长度 + 4 类型) 后宽高各 4 字节大端
         if head[:8] == b"\x89PNG\r\n\x1a\n":
             w = int.from_bytes(head[16:20], "big")
             h = int.from_bytes(head[20:24], "big")
             return (w, h) if w and h else None
-        # JPEG: 以 FFD8 开头，扫描 SOF 标记
+        # JPEG: 以 FFD8 开头，扫描 SOF 标记。SOF 一般就在文件头部，
+        # 这里只读前 2MB —— 避免为一张大图把整个文件吞进内存。
         if head[:2] == b"\xff\xd8":
             with open(path, "rb") as f:
-                data = f.read()
+                data = f.read(head_limit)
             i = 2
             while i < len(data) - 9:
                 if data[i] != 0xFF:
                     i += 1
                     continue
                 marker = data[i + 1]
-                # SOF0..SOF15 中除 C4/C8/CC 为有效尺寸标记
+                # SOF0..SOF15 中除 C4 / C8 / CC 为有效尺寸标记
                 if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
                     h = int.from_bytes(data[i + 5:i + 7], "big")
                     w = int.from_bytes(data[i + 7:i + 9], "big")
                     return (w, h) if w and h else None
-                # 跳到下一个标记
                 if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
                     i += 2
                 else:
@@ -69,20 +101,304 @@ def parse_image_dimensions(path):
         return None
 
 
+def read_png_text_chunks(path):
+    """读取 PNG 的全部文本块，返回 {keyword: text}。
+
+    三种块都要认 —— 这是本技能最容易踩空的地方：
+      tEXt  未压缩，Latin-1；A1111 的 parameters 就走这里
+      zTXt  zlib 压缩，关键字明文；ComfyUI 的大 JSON 经常落在这
+      iTXt  UTF-8，压缩标志可选；XMP 与部分工具走这里
+    只认 tEXt 的解析器，会在一大半 ComfyUI 图上读不出任何东西。
+    """
+    out = {}
+    try:
+        with open(path, "rb") as f:
+            if f.read(8) != b"\x89PNG\r\n\x1a\n":
+                return None
+            while True:
+                hdr = f.read(8)
+                if len(hdr) < 8:
+                    break
+                length = int.from_bytes(hdr[:4], "big")
+                ctype = hdr[4:8]
+                if length > 64 * 1024 * 1024:  # 异常长度，防止读到天边
+                    break
+                data = f.read(length)
+                f.read(4)  # CRC 不校验，损坏的块最多是读不出来，不该中断整批
+
+                if ctype == b"tEXt":
+                    k, _, v = data.partition(b"\x00")
+                    out[_dec(k, "latin-1")] = _dec(v, "latin-1")
+                elif ctype == b"zTXt":
+                    k, _, rest = data.partition(b"\x00")
+                    body = b""
+                    if len(rest) > 1:
+                        try:
+                            body = zlib.decompress(rest[1:])
+                        except Exception:
+                            body = b""
+                    out[_dec(k, "latin-1")] = _dec(body, "latin-1")
+                elif ctype == b"iTXt":
+                    k, _, rest = data.partition(b"\x00")
+                    if len(rest) >= 2:
+                        comp_flag, _method = rest[0], rest[1]
+                        body = rest[2:]
+                        # 跳过 language tag 与 translated keyword 两段
+                        i = body.find(b"\x00")
+                        if i >= 0:
+                            j = body.find(b"\x00", i + 1)
+                            if j >= 0:
+                                body = body[j + 1:]
+                        if comp_flag == 1:
+                            try:
+                                body = zlib.decompress(body)
+                            except Exception:
+                                body = b""
+                        out[_dec(k, "latin-1")] = _dec(body, "utf-8")
+                if ctype == b"IEND":
+                    break
+    except Exception:
+        return out or None
+    return out
+
+
+def _dec(b, enc):
+    try:
+        return b.decode(enc)
+    except Exception:
+        return b.decode(enc, "replace")
+
+
+def _split_top_level(text, sep=","):
+    """按 sep 切分，但不切进引号里 —— Lora hashes: "a: 1, b: 2" 会骗过朴素切分。"""
+    parts, buf, quote = [], [], None
+    for ch in text:
+        if quote:
+            if ch == quote:
+                quote = None
+            buf.append(ch)
+        elif ch in "\"'":
+            quote = ch
+            buf.append(ch)
+        elif ch == sep:
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(ch)
+    parts.append("".join(buf))
+    return parts
+
+
+def parse_a1111_parameters(text):
+    """解析 Automatic1111 / Forge 的 parameters 纯文本块。
+
+    结构：正向提示词（可多行）→ 一行 `Negative prompt: ...` → 一行 `Steps: ..., Sampler: ...`。
+    注意提示词自己就含逗号，所以参数行必须靠 `Steps:` 锚点定位，不能从前往后切。
+    """
+    res = {"tool": "a1111"}
+    pos, neg, param_line = [], [], None
+    mode = "pos"
+    for line in text.split("\n"):
+        if line.startswith("Negative prompt:"):
+            mode = "neg"
+            neg.append(line[len("Negative prompt:"):].strip())
+            continue
+        if re.match(r"^\s*Steps:\s*\d", line):
+            mode = "params"
+            param_line = line
+            continue
+        if mode == "pos":
+            pos.append(line)
+        elif mode == "neg":
+            neg.append(line)
+    if pos:
+        res["prompt"] = "\n".join(pos).strip()
+    if neg:
+        res["negative_prompt"] = "\n".join(neg).strip()
+
+    kv = {}
+    if param_line:
+        for part in _split_top_level(param_line):
+            if ":" in part:
+                k, _, v = part.partition(":")
+                kv[k.strip()] = v.strip()
+    params = {}
+    for src, dst in (("Steps", "steps"), ("Sampler", "sampler"), ("CFG scale", "cfg"),
+                     ("Seed", "seed"), ("Size", "size"), ("Model", "model"),
+                     ("Model hash", "model_hash"), ("Denoising strength", "denoise"),
+                     ("Clip skip", "clip_skip"), ("Schedule type", "scheduler"),
+                     ("VAE", "vae"), ("Lora hashes", "lora_hashes")):
+        if src in kv:
+            params[dst] = kv[src]
+    if params:
+        res["params"] = params
+    if kv.get("Model"):
+        res["model"] = kv["Model"]
+    if kv.get("Size") and re.match(r"^\d+x\d+$", kv["Size"]):
+        res["resolution"] = kv["Size"]
+    return res
+
+
+def parse_comfy_prompt(json_text):
+    """解析 ComfyUI 的 prompt 块（API 执行图 JSON）。
+
+    正向 / 负向提示词不靠节点标题猜，而是顺着 KSampler 的 positive / negative
+    输入连线找到真正的 CLIPTextEncode —— 标题写在 _meta.title 里，随时会被改。
+    连线拿不到时才退回标题启发式，并在 basis 里注明。
+    """
+    try:
+        graph = json.loads(json_text)
+    except Exception:
+        return None
+    if not isinstance(graph, dict) or not graph:
+        return None
+    res = {"tool": "comfyui"}
+    params, positive, negative, basis = {}, None, None, "link"
+
+    sampler_types = {"KSampler", "KSamplerAdvanced", "SamplerCustom", "KSamplerSelect"}
+    sampler = None
+    for _, node in _iter_nodes(graph):
+        if node.get("class_type") in sampler_types:
+            sampler = node
+            break
+
+    if sampler:
+        ins = sampler.get("inputs", {}) or {}
+        for k, dst in (("seed", "seed"), ("noise_seed", "seed"), ("steps", "steps"),
+                       ("cfg", "cfg"), ("sampler_name", "sampler"),
+                       ("scheduler", "scheduler"), ("denoise", "denoise")):
+            if k in ins and not isinstance(ins[k], list):
+                params[dst] = ins[k]
+        positive = _node_text(graph, ins.get("positive"))
+        negative = _node_text(graph, ins.get("negative"))
+
+    if positive is None and negative is None:
+        basis = "title"
+        for _, node in _iter_nodes(graph):
+            if "CLIPTextEncode" not in str(node.get("class_type", "")):
+                continue
+            t = (node.get("inputs") or {}).get("text")
+            if not isinstance(t, str):
+                continue
+            title = ((node.get("_meta") or {}).get("title") or "").lower()
+            if "neg" in title:
+                negative = negative or t
+            else:
+                positive = positive or t
+
+    if positive is not None:
+        res["prompt"] = positive
+    if negative is not None:
+        res["negative_prompt"] = negative
+    if params:
+        res["params"] = params
+    for _, node in _iter_nodes(graph):
+        ct = node.get("class_type", "")
+        if ct in ("CheckpointLoaderSimple", "CheckpointLoader", "UNETLoader"):
+            name = (node.get("inputs") or {}).get("ckpt_name") or (node.get("inputs") or {}).get("unet_name")
+            if isinstance(name, str) and name:
+                res["model"] = name
+                break
+    res["basis"] = basis
+    return res if len(res) > 2 else None
+
+
+def _iter_nodes(graph):
+    for nid, node in graph.items():
+        if nid.startswith("_"):
+            continue
+        if isinstance(node, dict) and "class_type" in node:
+            yield nid, node
+
+
+def _node_text(graph, ref):
+    """顺着连线取回上游节点的 text 输入；ref 形如 ["6", 0]。"""
+    if not isinstance(ref, list) or not ref:
+        return None
+    node = graph.get(str(ref[0]))
+    if not isinstance(node, dict):
+        return None
+    t = (node.get("inputs") or {}).get("text")
+    if isinstance(t, str):
+        return t
+    for key in ("text_g", "text_l"):
+        if isinstance((node.get("inputs") or {}).get(key), str):
+            return node["inputs"][key]
+    return None
+
+
+def parse_jsonish(text, tool):
+    """InvokeAI / Fooocus / NovelAI 之类把参数写成 JSON 的，做浅提取，认不出就交回原文。"""
+    try:
+        data = json.loads(text)
+    except Exception:
+        return None
+    if not isinstance(data, dict):
+        return None
+    res = {"tool": tool}
+
+    def dig(*keys):
+        for k in keys:
+            if k in data and isinstance(data[k], (str, int, float)) and data[k] != "":
+                return data[k]
+        return None
+
+    p = dig("prompt", "positive_prompt", "positive")
+    if p:
+        res["prompt"] = str(p)
+    n = dig("negative_prompt", "negative")
+    if n:
+        res["negative_prompt"] = str(n)
+    m = dig("model", "model_name", "ckpt_name", "base_model")
+    if m:
+        res["model"] = str(m)
+    seed = dig("seed")
+    if seed is not None:
+        res["params"] = {"seed": seed}
+    return res if len(res) > 1 else None
+
+
+def extract_embedded_metadata(path):
+    """从图内元数据挖创作信息。返回 (结果 dict | None, 全部文本块 dict | None)。
+
+    支持：ComfyUI（prompt / workflow，含 zTXt 压缩）、Automatic1111 / Forge（parameters）、
+    InvokeAI（invokeai_metadata / sd-metadata）、Fooocus / NovelAI（Comment）。
+    明确不支持：JPEG / WebP 里的 EXIF UserComment（A1111 存 JPEG 时会走那里）——
+    这条限制写在 references 里，遇到时 raw_meta 会把原文带出来供人工查看。
+    """
+    ext = os.path.splitext(path)[1].lower()
+    if ext != ".png":
+        return None, None
+    chunks = read_png_text_chunks(path)
+    if not chunks:
+        return None, None
+
+    # ComfyUI：prompt 是执行图，优先用它；workflow 只是画布图，兜底
+    for key in ("prompt", "workflow"):
+        if key in chunks and chunks[key].strip().startswith("{"):
+            got = parse_comfy_prompt(chunks[key])
+            if got:
+                return got, chunks
+    if "parameters" in chunks:
+        return parse_a1111_parameters(chunks["parameters"]), chunks
+    for key, tool in (("invokeai_metadata", "invokeai"), ("sd-metadata", "invokeai"),
+                      ("Comment", "fooocus/novelai"), ("Description", "generic")):
+        if key in chunks:
+            got = parse_jsonish(chunks[key], tool)
+            if got:
+                return got, chunks
+    return None, chunks
+
+
 def probe_video(path):
-    """可选探测：优先用系统 ffprobe 取视频宽高与时长。ffprobe 不存在或调用失败则静默返回 None。
-    不引入任何第三方库；ffprobe 是外部命令行工具，缺失即降级。"""
+    """可选探测：优先用系统 ffprobe 取视频宽高与时长。ffprobe 不存在或调用失败则静默返回 None。"""
     ffprobe = shutil.which("ffprobe")
     if not ffprobe:
         return None
     try:
-        cmd = [
-            ffprobe, "-v", "error",
-            "-select_streams", "v:0",
-            "-show_entries", "stream=width,height,duration",
-            "-of", "default=noprint_wrappers=1",
-            path,
-        ]
+        cmd = [ffprobe, "-v", "error", "-select_streams", "v:0",
+               "-show_entries", "stream=width,height,duration",
+               "-of", "default=noprint_wrappers=1", path]
         out = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if out.returncode != 0:
             return None
@@ -98,11 +414,12 @@ def probe_video(path):
                 res = "%dx%d" % (int(w), int(h))
             except ValueError:
                 res = None
-        dur = info.get("duration") or None
-        return {"resolution": res, "duration": dur}
+        return {"resolution": res, "duration": info.get("duration") or None}
     except Exception:
         return None
 
+
+# ============================================================ 单条记录
 
 def read_sibling_metadata(path):
     """读取同名 .txt（提示词）与 .json（结构化字段），合并为 dict。"""
@@ -127,7 +444,15 @@ def read_sibling_metadata(path):
     return meta
 
 
-def make_record(path, root, allow_probe=True):
+def _to_str(v):
+    if isinstance(v, (dict, list)):
+        return json.dumps(v, ensure_ascii=False)
+    if v is None:
+        return None
+    return str(v)
+
+
+def make_record(path, root, allow_probe=True, embed=True, keep_raw_meta=False):
     st = os.stat(path)
     ext = os.path.splitext(path)[1].lower()
     ftype = "video" if ext in VIDEO_EXTS else "image"
@@ -147,14 +472,55 @@ def make_record(path, root, allow_probe=True):
         "resolution": None,
         "created_at": None,
         "duration": None,
+        "batch_family": None,
+        "batch_id": None,
+        "batch_basis": None,
+        "meta_source": "none",
+        "meta_tool": None,
+        "raw_meta": None,
+        "flags": [],
         "_size": st.st_size,
         "_mtime": int(st.st_mtime),
     }
-    meta = read_sibling_metadata(path)
-    for k in ("role", "scene", "purpose", "prompt", "model", "params",
-              "tags", "is_scrap", "version", "commercial", "created_at"):
-        if k in meta and meta[k] not in (None, ""):
-            rec[k] = meta[k]
+
+    # 1) 同源文件（作者自己落的旁挂元数据，最可信）
+    sidecar = read_sibling_metadata(path)
+    for k in CREATIVE_FIELDS:
+        if k in sidecar and sidecar[k] not in (None, ""):
+            rec[k] = sidecar[k]
+    rec["created_at"] = sidecar.get("created_at") or None
+    if any(sidecar.get(k) not in (None, "") for k in ("role", "prompt", "model")):
+        rec["meta_source"] = "sidecar"
+
+    # 2) 图内元数据（没有同源文件时的主来源）
+    if embed and ftype == "image":
+        got, chunks = extract_embedded_metadata(path)
+        if got:
+            if rec["meta_source"] == "none":
+                rec["meta_source"] = "embedded"
+                rec["meta_tool"] = got.get("tool")
+            else:
+                rec["meta_tool"] = rec["meta_tool"] or got.get("tool")
+            for k in ("prompt", "model", "params", "resolution"):
+                if rec.get(k) in (None, "", []) and got.get(k) not in (None, "", []):
+                    rec[k] = got[k]
+            neg = got.get("negative_prompt")
+            if neg:
+                rec["params"] = rec["params"] if isinstance(rec["params"], dict) else {}
+                rec["params"].setdefault("negative_prompt", neg)
+            if got.get("basis"):
+                rec["flags"].append("comfy-basis:" + got["basis"])
+        if chunks:
+            # 认不出的块也留个底：截断保存，供人工查看，不参与检索
+            names = sorted(chunks.keys())
+            rec["flags"].append("png-chunks:" + ",".join(names))
+            if LOCAL_PATH_RE.search(json.dumps(chunks, ensure_ascii=False)):
+                rec["flags"].append("meta-has-local-path")
+            if keep_raw_meta:
+                blob = json.dumps(chunks, ensure_ascii=False)
+                rec["raw_meta"] = blob[:4000]
+
+    # 3) 分辨率：图片以头部解析为准，绝不靠文件名猜
     if ftype == "image":
         dims = parse_image_dimensions(path)
         if dims:
@@ -165,74 +531,201 @@ def make_record(path, root, allow_probe=True):
             if pv.get("resolution"):
                 rec["resolution"] = pv["resolution"]
             rec["duration"] = pv.get("duration")
+
+    if not rec["created_at"]:
+        import datetime
+        rec["created_at"] = datetime.datetime.fromtimestamp(st.st_mtime).isoformat(timespec="seconds")
+        rec["flags"].append("created_at-from-mtime")
     return rec
 
 
 def iter_media_files(directory, recursive):
-    for entry in os.scandir(directory):
-        if entry.is_dir():
+    try:
+        entries = list(os.scandir(directory))
+    except OSError:
+        return
+    for entry in entries:
+        if entry.name.startswith("."):
+            continue
+        if entry.is_dir(follow_symlinks=False):
             if recursive:
-                yield from iter_media_files(entry.path, recursive)
+                for p in iter_media_files(entry.path, recursive):
+                    yield p
             continue
         ext = os.path.splitext(entry.name)[1].lower()
         if ext in IMAGE_EXTS or ext in VIDEO_EXTS:
             yield entry.path
 
 
+# ============================================================ 索引读写
+
 def load_index(index_path):
-    records = []
+    """读台账。返回 (records, meta)。兼容没有 _meta 行的旧台账。"""
+    records, meta = [], {}
     if not os.path.isfile(index_path):
-        return records
+        return records, meta
     if index_path.endswith(".csv"):
         with open(index_path, "r", encoding="utf-8", newline="") as f:
             for row in csv.DictReader(f):
-                records.append(row)
+                if row.get("file_path") == "__meta__":
+                    try:
+                        meta = json.loads(row.get("prompt") or "{}")
+                    except Exception:
+                        meta = {}
+                    continue
+                rec = dict(row)
+                for k in CSV_KEY_COLUMNS:
+                    if k in rec and rec[k] not in (None, ""):
+                        try:
+                            rec[k] = int(float(rec[k]))
+                        except ValueError:
+                            rec.pop(k, None)
+                for k in ("is_scrap", "commercial"):
+                    if rec.get(k) not in (None, ""):
+                        rec[k] = str(rec[k]).strip().lower() in ("true", "1", "yes", "是")
+                if rec.get("tags"):
+                    rec["tags"] = [t.strip() for t in str(rec["tags"]).split(",") if t.strip()]
+                else:
+                    rec["tags"] = []
+                records.append(rec)
     else:
         with open(index_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
-                if line:
-                    records.append(json.loads(line))
-    return records
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                except Exception:
+                    continue  # 单行损坏不该让整个台账读不出来
+                if isinstance(obj, dict) and obj.get("_meta"):
+                    meta = obj
+                else:
+                    records.append(obj)
+    return records, meta
 
 
-def save_index(records, index_path, fmt):
+def save_index(records, index_path, fmt, meta=None):
+    meta = dict(meta or {})
+    meta["tool_version"] = TOOL_VERSION
     if fmt == "csv":
-        fields = ["file_path", "type", "role", "scene", "purpose", "prompt",
-                  "model", "params", "tags", "is_scrap", "version",
-                  "commercial", "resolution", "duration", "created_at"]
+        fields = CSV_COLUMNS + CSV_KEY_COLUMNS
         with open(index_path, "w", encoding="utf-8", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
             w.writeheader()
+            # meta 也落一行，否则 render 找不到 root，增量也读不回键
+            meta_row = {k: "" for k in fields}
+            meta_row["file_path"] = "__meta__"
+            meta_row["prompt"] = json.dumps(meta, ensure_ascii=False)
+            w.writerow(meta_row)
             for r in records:
                 row = dict(r)
                 if isinstance(row.get("tags"), list):
                     row["tags"] = ",".join(map(str, row["tags"]))
+                if isinstance(row.get("params"), dict):
+                    row["params"] = json.dumps(row["params"], ensure_ascii=False)
                 w.writerow(row)
     else:
         with open(index_path, "w", encoding="utf-8") as f:
+            m = {"_meta": True}
+            m.update(meta)
+            f.write(json.dumps(m, ensure_ascii=False) + "\n")
             for r in records:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
-def cmd_scan(args):
-    records = load_index(args.index)
-    seen = {(r.get("file_path"), int(r.get("_size", -1)), int(r.get("_mtime", -1)))
-            for r in records}
-    root = args.directory
-    added = 0
-    for p in iter_media_files(root, args.recursive):
-        rel = os.path.relpath(p, root)
-        st = os.stat(p)
-        key = (rel, st.st_size, int(st.st_mtime))
-        if key in seen:
+def _dedupe(records, verbose=True):
+    """同一 file_path 只留最后一条。csv 时代留下的重复台账，靠这一步收敛。"""
+    seen, out, dropped = set(), [], 0
+    for r in reversed(records):
+        p = r.get("file_path")
+        if p in seen:
+            dropped += 1
             continue
-        records.append(make_record(p, root, allow_probe=not args.no_ffprobe))
-        seen.add(key)
-        added += 1
-    save_index(records, args.index, args.format)
-    print("扫描完成：新增 %d 条，台账共 %d 条 → %s" % (added, len(records), args.index))
+        seen.add(p)
+        out.append(r)
+    out.reverse()
+    if dropped and verbose:
+        print("提示：台账里有 %d 条重复记录（同一文件多条），已按最后一次扫描的结果收敛。" % dropped)
+    return out
 
+
+# ============================================================ 批次推断
+
+_STEM_RULES = [
+    (re.compile(r"[\s_-]*\(\d{1,3}\)$"), "copy-paren"),
+    (re.compile(r"[\s_-]*(?:copy|副本)$", re.I), "copy-word"),
+    (re.compile(r"[\s_-]+v(?:er)?\.?\d{1,3}$", re.I), "version-v"),
+    (re.compile(r"[\s_-]+\d{1,4}$"), "trailing-number"),
+]
+
+
+def norm_stem(stem):
+    """把文件名主干规范化成「命名族」。返回 (族名, 命中的规则)。
+
+    例：lina_03 → lina（trailing-number）；poster (1) → poster（copy-paren）。
+    绝不改内容，只去尾部版本/副本标记 —— 规则名会记进 batch_basis，误判可见可查。
+    """
+    s = stem
+    for rx, name in _STEM_RULES:
+        new = rx.sub("", s)
+        if new != s and new.strip():
+            return new.strip(" _-"), name
+    return s, None
+
+
+def assign_batches(records, window=DEFAULT_BATCH_WINDOW):
+    """按「文件名族 + 时间邻近」推断批次，写回 batch_family / batch_id / batch_basis。
+
+    这是推断，不是事实 —— 一律以 [推断] 呈现。文件属性在这里只当线索，
+    不作为检索维度（见 SKILL.md 规则 1）。
+    """
+    fams = {}
+    for r in records:
+        p = r.get("file_path") or ""
+        stem = os.path.splitext(os.path.basename(p))[0]
+        fam, rule = norm_stem(stem)
+        r["batch_family"] = fam if rule else None
+        r["batch_id"] = None
+        r["batch_basis"] = None
+        r.setdefault("flags", [])
+        if rule:
+            r["flags"] = [f for f in r["flags"] if not f.startswith("stem-rule:")]
+            r["flags"].append("stem-rule:" + rule)
+        fams.setdefault(fam, []).append(r)
+
+    groups = 0
+    for fam, items in fams.items():
+        if len(items) < 2:
+            continue
+        items.sort(key=lambda r: (r.get("_mtime") or 0, r.get("file_path") or ""))
+        bucket, last = [], None
+        buckets = []
+        for r in items:
+            t = r.get("_mtime") or 0
+            if last is None or (t - last) <= window:
+                bucket.append(r)
+            else:
+                buckets.append(bucket)
+                bucket = [r]
+            last = t
+        if bucket:
+            buckets.append(bucket)
+        for i, b in enumerate(buckets, 1):
+            if len(b) < 2:
+                continue
+            groups += 1
+            for r in b:
+                r["batch_id"] = "%s#%d" % (fam, i)
+                r["batch_basis"] = "filename+time"
+        # 同族但时间相差太远 → 仍标出族关系，只是不成批
+        for r in items:
+            if not r.get("batch_id"):
+                r["batch_basis"] = "filename-only"
+    return groups
+
+
+# ============================================================ 检索条件
 
 def _as_bool(v):
     if isinstance(v, bool):
@@ -242,22 +735,39 @@ def _as_bool(v):
     return str(v).strip().lower() in ("true", "1", "yes", "是")
 
 
-def cmd_query(args):
-    records = load_index(args.index)
-    if not records:
-        print("台账为空或不存在：%s" % args.index)
-        return
+def _tags_of(r):
+    tags = r.get("tags") or []
+    if isinstance(tags, str):
+        tags = [t.strip() for t in tags.split(",") if t.strip()]
+    return tags
+
+
+def _res_of(r):
+    res = r.get("resolution") or ""
+    try:
+        w, h = (int(x) for x in str(res).lower().split("x"))
+        return w, h
+    except Exception:
+        return None
+
+
+def filter_records(records, args):
+    """统一过滤。返回 (命中列表, 因缺字段被跳过的条数)。"""
     role = args.role
     scene = args.scene
     purpose = args.purpose
     model = args.model
     tag = args.tag
     version = args.version
+    batch = getattr(args, "batch", None)
+    grep = getattr(args, "grep_prompt", None)
     scrap = _as_bool(args.scrap) if args.scrap is not None else None
+    all_scrap = getattr(args, "all", False)
     commercial = _as_bool(args.commercial) if args.commercial is not None else None
     min_res = int(args.min_res) if args.min_res else 0
+    min_long = int(args.min_long_side) if getattr(args, "min_long_side", None) else 0
 
-    hits = []
+    hits, skipped_missing = [], 0
     for r in records:
         if role and (r.get("role") or "") != role:
             continue
@@ -269,44 +779,509 @@ def cmd_query(args):
             continue
         if version and str(r.get("version") or "") != str(version):
             continue
-        if scrap is not None and _as_bool(r.get("is_scrap")) != scrap:
+        if batch and (r.get("batch_id") or "") != batch and (r.get("batch_family") or "") != batch:
             continue
+        if grep:
+            hay = (r.get("prompt") or "")
+            if isinstance(r.get("params"), dict):
+                hay += " " + json.dumps(r["params"], ensure_ascii=False)
+            if grep.lower() not in hay.lower():
+                continue
         if commercial is not None and _as_bool(r.get("commercial")) != commercial:
             continue
-        if tag:
-            tags = r.get("tags") or []
-            if isinstance(tags, str):
-                tags = [t.strip() for t in tags.split(",") if t.strip()]
-            if tag not in tags:
+        if scrap is not None:
+            if _as_bool(r.get("is_scrap")) != scrap:
                 continue
-        if min_res:
-            res = r.get("resolution") or ""
-            try:
-                w, h = (int(x) for x in res.lower().split("x"))
-                if w < min_res or h < min_res:
-                    continue
-            except Exception:
+        elif not all_scrap:
+            if _as_bool(r.get("is_scrap")):  # 默认排除废片
+                continue
+        if min_res or min_long:
+            dims = _res_of(r)
+            if not dims:
+                skipped_missing += 1
+                continue
+            w, h = dims
+            if min_res and (w < min_res or h < min_res):
+                continue
+            if min_long and max(w, h) < min_long:
                 continue
         hits.append(r)
+    return hits, skipped_missing
 
+
+# ============================================================ 子命令
+
+def cmd_scan(args):
+    records, meta = load_index(args.index)
+    records = _dedupe(records)
+    prev = meta.get("root")
+    root_abs = os.path.abspath(args.directory)
+    if prev and prev != root_abs and records:
+        print("提示：本台账原本记录的是 %s，本次扫描 %s。"
+              "相对路径以各自的扫描目录为基准，混用前请确认。" % (prev, root_abs))
+
+    seen = {(r.get("file_path"), r.get("_size", -1), r.get("_mtime", -1)) for r in records}
+    known_paths = {r.get("file_path") for r in records}
+    added = 0
+    for p in iter_media_files(root_abs, args.recursive):
+        rel = os.path.relpath(p, root_abs)
+        st = os.stat(p)
+        key = (rel, st.st_size, int(st.st_mtime))
+        if key in seen:
+            continue
+        rec = make_record(p, root_abs, allow_probe=not args.no_ffprobe,
+                          embed=not args.no_embed, keep_raw_meta=args.keep_raw_meta)
+        if rel in known_paths:
+            rec["flags"].append("suspect-rename")
+        records.append(rec)
+        seen.add(key)
+        known_paths.add(rel)
+        added += 1
+
+    groups = 0
+    if not args.no_batch:
+        groups = assign_batches(records, args.batch_window)
+
+    meta["root"] = root_abs
+    meta["updated_at"] = _now()
+    save_index(records, args.index, args.format, meta)
+
+    emb = sum(1 for r in records if r.get("meta_source") == "embedded")
+    print("扫描完成：新增 %d 条，台账共 %d 条 → %s" % (added, len(records), args.index))
+    print("  创作字段来源：图内元数据 %d · 同源文件 %d · 未提供 %d"
+          % (emb,
+             sum(1 for r in records if r.get("meta_source") == "sidecar"),
+             sum(1 for r in records if r.get("meta_source") == "none")))
+    if not args.no_batch:
+        batched = sum(1 for r in records if r.get("batch_id"))
+        print("  批次 [推断]：%d 组，覆盖 %d 条（同族判定窗口 %d 秒）"
+              % (groups, batched, args.batch_window))
+    leak = sum(1 for r in records if "meta-has-local-path" in (r.get("flags") or []))
+    if leak:
+        print("  ⚠ %d 条素材的内嵌元数据含本机绝对路径（可能带用户名）—— "
+              "对外分享前先看 stats 的隐私提醒。" % leak)
+
+
+def cmd_query(args):
+    records, _ = load_index(args.index)
+    records = _dedupe(records)
+    if not records:
+        print("台账为空或不存在：%s" % args.index)
+        return
+    hits, skipped = filter_records(records, args)
     print("命中 %d / %d 条：" % (len(hits), len(records)))
     for r in hits:
         res = r.get("resolution") or "未提供"
-        scrap_mark = " [废片]" if _as_bool(r.get("is_scrap")) else ""
+        marks = []
+        if _as_bool(r.get("is_scrap")):
+            marks.append("废片")
+        if _as_bool(r.get("commercial")):
+            marks.append("可商用")
+        if r.get("batch_id"):
+            marks.append(r["batch_id"] + " [推断]")
         print("  %s | %s | %s | res=%s%s" % (
             r.get("file_path"), r.get("role") or "未提供",
-            r.get("purpose") or "未提供", res, scrap_mark))
+            r.get("purpose") or "未提供", res,
+            (" [" + " · ".join(marks) + "]") if marks else ""))
+    if skipped:
+        print("  另有 %d 条因分辨率未提供被跳过（视频缺 ffprobe 时会出现）。" % skipped)
+    if not hits and args.scrap is None and not args.all:
+        scrap_n = sum(1 for r in records if _as_bool(r.get("is_scrap")))
+        if scrap_n:
+            print("  提示：台账里有 %d 条废片，检索默认不显示；要一并看用 --all，只看废片用 --scrap true。"
+                  % scrap_n)
 
+
+SETTABLE = ["role", "scene", "purpose", "prompt", "model", "version",
+            "commercial", "is_scrap"]
+
+
+def cmd_set(args):
+    records, meta = load_index(args.index)
+    if not records:
+        print("台账为空或不存在：%s" % args.index)
+        return
+    hit, err = _locate(records, args.path)
+    if err:
+        print("未改动：" + err)
+        return
+
+    changed = []
+    for f in SETTABLE:
+        v = getattr(args, f.replace("-", "_"), None)
+        if v is None:
+            continue
+        if f in ("commercial", "is_scrap"):
+            v = _as_bool(v)
+        hit[f] = v
+        changed.append("%s=%s" % (f, v))
+    if args.tag:
+        tags = _tags_of(hit)
+        for t in args.tag:
+            if t not in tags:
+                tags.append(t)
+                changed.append("+tag:%s" % t)
+        hit["tags"] = tags
+    if args.clear_tags:
+        hit["tags"] = []
+        changed.append("清空 tags")
+    for f in args.unset or []:
+        if f in hit:
+            hit[f] = None
+            changed.append("清空 %s" % f)
+
+    if not changed:
+        print("没有给出要改的字段。可改：%s（另有 --tag / --clear-tags / --unset）"
+              % " ".join("--" + f for f in SETTABLE))
+        return
+
+    # 人工给的值优先级最高，来源改记 user
+    hit["meta_source"] = "user"
+    hit.setdefault("flags", [])
+    if "user-edited" not in hit["flags"]:
+        hit["flags"].append("user-edited")
+    meta["updated_at"] = _now()
+    save_index(records, args.index, args.format, meta)
+    print("已更新 %s" % hit.get("file_path"))
+    for c in changed:
+        print("  " + c)
+
+
+def _locate(records, path):
+    exact = [r for r in records if r.get("file_path") == path]
+    if len(exact) == 1:
+        return exact[0], None
+    by_name = [r for r in records if os.path.basename(r.get("file_path") or "") == path]
+    if len(by_name) == 1:
+        return by_name[0], None
+    sub = [r for r in records if path in (r.get("file_path") or "")]
+    if len(sub) == 1:
+        return sub[0], None
+    if len(sub) > 1:
+        return None, "「%s」匹配到 %d 条，不唯一：%s" % (
+            path, len(sub), ", ".join((r.get("file_path") or "")[:40] for r in sub[:5]))
+    return None, "台账里没有匹配「%s」的记录" % path
+
+
+def cmd_stats(args):
+    records, meta = load_index(args.index)
+    records = _dedupe(records)
+    if not records:
+        print("台账为空或不存在：%s" % args.index)
+        return
+    total = len(records)
+    imgs = sum(1 for r in records if r.get("type") == "image")
+    vids = total - imgs
+    scrap = [r for r in records if _as_bool(r.get("is_scrap"))]
+    comm_yes = sum(1 for r in records if _as_bool(r.get("commercial")) is True)
+    comm_no = sum(1 for r in records if _as_bool(r.get("commercial")) is False)
+
+    print("台账：%s" % args.index)
+    print("  记录总数     %d" % total)
+    print("  图片 / 视频  %d / %d" % (imgs, vids))
+    if meta.get("root"):
+        print("  扫描根目录   %s" % meta["root"])
+    if meta.get("updated_at"):
+        print("  最近更新     %s" % meta["updated_at"])
+
+    print("\n素材状态")
+    print("  废片         %d（%.1f%%）" % (len(scrap), len(scrap) * 100.0 / total))
+    print("  可商用       %d 是 · %d 否 · %d 未提供" % (comm_yes, comm_no, total - comm_yes - comm_no))
+    no_res = sum(1 for r in records if not r.get("resolution"))
+    if no_res:
+        print("  分辨率缺失   %d（视频未装 ffprobe 时会这样）" % no_res)
+
+    print("\n创作字段来源")
+    for key, label in (("embedded", "图内元数据"), ("sidecar", "同源文件"),
+                       ("user", "人工补录"), ("none", "未提供")):
+        n = sum(1 for r in records if r.get("meta_source") == key)
+        if n:
+            print("  %-10s %d（%.0f%%）" % (label, n, n * 100.0 / total))
+    tools = {}
+    for r in records:
+        if r.get("meta_tool"):
+            tools[r["meta_tool"]] = tools.get(r["meta_tool"], 0) + 1
+    if tools:
+        print("  认出的工具 " + " · ".join("%s %d" % (k, v) for k, v in sorted(tools.items())))
+
+    print("\n字段完整度（条越长缺得越多；缺 = 未提供，不代表素材有问题）")
+    for f in CREATIVE_FIELDS:
+        miss = sum(1 for r in records
+                   if r.get(f) in (None, "", []) or (f == "tags" and not _tags_of(r)))
+        bar = "▒" * int(round(miss * 20.0 / total)) if total else ""
+        print("  %-10s 缺 %-4d %s" % (f, miss, bar))
+
+    print("\n分布（各取前 8）")
+    for f, label in (("role", "按角色"), ("model", "按模型"),
+                     ("purpose", "按用途"), ("batch_family", "按命名族")):
+        cnt = {}
+        for r in records:
+            k = r.get(f) or "未提供"
+            cnt[k] = cnt.get(k, 0) + 1
+        top = sorted(cnt.items(), key=lambda x: -x[1])[:8]
+        print("  %-8s %s" % (label, " · ".join("%s %d" % (k, v) for k, v in top)))
+
+    batched = [r for r in records if r.get("batch_id")]
+    fams = {r["batch_id"] for r in batched}
+    print("\n批次 [推断]")
+    print("  疑似批次     %d 组，覆盖 %d 条" % (len(fams), len(batched)))
+    if args.show_batches and fams:
+        for b in sorted(fams):
+            items = [r for r in batched if r["batch_id"] == b]
+            print("  %-16s %d 条 → %s" % (b, len(items),
+                                          ", ".join((r.get("file_path") or "")[:32] for r in items[:4])))
+
+    leaks = [r for r in records if "meta-has-local-path" in (r.get("flags") or [])]
+    if leaks:
+        print("\n隐私提醒")
+        print("  %d 条素材的内嵌元数据含本机绝对路径（可能带用户名 / 目录结构）。" % len(leaks))
+        for r in leaks[:5]:
+            print("    %s" % r.get("file_path"))
+        if len(leaks) > 5:
+            print("    …… 另有 %d 条" % (len(leaks) - 5))
+        print("  对外分享这些图前，建议先用专门工具剥掉 PNG 文本块。")
+
+    if args.show_fields:
+        print("\n全部字段名：")
+        print("  创作 " + " ".join(CREATIVE_FIELDS))
+        print("  技术 " + " ".join(TECH_FIELDS))
+        print("  派生 " + " ".join(DERIVED_FIELDS))
+
+
+def _now():
+    import datetime
+    return datetime.datetime.now().isoformat(timespec="seconds")
+
+
+# ============================================================ HTML 看板
+
+_HTML_CSS = """
+:root{
+  --s:#2f7d5d; --e:#b3352f; --c:#4a5a6a; --a:#a8761c;
+  --bg:#f7f6f3; --card:#ffffff; --line:#e3e1dc; --ink:#22201d; --dim:#6b6862;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:17px;font-weight:500;margin:0 0 4px}
+.sub{color:var(--dim);font-size:12px;margin-bottom:20px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.kv{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;min-width:104px}
+.kv b{display:block;font-size:18px;font-weight:500;line-height:1.3}
+.kv span{font-size:12px;color:var(--dim)}
+.kv.warn b{color:var(--a)}
+.kv.bad b{color:var(--e)}
+.filters{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:14px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select,input[type=search]{font:inherit;padding:6px 10px;border:1px solid var(--line);
+  border-radius:8px;background:#fff;color:var(--ink);min-width:132px}
+input[type=search]{flex:1;min-width:200px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+  border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12px;user-select:none}
+.chip.on{background:#eef4f0;border-color:#9dc4b3;color:var(--s)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:14px}
+.sk{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  overflow:hidden;display:flex;flex-direction:column}
+.sk.scrap{border-color:#e5bdb9;background:#fdf8f7}
+.th{aspect-ratio:4/3;background:#f0eeea;display:flex;align-items:center;justify-content:center;
+  color:var(--dim);font-size:12px;overflow:hidden}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.name{font-size:12px;color:var(--dim);word-break:break-all}
+.rowtag{display:flex;flex-wrap:wrap;gap:4px}
+.t{font-size:11px;padding:2px 7px;border-radius:6px;background:#f1efeb;color:var(--c)}
+.t.s{background:#eaf3ee;color:var(--s)}
+.t.e{background:#fbeceb;color:var(--e)}
+.t.a{background:#faf1e0;color:var(--a)}
+.prompt{margin-top:auto;font-size:11px;color:var(--dim);max-height:52px;overflow:hidden;
+  border-top:1px dashed var(--line);padding-top:6px}
+.empty{color:var(--dim);padding:40px 0;text-align:center}
+.callout{border-left:3px solid var(--a);background:#fdfaf2;padding:10px 14px;
+  border-radius:0 8px 8px 0;font-size:12px;color:var(--dim);margin-top:22px}
+"""
+
+_HTML_JS = """
+var DATA=[], filtered=[];
+function el(id){return document.getElementById(id)}
+function uniq(k){var s={};DATA.forEach(function(r){var v=r[k];if(v){s[v]=1}});
+  return Object.keys(s).sort()}
+function fill(){
+  [['fRole','role'],['fModel','model'],['fPurpose','purpose'],['fBatch','batch_family']]
+  .forEach(function(p){
+    var sel=el(p[0]);uniq(p[1]).forEach(function(v){
+      var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)})});
+}
+function match(r){
+  if(el('fRole').value && (r.role||'')!==el('fRole').value) return false;
+  if(el('fModel').value && (r.model||'')!==el('fModel').value) return false;
+  if(el('fPurpose').value && (r.purpose||'')!==el('fPurpose').value) return false;
+  if(el('fBatch').value && (r.batch_family||'')!==el('fBatch').value) return false;
+  if(el('onlyCommercial').classList.contains('on') && r.commercial!==true) return false;
+  if(el('onlyBatch').classList.contains('on') && !r.batch_id) return false;
+  if(!el('showScrap').classList.contains('on') && r.is_scrap) return false;
+  if(el('onlyScrap').classList.contains('on') && !r.is_scrap) return false;
+  var q=el('q').value.trim().toLowerCase();
+  if(q){
+    var hay=((r.file_path||'')+' '+(r.prompt||'')+' '+(r.role||'')+' '+(r.purpose||'')).toLowerCase();
+    if(hay.indexOf(q)<0) return false;
+  }
+  return true;
+}
+function badge(r){
+  var b=[];
+  if(r.is_scrap) b.push('<span class="t e">废片</span>');
+  if(r.commercial===true) b.push('<span class="t s">可商用</span>');
+  if(r.commercial===false) b.push('<span class="t a">限自用</span>');
+  if(r.role) b.push('<span class="t">'+r.role+'</span>');
+  if(r.purpose) b.push('<span class="t">'+r.purpose+'</span>');
+  if(r.batch_id) b.push('<span class="t a">'+r.batch_id+' 推断</span>');
+  if(r.resolution) b.push('<span class="t">'+r.resolution+'</span>');
+  (r.tags||[]).slice(0,3).forEach(function(t){b.push('<span class="t">'+t+'</span>')});
+  return b.join('');
+}
+function draw(){
+  filtered=DATA.filter(match);
+  el('count').textContent=filtered.length+' / '+DATA.length+' 条';
+  var g=el('grid');g.innerHTML='';
+  if(!filtered.length){g.innerHTML='<div class="empty">没有命中的素材。检索默认不显示废片，需要时打开「含废片」。</div>';return}
+  filtered.forEach(function(r){
+    var d=document.createElement('div');
+    d.className='sk'+(r.is_scrap?' scrap':'');
+    var th=r.type==='video'
+      ? '<div class="th">VIDEO</div>'
+      : '<div class="th"><img loading="lazy" src="'+r._src+'" onerror="this.parentNode.textContent=\\'图不可读\\'"></div>';
+    d.innerHTML=th+'<div class="body">'+badge(r)+
+      '<div class="name">'+r.file_path+'</div>'+
+      (r.prompt?'<div class="prompt">'+r.prompt.replace(/</g,'&lt;')+'</div>':'')+
+      '</div>';
+    g.appendChild(d);
+  });
+}
+function toggle(id){el(id).classList.toggle('on');draw()}
+function reset(){
+  ['fRole','fModel','fPurpose','fBatch'].forEach(function(i){el(i).value=''});
+  el('q').value='';
+  ['onlyCommercial','onlyBatch','showScrap','onlyScrap'].forEach(function(i){el(i).classList.remove('on')});
+  draw();
+}
+function boot(){
+  ['fRole','fModel','fPurpose','fBatch'].forEach(function(i){
+    el(i).addEventListener('change',draw)});
+  el('q').addEventListener('input',draw);
+  ['onlyCommercial','onlyBatch','showScrap','onlyScrap'].forEach(function(i){
+    el(i).addEventListener('click',function(){toggle(i)})});
+  el('reset').addEventListener('click',reset);
+  fill();draw();
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+else boot();
+"""
+
+
+def cmd_render(args):
+    records, meta = load_index(args.index)
+    records = _dedupe(records)
+    if not records:
+        print("台账为空或不存在：%s" % args.index)
+        return
+    root = args.root or meta.get("root")
+    out_html = os.path.abspath(args.out)
+    out_dir = os.path.dirname(out_html)
+
+    payload = []
+    missing = 0
+    for r in records:
+        item = {k: r.get(k) for k in
+                ("file_path", "type", "role", "scene", "purpose", "prompt", "model",
+                 "is_scrap", "commercial", "resolution", "duration", "batch_id",
+                 "batch_family", "meta_source")}
+        item["tags"] = _tags_of(r)
+        item["is_scrap"] = bool(_as_bool(r.get("is_scrap")))
+        item["commercial"] = _as_bool(r.get("commercial"))
+        src = ""
+        if root:
+            abspath = os.path.join(root, r.get("file_path") or "")
+            src = os.path.relpath(abspath, out_dir)
+        item["_src"] = src
+        if root and not os.path.isfile(os.path.join(root, r.get("file_path") or "")):
+            missing += 1
+        payload.append(item)
+
+    total = len(records)
+    scrap = sum(1 for r in records if _as_bool(r.get("is_scrap")))
+    comm = sum(1 for r in records if _as_bool(r.get("commercial")) is True)
+    no_role = sum(1 for r in records if not r.get("role"))
+    batched = sum(1 for r in records if r.get("batch_id"))
+    emb = sum(1 for r in records if r.get("meta_source") == "embedded")
+
+    html = []
+    html.append("<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"utf-8\">")
+    html.append("<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">")
+    html.append("<title>素材台账 · 晓得</title>")
+    html.append("<style>" + _HTML_CSS + "</style>\n</head>\n<body>\n<div class=\"wrap\">")
+    html.append("<h1>素材台账</h1>")
+    html.append("<div class=\"sub\">%s 条素材 · 扫描目录 %s · 更新于 %s</div>"
+                % (total, (root or "未记录"), meta.get("updated_at") or "—"))
+    html.append("<div class=\"bar\">")
+    html.append("<div class=\"kv\"><b>%d</b><span>素材总数</span></div>" % total)
+    html.append("<div class=\"kv bad\"><b>%d</b><span>废片</span></div>" % scrap)
+    html.append("<div class=\"kv\"><b>%d</b><span>可商用</span></div>" % comm)
+    html.append("<div class=\"kv\"><b>%d</b><span>来自图内元数据</span></div>" % emb)
+    html.append("<div class=\"kv warn\"><b>%d</b><span>缺角色</span></div>" % no_role)
+    html.append("<div class=\"kv\"><b>%d</b><span>已归入批次</span></div>" % batched)
+    html.append("</div>")
+
+    html.append("<div class=\"filters\">")
+    html.append("<select id=\"fRole\"><option value=\"\">全部角色</option></select>")
+    html.append("<select id=\"fModel\"><option value=\"\">全部模型</option></select>")
+    html.append("<select id=\"fPurpose\"><option value=\"\">全部用途</option></select>")
+    html.append("<select id=\"fBatch\"><option value=\"\">全部命名族</option></select>")
+    html.append("<span class=\"chip\" id=\"onlyCommercial\">仅可商用</span>")
+    html.append("<span class=\"chip\" id=\"onlyBatch\">仅成批素材</span>")
+    html.append("<span class=\"chip\" id=\"showScrap\">含废片</span>")
+    html.append("<span class=\"chip\" id=\"onlyScrap\">只看废片</span>")
+    html.append("<input type=\"search\" id=\"q\" placeholder=\"搜文件名 / 提示词 / 角色 / 用途……\">")
+    html.append("<span class=\"chip\" id=\"reset\">重置</span>")
+    html.append("<span class=\"sub\" id=\"count\" style=\"margin:0\"></span>")
+    html.append("</div>")
+
+    html.append("<div class=\"grid\" id=\"grid\"></div>")
+    html.append("<div class=\"callout\">批次是用「文件名族 + 生成时间邻近」推断出来的，"
+                "一律标注「推断」，不等于事实。检索默认不显示废片 —— 点「含废片」可一并查看。</div>")
+    html.append("</div>")
+    html.append("<script>var DATA=" + json.dumps(payload, ensure_ascii=False) + ";</script>")
+    html.append("<script>" + _HTML_JS + "</script>")
+    html.append("</body>\n</html>\n")
+
+    with open(out_html, "w", encoding="utf-8") as f:
+        f.write("\n".join(html))
+    print("看板已写入 %s（%d 条素材）" % (out_html, total))
+    if not root:
+        print("  提示：台账里没记扫描根目录，缩略图无法定位，看板只显示字段。"
+              "改用 --root <扫描目录> 指定。")
+    elif missing:
+        print("  提示：%d 条素材在磁盘上找不到（已移动或删除），看板上显示为「图不可读」。" % missing)
+
+
+# ============================================================ CLI
 
 def main():
-    parser = argparse.ArgumentParser(description="素材台账：扫描 + 检索（纯标准库）")
+    parser = argparse.ArgumentParser(description="素材台账 v%s：扫描 / 检索 / 补录 / 体检 / 看板（纯标准库）" % TOOL_VERSION)
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_scan = sub.add_parser("scan", help="扫描目录建立/增量更新台账")
+    p_scan = sub.add_parser("scan", help="扫描目录建立 / 增量更新台账")
     p_scan.add_argument("directory", help="要扫描的目录")
     p_scan.add_argument("--index", default="ledger.jsonl", help="索引文件路径")
     p_scan.add_argument("--recursive", action="store_true", help="递归子目录")
-    p_scan.add_argument("--no-ffprobe", action="store_true", help="跳过 ffprobe 探测视频分辨率/时长")
+    p_scan.add_argument("--no-ffprobe", action="store_true", help="跳过 ffprobe 探测视频分辨率 / 时长")
+    p_scan.add_argument("--no-embed", action="store_true", help="不从图内元数据挖提示词与参数")
+    p_scan.add_argument("--no-batch", action="store_true", help="不做批次推断")
+    p_scan.add_argument("--batch-window", type=int, default=DEFAULT_BATCH_WINDOW,
+                        help="同族判定窗口（秒），默认 %d" % DEFAULT_BATCH_WINDOW)
+    p_scan.add_argument("--keep-raw-meta", action="store_true",
+                        help="把认不出的文本块原文也存进台账（截断 4000 字符）")
     p_scan.add_argument("--format", default="jsonl", choices=["jsonl", "csv"])
     p_scan.set_defaults(func=cmd_scan)
 
@@ -318,10 +1293,43 @@ def main():
     p_q.add_argument("--model", help="按生成模型过滤")
     p_q.add_argument("--tag", help="按标签过滤（命中即匹配）")
     p_q.add_argument("--version", help="按版本号过滤")
-    p_q.add_argument("--scrap", help="是否废片：true/false")
-    p_q.add_argument("--commercial", help="是否可商用：true/false")
-    p_q.add_argument("--min-res", help="最小分辨率（宽高均 >= 此值）")
+    p_q.add_argument("--batch", help="按批次或命名族过滤（[推断]）")
+    p_q.add_argument("--grep-prompt", help="在提示词全文里搜关键词")
+    p_q.add_argument("--scrap", help="是否废片：true / false")
+    p_q.add_argument("--all", action="store_true", help="不按废片过滤（默认排除废片）")
+    p_q.add_argument("--commercial", help="是否可商用：true / false")
+    p_q.add_argument("--min-res", help="最小分辨率，宽高均 >= 此值")
+    p_q.add_argument("--min-long-side", help="最小长边，取宽高中的大者比较")
     p_q.set_defaults(func=cmd_query)
+
+    p_s = sub.add_parser("set", help="人工补字段 / 标废片 / 改可商用")
+    p_s.add_argument("--index", default="ledger.jsonl")
+    p_s.add_argument("--path", required=True, help="文件路径（精确、文件名或唯一子串）")
+    p_s.add_argument("--role")
+    p_s.add_argument("--scene")
+    p_s.add_argument("--purpose")
+    p_s.add_argument("--prompt")
+    p_s.add_argument("--model")
+    p_s.add_argument("--version")
+    p_s.add_argument("--commercial", help="true / false")
+    p_s.add_argument("--is-scrap", dest="is_scrap", help="true / false")
+    p_s.add_argument("--tag", action="append", help="追加标签，可多次")
+    p_s.add_argument("--clear-tags", action="store_true", help="清空全部标签")
+    p_s.add_argument("--unset", action="append", help="清空某字段，可多次")
+    p_s.add_argument("--format", default="jsonl", choices=["jsonl", "csv"])
+    p_s.set_defaults(func=cmd_set)
+
+    p_st = sub.add_parser("stats", help="台账体检")
+    p_st.add_argument("--index", default="ledger.jsonl")
+    p_st.add_argument("--show-batches", action="store_true", help="逐组列出推断批次")
+    p_st.add_argument("--show-fields", action="store_true", help="列出全部字段名")
+    p_st.set_defaults(func=cmd_stats)
+
+    p_r = sub.add_parser("render", help="渲染单文件 HTML 看板")
+    p_r.add_argument("--index", default="ledger.jsonl")
+    p_r.add_argument("--out", default="ledger.html", help="输出的 HTML 路径")
+    p_r.add_argument("--root", help="素材根目录（台账里没记录时用它定位缩略图）")
+    p_r.set_defaults(func=cmd_render)
 
     args = parser.parse_args()
     args.func(args)
