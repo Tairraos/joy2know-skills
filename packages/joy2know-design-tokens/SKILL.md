@@ -18,7 +18,7 @@ description_en: >-
   consistent. Requires an actual reference to work from; not for designing a visual identity from scratch,
   print posters, or editing copy in pages that already exist.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -55,6 +55,7 @@ author: 晓得乐
 ## 三、工作流
 
 1. **取参考。** URL 用 `scripts/fetch-page-css.py <url>` 抓取页面与样式，产出候选值清单；截图直接读取图片。
+   脚本会在抓不到编码或解码失败时于 stderr 打**编码警告**；看到警告即以截图为准，不要照抄可能被吃掉的候选值。
    抓取失败按第六节降级。
 2. **提取候选。** 从候选值中筛出：主色/强调色、中性色阶、背景与前景、字体族、字号阶梯、间距节奏、圆角、阴影。
 3. **落成 token 文件。** 写到项目内的 `design-tokens.css`（或用户指定路径），变量命名见 `@references/token-spec.md`。
@@ -196,8 +197,12 @@ author: 晓得乐
 
 只在遇到对应问题时读取，不要一次全读：
 
-- token 的完整字段规范、命名约定、断点与栅格写法 → `@references/token-spec.md`
-- 从网页/截图提取候选值的方法、脚本参数与结果解读 → `@references/extraction-guide.md`
+- **`@references/token-spec.md` §八「自检清单」—— 产出 token 文件后必跑**（逐条过一遍再交付）
+- **`@references/extraction-guide.md` §五「常见坑」—— 动手取候选值前必读**（取色/解码/标注三类坑）
+- token 的完整字段规范、命名约定、分级数量、中性色阶、字号阶梯、断点栅格、字体族降级栈、暗色主题
+  → `@references/token-spec.md` §一~§七
+- 从网页/截图/文字描述三种来源提取候选值的方法、脚本参数与结果解读、标注方式
+  → `@references/extraction-guide.md` §一~§四
 
 ## 八、完成判据
 

@@ -15,6 +15,10 @@
 用法：
     python3 fetch-page-css.py <url> [--limit 25] [--css-only] [--timeout 20]
 
+--css-only：只输出「CSS 变量（令牌）」一段，跳过颜色/字号/间距等候选段。
+（原 docstring 与 argparse 都声明了这个旗标，但 report() 里从未使用它 —— 传不传输出逐字节相同。
+  2026-09-23 改为真正生效，并把描述改成与行为一致。）
+
 输出：
     一段纯文本候选清单，直接喂给 AI 读取。
 """
@@ -36,6 +40,29 @@ SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
 
 
+META_CHARSET_RE = re.compile(rb'<meta[^>]+charset\s*=\s*["\']?([\w\-]+)', re.I)
+CSS_CHARSET_RE = re.compile(rb'@charset\s+["\']([\w\-]+)["\']', re.I)
+
+
+def sniff_charset(raw, ctype):
+    """按优先级嗅探字符编码，返回 (编码名 或 None, 来源说明)。
+
+    顺序：HTTP Content-Type 的 charset → HTML `<meta charset>` → CSS `@charset`。
+    只在开头几 KB 内找，避免大文件全量扫描。
+    """
+    m = re.search(r'charset=([\w\-]+)', ctype, re.I)
+    if m:
+        return m.group(1), "Content-Type"
+    head = raw[:4096]
+    m = META_CHARSET_RE.search(head)
+    if m:
+        return m.group(1).decode("ascii", "ignore"), "<meta charset>"
+    m = CSS_CHARSET_RE.search(raw[:512])
+    if m:
+        return m.group(1).decode("ascii", "ignore"), "@charset"
+    return None, None
+
+
 def fetch(url, timeout):
     req = urllib.request.Request(url, headers={
         "User-Agent": UA,
@@ -45,14 +72,27 @@ def fetch(url, timeout):
     with urllib.request.urlopen(req, timeout=timeout, context=SSL_CTX) as r:
         raw = r.read()
         ctype = r.headers.get("Content-Type", "")
-    enc = "utf-8"
-    m = re.search(r'charset=([\w\-]+)', ctype, re.I)
-    if m:
-        enc = m.group(1)
-    try:
-        return raw.decode(enc, errors="replace")
-    except LookupError:
-        return raw.decode("utf-8", errors="replace")
+
+    enc, src = sniff_charset(raw, ctype)
+    if enc:
+        try:
+            return raw.decode(enc)
+        except (LookupError, UnicodeDecodeError) as e:
+            # 声明了编码却解不开：留痕后再容错，绝不静默产出被吃掉的中文
+            print(f"[编码警告] {url}\n"
+                  f"  声明的编码 {enc}（来自 {src}）解码失败：{type(e).__name__}: {e}\n"
+                  f"  已退回 UTF-8 容错解码 —— **非 ASCII 内容可能丢失**，请核对提取结果或改用截图作参考物。",
+                  file=sys.stderr)
+    else:
+        try:
+            return raw.decode("utf-8")
+        except UnicodeDecodeError:
+            print(f"[编码警告] {url}\n"
+                  f"  未识别到字符编码（Content-Type 无 charset，页面也无 <meta charset> / @charset）。\n"
+                  f"  已按 UTF-8 容错解码 —— **非 ASCII 内容可能丢失**（GBK/GB18030 等页面尤其明显）；\n"
+                  f"  若样式候选值异常偏少，请改用截图作参考物。",
+                  file=sys.stderr)
+    return raw.decode("utf-8", errors="replace")
 
 
 HEX_RE = re.compile(r'#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b')
@@ -94,7 +134,7 @@ def parse_spacing(raw):
     return out
 
 
-def report(css_text, limit, css_only):
+def report(css_text, limit, css_only=False):
     colors = Counter()
     for m in HEX_RE.finditer(css_text):
         colors[m.group(0).lower()] += 1
@@ -130,6 +170,11 @@ def report(css_text, limit, css_only):
             lines.append(f"  {c:>5}x  {k}")
 
     sec("CSS 变量（最优先看这里，原站若已令牌化可直接沿用）", cssvars)
+    if css_only:
+        # `--css-only`：只给令牌段。原实现忽略该形参，导致旗标是空操作（2026-09-23 修复）。
+        lines.append("\n（--css-only：只列令牌定义，颜色/字号/间距/圆角/阴影/字体族候选已跳过。"
+                     "去掉该旗标可看全部候选。）")
+        return "\n".join(lines)
     sec("颜色候选", colors)
     sec("字号候选（rem 已按 16px 折算）", sizes)
     sec("间距候选（padding/margin/gap）", spacing)
@@ -143,7 +188,8 @@ def main():
     ap = argparse.ArgumentParser(description="提取网页样式候选值")
     ap.add_argument("url", help="网页 URL")
     ap.add_argument("--limit", type=int, default=25, help="每类最多输出多少条（默认 25）")
-    ap.add_argument("--css-only", action="store_true", help="只抓 CSS，不抓 HTML")
+    ap.add_argument("--css-only", action="store_true",
+                    help="只输出「CSS 变量（令牌）」一段，跳过其余候选段")
     ap.add_argument("--timeout", type=int, default=20, help="单次请求超时秒数（默认 20）")
     args = ap.parse_args()
 

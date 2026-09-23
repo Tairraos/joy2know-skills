@@ -5,10 +5,17 @@
 ## 一、网页参考：用脚本取候选值
 
 ```bash
-python3 scripts/fetch-page-css.py <url> [--limit 25] [--timeout 20]
+python3 scripts/fetch-page-css.py <url> [--limit 25] [--timeout 20] [--css-only]
 ```
 
 脚本会：抓 HTML → 收集 `<style>` 内联样式 → 抓最多 12 个外链 CSS → 统计颜色/字号/间距/圆角/阴影/字体族的出现频次。
+
+**`--css-only`**：只输出「CSS 变量（令牌）」一段，跳过其余候选段 —— 原站已令牌化、只想要命名与值时用它。
+
+**编码**：脚本自动按「HTTP `Content-Type` 的 charset → 页面 `<meta charset>` → CSS `@charset`」的顺序嗅探字符编码。
+三种都找不到、或声明的编码解不开时，会在 **stderr 打印编码警告并说明「非 ASCII 内容可能丢失」** ——
+看到该警告就说明提取到的中文值（字体名等）**可能已经不可信**，此时改用页面截图作参考物，不要照抄。
+
 
 **看结果的优先级：**
 
