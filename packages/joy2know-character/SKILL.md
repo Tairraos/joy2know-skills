@@ -16,7 +16,7 @@ description_en: >-
   uses a continuity-lock + anchor-phrase mechanism so cross-shot, cross-chat consistency is reproducible and
   comparable. For characters meant to be drawn repeatedly, not one-off throwaway prompts.
 category: writing
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -33,7 +33,7 @@ author: 晓得乐
 | **识别锚点** | 一段可见、可生成、可比较的事实描述 | 用来上锁，不是「帅气」这类空泛质量词 |
 | **锚点短语** | 必须**逐字**出现在每条提示词里的「颜色+材质/形制+物体」最小名词短语 | 一个角色一把锁，逐字匹配 |
 | **状态** | 会随剧情变的（表情/姿势/破损/湿身） | **不上锁**，每镜单独写 |
-| **造型** | 同一角色的另一套固定外观 | 算**另一把锁**，另建一张卡 |
+| **造型** | 同一角色的另一套固定外观 | 算**另一把锁**：新建一张角色卡，**或**在原卡的独立 `variant` 块（二选一，见规则 4） |
 
 **最容易犯的错：** 把「蓝色毛衣」当锁。英文提示词里永远匹配不上，也分不清浅蓝和藏青——锁当即失效。
 
@@ -150,8 +150,11 @@ ref_images:
 
 只在遇到对应问题时读取：
 
-- 角色卡字段规范、YAML/Markdown 两种落盘格式、完整示例 → `@references/character-card-spec.md`
-- 锚点短语的写法、上锁三条判据、正反例与校验方法 → `@references/anchor-phrase.md`
+- **写法硬约束**、**常见翻车现场** → `@references/anchor-phrase.md`（§三、§八）——
+  写锚点短语前必读约束；产出后逐条过一遍翻车现场自查。
+- **校验方法（写完后必须跑一遍）** → `@references/anchor-phrase.md`（§五）。
+- 角色卡字段清单、YAML/Markdown 两种落盘格式、完整示例（含换造型 `variant`）→ `@references/character-card-spec.md`（§一~§四）
+- 锚点短语是什么、上锁三条判据、正反例对照、换造型规则、参考图提炼步骤 → `@references/anchor-phrase.md`（§一、§二、§四、§六、§七）
 
 ## 八、完成判据
 
