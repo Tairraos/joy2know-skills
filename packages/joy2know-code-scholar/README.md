@@ -38,11 +38,16 @@
 joy2know-code-scholar/
 ├── .codebuddy-plugin/plugin.json   # 配置（expertType: agent）
 ├── agents/joy2know-code-scholar.md # 角色定义
-├── avatars/expert.png              # 头像
-├── skills/joy2know-codebase/       # 内置技能（含扫描脚本）
+├── avatars/expert.png              # 头像（由构建注入）
+├── skills/joy2know-codebase/       # 内置技能（含扫描脚本，由构建注入）
 └── README.md
 ```
 
+> **形态说明**：上面的目录树是**构建后所得包的形态**。仓库里的**源包**只有
+> `.codebuddy-plugin/plugin.json`、`agents/`、`skills.json` 与 `README.md` —— 
+> `avatars/` 由构建从仓库根 `avatars/` 注入；`skills/` 由构建按 `skills.json` 声明的名单，
+> 从 `packages/<技能名>/` 复制**唯一真源**（本包内不存副本，避免同一技能出现两份、改一处漏一处）。
+
 ## 版本
 
-1.1.0 · 作者：晓得乐
+1.2.0 · 作者：晓得乐

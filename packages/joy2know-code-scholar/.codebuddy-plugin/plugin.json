@@ -1,6 +1,6 @@
 {
   "name": "joy2know-code-scholar",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A codebase archaeologist that turns an unfamiliar repository into an architecture map, entry-point traces, data flow and a ranked change-risk list — without reading every file",
   "author": {
     "name": "晓得乐"
