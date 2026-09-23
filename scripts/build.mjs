@@ -9,7 +9,7 @@
  *   pnpm build --strict             深度自检 / 检测文档有问题即中止（默认仅告警）
  *   pnpm build --no-skill-icons     不把技能图标写进内嵌技能目录
  *   pnpm build --keep-old-zips      保留 dist/ 里同包的旧版本 zip（默认清理）
- *   pnpm build --no-manifest        不重写 dist/发布清单.md
+ *   pnpm build --no-manifest        不重写仓库根的 发布清单.md
  *
  * 四条核心约定
  * ---------------------------------------------------------------
@@ -36,9 +36,11 @@
  *
  * 4) 开发期文档不进包，发布清单自动生成。
  *    packages/<包名>/<包名>.md 是「发布前检测报告」（规范见 AGENT.md），
- *    构建时排除，不进 zip。dist/发布清单.md 的前四节由本脚本依据
+ *    构建时排除，不进 zip。仓库根 发布清单.md 的前四节由本脚本依据
  *    packages/ 实际版本 + release.config.json 重写，人工只改
  *    「发布时要注意」与「发布历史」两节。
+ *    清单在**仓库根**而非 dist/ —— dist/ 是 gitignore 的产物目录，
+ *    而清单里记着发布历史，属于要进 git 的资产。
  *
  * 依赖：系统 zip / unzip（macOS、Linux 自带）。不引入任何 npm 依赖。
  */
@@ -59,8 +61,12 @@ const SKILL_ICON_NAME = 'icon.png';
 
 // 发布参考信息（建议发布类目 / 平台侧最后版本）—— 唯一真源
 const RELEASE_CONFIG = path.join(ROOT, 'release.config.json');
-// 发布清单：前四节自动重写，AUTO:END 之后的人工段落原样保留
-const MANIFEST = path.join(DIST, '发布清单.md');
+// 发布清单：前四节自动重写，AUTO:END 之后的人工段落原样保留。
+// **放在仓库根**（不在 dist/）：dist/ 是 gitignore 的产物目录，清单里记着发布历史，
+// 属于版本化资产，删一次 dist 不该把历史一起丢掉。
+const MANIFEST = path.join(ROOT, '发布清单.md');
+// 老位置遗留的清单（曾经放在 dist/），构建时顺手清掉，避免两处并存误导人
+const LEGACY_MANIFEST_RE = /^发布清单(?:-\d+(?:\.\d+)*)?\.md$/;
 const AUTO_BEGIN = '<!-- AUTO:BEGIN -->';
 const AUTO_END = '<!-- AUTO:END -->';
 // 发布前检测报告（开发期文档，不进包）；规范见 AGENT.md
@@ -698,12 +704,12 @@ ${C.bold('晓得 / joy2know 打包工具')}
     --force            即使有错误也写出 zip
     --no-skill-icons   不把技能图标写进内嵌技能目录
     --keep-old-zips    保留 dist/ 里同包的旧版本 zip（默认清理）
-    --no-manifest      不重写 dist/发布清单.md
+    --no-manifest      不重写仓库根的 发布清单.md
     --list             等价于 pnpm list
     --help             显示本帮助
 
   ${C.bold('产物')}      dist/<包名>-v<版本>.zip（带版本号，同包只留最新一版）
-  ${C.bold('发布清单')}  dist/发布清单.md：前四节自动生成，末两节人工维护
+  ${C.bold('发布清单')}  发布清单.md（仓库根）：前四节自动生成，末两节人工维护
   ${C.bold('检测报告')}  packages/<包名>/<包名>.md：发布前检测，开发期文档，不进 zip（规范见 AGENT.md）
   ${C.bold('内嵌技能')}  写在包根 ${EMBED_MANIFEST} 里，构建时从 packages/<技能名>/ 复制
   ${C.bold('图标')}      avatars/<包名>.png（自身）· avatars/<包名>/<文件名>.png（团队成员）
@@ -883,7 +889,7 @@ const DEFAULT_MANUAL_TAIL = `\n---
 |---|---|---|---|---|---|
 `;
 
-/** 重写 dist/发布清单.md：AUTO 区自动生成，AUTO:END 之后的人工段落原样保留 */
+/** 重写仓库根 发布清单.md：AUTO 区自动生成，AUTO:END 之后的人工段落原样保留 */
 function writeManifest(pkgs, cfg) {
   let tail = DEFAULT_MANUAL_TAIL;
   if (exists(MANIFEST)) {
@@ -899,6 +905,22 @@ function writeManifest(pkgs, cfg) {
   const out = `${AUTO_BEGIN}\n${renderManifest(pkgs, cfg, stamp)}\n${AUTO_END}\n${tail}`;
   fs.writeFileSync(MANIFEST, out);
   return MANIFEST;
+}
+
+/**
+ * 清理 dist/ 里遗留的旧位置发布清单（曾放在 dist/ 下）。
+ * 清单已迁到仓库根：两处并存必然会让人看错一份，构建时顺手清掉。
+ * 只匹配 `发布清单.md` / `发布清单-<版本>.md`，不碰 dist/ 里任何 zip。
+ */
+function pruneLegacyManifests() {
+  const removed = [];
+  if (!exists(DIST)) return removed;
+  for (const f of fs.readdirSync(DIST)) {
+    if (!LEGACY_MANIFEST_RE.test(f)) continue;
+    fs.rmSync(path.join(DIST, f), { force: true });
+    removed.push(f);
+  }
+  return removed;
 }
 
 function cmdList(pkgs) {
@@ -1088,9 +1110,15 @@ function main() {
   if (!opts.noManifest) {
     const cfg = loadReleaseConfig();
     if (cfg.error) console.log('\n' + C.yellow('! ') + cfg.error + C.dim('（发布清单里的类目/平台版本会缺项）'));
+    if (!exists(MANIFEST)) {
+      console.log('\n' + C.yellow('! ') + `仓库根没有 发布清单.md，本次按默认模板新建` +
+        C.dim('（发布历史需要另补）'));
+    }
     writeManifest(pkgs, cfg);
+    const stale = pruneLegacyManifests();
     console.log('');
     console.log(C.bold('发布清单') + C.dim(`  ${norm(path.relative(ROOT, MANIFEST))} 已按实际版本重写（人工段落保留）`));
+    for (const f of stale) console.log('  ' + C.dim(`已清理旧位置 dist/${f}（清单已迁到仓库根，两处并存会看错）`));
   }
 }
 
