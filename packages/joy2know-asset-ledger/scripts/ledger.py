@@ -935,8 +935,11 @@ def cmd_set(args):
               % " ".join("--" + f for f in SETTABLE))
         return
 
-    # 人工给的值优先级最高，来源改记 user
-    hit["meta_source"] = "user"
+    # 人工给的值优先级最高。但 meta_source 描述的是「提示词这类核心字段从哪来」，
+    # 只在真的改了 prompt 时才改写 —— 否则补一个 role 就会把
+    # 「提示词其实来自图内元数据」这个事实抹掉，stats 的来源分布随之失真。
+    if args.prompt is not None:
+        hit["meta_source"] = "user"
     hit.setdefault("flags", [])
     if "user-edited" not in hit["flags"]:
         hit["flags"].append("user-edited")
@@ -1003,6 +1006,10 @@ def cmd_stats(args):
             tools[r["meta_tool"]] = tools.get(r["meta_tool"], 0) + 1
     if tools:
         print("  认出的工具 " + " · ".join("%s %d" % (k, v) for k, v in sorted(tools.items())))
+    edited = sum(1 for r in records if "user-edited" in (r.get("flags") or []))
+    if edited:
+        print("  人工补录过   %d 条（补 role / 用途 / 废片标记等；"
+              "上面的提示词来源判定不受影响）" % edited)
 
     print("\n字段完整度（条越长缺得越多；缺 = 未提供，不代表素材有问题）")
     for f in CREATIVE_FIELDS:

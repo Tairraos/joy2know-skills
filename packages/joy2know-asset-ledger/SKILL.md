@@ -152,7 +152,7 @@ author: 晓得乐
 | `batch_family` | 命名族（文件名去尾部版本/序号）—— **[推断]** |
 | `batch_id` | 具体批次，形如 `lina#1` —— **[推断]** |
 | `batch_basis` | 批次依据：`filename+time` / `filename-only` |
-| `meta_source` | 创作字段来源：`embedded` 图内元数据 / `sidecar` 同源文件 / `user` 人工补录 / `none` 未提供 |
+| `meta_source` | 提示词等核心字段的来源：`embedded` 图内元数据 / `sidecar` 同源文件 / `user` 人工给定 / `none` 未提供。**补 role、用途、废片标记不会改动本字段**，人工介入记在 `flags` 的 `user-edited` |
 | `meta_tool` | 认出的工具：`comfyui` / `a1111` / `invokeai` / `fooocus/novelai` / `generic` |
 | `flags` | 内部标记（如 `meta-has-local-path`、`suspect-rename`），供排查用 |
 
