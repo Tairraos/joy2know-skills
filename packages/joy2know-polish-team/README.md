@@ -65,11 +65,17 @@ joy2know-polish-team/
 ├── settings.json                   # 主理人声明（平台校验器查这个名）
 ├── setting.json                    # 内容同上，沿用官方模板名，兼容保留
 ├── agents/                         # 1 主理人 + 4 成员
-├── avatars/                        # 团队头像 + 5 角色头像
-├── skills/                         # 内置：讲明白 + 凡人腔调 + 讲得清 + 一页看懂
+├── avatars/                        # 团队头像 + 5 角色头像（由构建注入）
+├── skills/                         # 内置 4 技能（由构建注入）
 └── README.md
 ```
 
+> **形态说明**：上面的目录树是**构建后所得包的形态**。仓库里的**源包**只有
+> `.codebuddy-plugin/plugin.json`、`agents/`、`skills.json`、`settings.json`、`setting.json` 与 `README.md` ——
+> `avatars/` 由构建从仓库根 `avatars/joy2know-polish-team/`（团队图标）+ `avatars/<成员名>.png`（成员图标）注入；
+> `skills/` 由构建按 `skills.json` 声明的 4 个技能名，从 `packages/<技能名>/` 复制**唯一真源**
+> （本包内不存副本，避免同一技能两份、改一处漏一处）。
+
 ## 版本
 
-1.1.0 · 作者：晓得乐
+1.2.0 · 作者：晓得乐

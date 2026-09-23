@@ -1,7 +1,7 @@
 {
   "name": "joy2know-polish-team",
-  "version": "1.1.0",
-  "description": "A four-editor polishing team that takes what you already have — a finished draft, a long report, a spreadsheet — and hands back something you can actually send. It diagnoses the material first, then routes it: untangle the structure, cut a long report into talkable pages, turn a spreadsheet into a one-page interactive dashboard, and strip the machine tone out of the final wording. Every edit is traceable to a named rule, and a gate script blocks anything that changes meaning, numbers or structure.",
+  "version": "1.2.0",
+  "description": "A four-editor polishing team that diagnoses your draft first, then routes it — untangle, cut into talkable pages, build a one-page dashboard, or strip machine tone last. Every edit traceable to a rule.",
   "author": {
     "name": "晓得乐"
   },
