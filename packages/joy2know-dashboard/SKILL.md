@@ -17,7 +17,7 @@ description_en: >-
   single file (no external CDN); does not connect to databases. Read the source table with the platform's
   existing table tooling or pandas/openpyxl — this skill focuses on data-to-dashboard conversion rules.
 category: capability
-version: 1.1.0
+version: 1.2.0
 author: 晓得乐
 ---
 
@@ -101,6 +101,9 @@ author: 晓得乐
 
 - 触发条件：选配色与背景。
 - 硬性动作：默认浅色背景 + 深色文字，正文与背景对比度 ≥ 4.5:1；多系列用区分度高的色，不靠相近色区分，避免红绿相邻（色盲不可分）。
+  **涨跌配色写死中文惯例：涨 = 红（`#E23D3D`）、跌 = 绿（`#2FA84F`）**，并同时给 ↑/↓ 箭头 + 数值，
+  不靠颜色单独表意。（注意：此处「红绿相邻」指的是**多系列并列时**别用红绿配对区分系列；
+  涨跌单值着色是**语义约定**，不受此限 —— 2026-09-23 明确，原文未给判据易被理解成禁用红绿上色。）
 - 正例：✓ 白底 + `#1F2329` 文字 + 蓝/橙/绿系列色。
 - 反例：✗ 深灰底浅灰字，或红绿相邻。
 - 降级路径：用户要求深色 → 保证同对比度标准，不降低可读性。
@@ -172,7 +175,10 @@ author: 晓得乐
 
 只在遇到对应问题时读取：
 
-- 图种决策表完整版、配色规范、筛选 / 维度切换等交互组件写法要点 → `@references/chart-choice.md`
+- **常见误选与纠正**、**一页看板自检清单** → `@references/chart-choice.md`（§四、§七）——
+  产出后必须逐条过一遍自检清单；命中误选按 §四 纠正。
+- 图种决策表完整版、配色规范（含涨跌配色）、筛选 / 维度切换等交互组件写法要点、布局与可访问性
+  → `@references/chart-choice.md`（§一、§二、§三、§五、§六）
 
 ## 八、完成判据
 
