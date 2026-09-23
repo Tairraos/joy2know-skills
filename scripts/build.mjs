@@ -6,10 +6,12 @@
  *   pnpm build joy2know-mr          只打包指定包（可给多个，支持前缀匹配）
  *   pnpm list                       列出全部包及其状态
  *   pnpm build --no-check           跳过深度自检（selfcheck.py）
- *   pnpm build --strict             深度自检发现问题即中止（默认仅告警）
+ *   pnpm build --strict             深度自检 / 检测文档有问题即中止（默认仅告警）
  *   pnpm build --no-skill-icons     不把技能图标写进内嵌技能目录
+ *   pnpm build --keep-old-zips      保留 dist/ 里同包的旧版本 zip（默认清理）
+ *   pnpm build --no-manifest        不重写 dist/发布清单.md
  *
- * 两条核心约定
+ * 四条核心约定
  * ---------------------------------------------------------------
  * 1) 内嵌技能不存副本。
  *    专家/专家团包根放 skills.json 声明依赖，构建时才从 packages/<技能名>/
@@ -28,6 +30,16 @@
  *                                      → 被内嵌进专家包时，复制为
  *                                        skills/<技能名>/icon.png
  *
+ * 3) 产物文件名带版本号：dist/<包名>-v<版本>.zip。
+ *    上传平台用哪一个一目了然；同包的旧版本 zip 在下次构建时自动清理
+ *    （zip 第一层仍必须是包目录名 —— 文件名不参与平台解析）。
+ *
+ * 4) 开发期文档不进包，发布清单自动生成。
+ *    packages/<包名>/<包名>.md 是「发布前检测报告」（规范见 AGENT.md），
+ *    构建时排除，不进 zip。dist/发布清单.md 的前四节由本脚本依据
+ *    packages/ 实际版本 + release.config.json 重写，人工只改
+ *    「发布时要注意」与「发布历史」两节。
+ *
  * 依赖：系统 zip / unzip（macOS、Linux 自带）。不引入任何 npm 依赖。
  */
 
@@ -45,14 +57,27 @@ const DIST = path.join(ROOT, 'dist');
 const EMBED_MANIFEST = 'skills.json';
 const SKILL_ICON_NAME = 'icon.png';
 
+// 发布参考信息（建议发布类目 / 平台侧最后版本）—— 唯一真源
+const RELEASE_CONFIG = path.join(ROOT, 'release.config.json');
+// 发布清单：前四节自动重写，AUTO:END 之后的人工段落原样保留
+const MANIFEST = path.join(DIST, '发布清单.md');
+const AUTO_BEGIN = '<!-- AUTO:BEGIN -->';
+const AUTO_END = '<!-- AUTO:END -->';
+// 发布前检测报告（开发期文档，不进包）；规范见 AGENT.md
+const checkDocOf = (pkg) => path.join(pkg.dir, `${pkg.name}.md`);
+
 const AVATAR_EXT = ['.png', '.jpg', '.jpeg', '.webp'];
 const IMG_MAX_BYTES = 500 * 1024;
 const IMG_SIZE = 512;
 const ZIP_LIMIT = { skill: 3 * 1024 * 1024, expert: 20 * 1024 * 1024 };
 
-// 深度自检脚本位置（可用环境变量 SELFCHECK 覆盖）
+// 深度自检脚本位置。
+// 优先用**仓库自带**那一份（scripts/selfcheck.py）：本仓库不依赖任何本机技能目录，
+// 换一台机器克隆下来就能跑完整自检。本机技能目录里的那份只作兜底。
+// 需要临时换用别的副本时用环境变量 SELFCHECK=<路径>。
 const SELFCHECK_CANDIDATES = [
   process.env.SELFCHECK,
+  path.join(ROOT, 'scripts/selfcheck.py'),
   path.join(os.homedir(), '.workbuddy/skills/WorkBuddy资产包生产/scripts/selfcheck.py'),
 ].filter(Boolean);
 
@@ -226,6 +251,94 @@ function displayNameOf(pkg) {
   return '（无入口文件）';
 }
 
+/** 类型标签：技能 / 专家 / 专家团 */
+function typeLabelOf(pkg) {
+  if (pkg.isExpert) return pkg.expertSubtype === 'team' ? '专家团' : '专家';
+  return pkg.isSkill ? '技能' : '非法';
+}
+
+/** 该包要上传的版本号：技能取 SKILL.md 的 version，专家/团取 plugin.json 的 version */
+function versionOf(pkg) {
+  if (pkg.isExpert) {
+    try { return String(readJson(pkg.pluginJson).version || '—'); } catch { return '—'; }
+  }
+  if (pkg.isSkill) {
+    const fm = parseFrontmatter(fs.readFileSync(pkg.skillMd, 'utf8'));
+    return fm?.fields.version || '—';
+  }
+  return '—';
+}
+
+/** 发布用 zip 的文件名（带版本号）*/
+const zipNameOf = (pkg) => `${pkg.name}-v${versionOf(pkg)}.zip`;
+
+/** 技能包需要额外展示的 frontmatter 字段 */
+function skillMetaOf(pkg) {
+  try {
+    const f = parseFrontmatter(fs.readFileSync(pkg.skillMd, 'utf8'))?.fields || {};
+    return { zh: f.display_name || '—', en: f.display_name_en || '—' };
+  } catch { return { zh: '—', en: '—' }; }
+}
+
+/** 专家/专家团：profession 与 categoryId 都写在包内 plugin.json */
+function expertMetaOf(pkg) {
+  try {
+    const pj = readJson(pkg.pluginJson);
+    const pf = pj.profession || {};
+    return { zh: pf.zh || '—', en: pf.en || '—', categoryId: pj.categoryId || '—' };
+  } catch { return { zh: '—', en: '—', categoryId: '—' }; }
+}
+
+/** 读 release.config.json（缺失 / 损坏都不致命，只告警）*/
+function loadReleaseConfig() {
+  if (!exists(RELEASE_CONFIG)) return { packages: {}, error: `${path.basename(RELEASE_CONFIG)} 不存在` };
+  try {
+    const j = readJson(RELEASE_CONFIG);
+    return { packages: j.packages || {}, error: null };
+  } catch (e) {
+    return { packages: {}, error: `${path.basename(RELEASE_CONFIG)} 解析失败：${e.message}` };
+  }
+}
+
+/** dist 里已构建产物的体积（KB 字符串）；未构建返回 null */
+function builtSizeOf(zipName) {
+  const p = path.join(DIST, zipName);
+  if (!exists(p)) return null;
+  return (fs.statSync(p).size / 1024).toFixed(1) + ' KB';
+}
+
+/**
+ * 读包内「发布前检测报告」的状态。
+ * 约定（见 AGENT.md）：报告里有一行 `- **对应版本**：x.y.z` 与一行 `- **检测状态**：…`。
+ */
+function checkDocState(pkg) {
+  const p = checkDocOf(pkg);
+  if (!exists(p)) return { exists: false };
+  const text = fs.readFileSync(p, 'utf8');
+  const ver = /^-\s*\*\*对应版本\*\*[：:]\s*(\S+)/m.exec(text);
+  const st = /^-\s*\*\*检测状态\*\*[：:]\s*(.+)$/m.exec(text);
+  const newest = newestSourceMtime(pkg);
+  return {
+    exists: true,
+    path: p,
+    version: ver ? ver[1] : null,
+    status: st ? st[1].trim() : null,
+    stale: newest > fs.statSync(p).mtimeMs,
+  };
+}
+
+/** 包内源码文件的最新修改时间（排除检测报告自身）*/
+function newestSourceMtime(pkg) {
+  const docName = `${pkg.name}.md`;
+  let newest = 0;
+  for (const rel of walkFiles(pkg.dir)) {
+    const base = path.basename(rel);
+    if (base === docName || base === '.DS_Store') continue;
+    try { newest = Math.max(newest, fs.statSync(path.join(pkg.dir, rel)).mtimeMs); } catch { /* ignore */ }
+  }
+  return newest;
+}
+
 // ---------------------------------------------------------------- 内嵌技能
 
 /**
@@ -286,8 +399,9 @@ function embedSkills(pkg, stageDir, opts) {
     }
     const dst = path.join(stageDir, 'skills', sname);
     fs.cpSync(src, dst, { recursive: true });
-    // 技能自己的描述文件 / 系统文件不该跟着走
-    for (const junk of [EMBED_MANIFEST, '.DS_Store']) {
+    // 技能自己的描述文件、发布前检测报告、系统文件不该跟着走
+    //（检测报告是开发期文档，与包根那一份同理：不进 zip）
+    for (const junk of [EMBED_MANIFEST, `${sname}.md`, '.DS_Store']) {
       const f = path.join(dst, junk);
       if (exists(f)) fs.rmSync(f, { force: true });
     }
@@ -418,6 +532,24 @@ function firstZipEntry(zipPath) {
   }
 }
 
+/**
+ * 清理 dist/ 里同包的旧产物，只留本次写出的那一个。
+ * 精确匹配「<包名>.zip」与「<包名>-v<数字>.zip」，绝不碰其它包的文件；
+ * 只动 dist/（构建产物目录），不动源目录。--keep-old-zips 可关闭。
+ */
+function pruneOldZips(pkg, keepName, opts) {
+  const removed = [];
+  if (opts.keepOldZips || !exists(DIST)) return removed;
+  const esc = pkg.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`^${esc}(?:-v\\d+(?:\\.\\d+)*)?\\.zip$`);
+  for (const f of fs.readdirSync(DIST)) {
+    if (f === keepName || !re.test(f)) continue;
+    fs.rmSync(path.join(DIST, f), { force: true });
+    removed.push(f);
+  }
+  return removed;
+}
+
 function runSelfcheck(dir) {
   const script = SELFCHECK_CANDIDATES.find(exists);
   if (!script) return { skipped: true, reason: '未找到 selfcheck.py（可用 SELFCHECK=<路径> 指定）' };
@@ -444,9 +576,47 @@ function buildOne(pkg, opts) {
   const stage = fs.mkdtempSync(path.join(os.tmpdir(), 'joy2know-build-'));
   const stageDir = path.join(stage, pkg.name);
   const zipPath = path.join(stage, `${pkg.name}.zip`);
+  const zipName = zipNameOf(pkg);
+  const docName = `${pkg.name}.md`;
+
+  // 发布前检测报告是开发期文档，连同系统垃圾一起挡在暂存目录之外。
+  // 注意：**只能排除包根的那一个** —— 专家包的 agent 文件可能与包同名
+  //（如 agents/joy2know-code-scholar.md），按文件名匹配会误删它。
+  const stageFilter = (src) => {
+    const rel = path.relative(pkg.dir, src);
+    if (!rel) return true;
+    const relPosix = rel.split(path.sep).join('/');
+    if (path.basename(src) === '.DS_Store') return false;
+    return relPosix !== docName;
+  };
 
   try {
-    fs.cpSync(pkg.dir, stageDir, { recursive: true });
+    fs.cpSync(pkg.dir, stageDir, { recursive: true, filter: stageFilter });
+
+    // 0) 发布前检测门 —— 见 AGENT.md。默认只告警；--strict 时算失败。
+    const doc = checkDocState(pkg);
+    if (!doc.exists) {
+      warnings.push(`缺发布前检测报告 packages/${pkg.name}/${docName}（规范见 AGENT.md）`);
+    } else {
+      if (doc.status && /未检测|未通过|待检测/.test(doc.status)) {
+        warnings.push(`发布前检测报告未通过：${doc.status}（packages/${pkg.name}/${docName}）`);
+      }
+      if (doc.version && doc.version !== versionOf(pkg)) {
+        warnings.push(
+          `发布前检测报告对应版本 ${doc.version} ≠ 包版本 ${versionOf(pkg)} —— 改过内容就要重测并同步文档`
+        );
+      }
+      if (!doc.version || !doc.status) {
+        warnings.push(`发布前检测报告缺「对应版本」或「检测状态」行（packages/${pkg.name}/${docName}）`);
+      }
+      if (doc.stale) {
+        warnings.push(`包内文件比发布前检测报告新 —— 报告可能已过期（packages/${pkg.name}/${docName}）`);
+      }
+    }
+    if (opts.strict && warnings.some((w) => w.includes('发布前检测报告'))) {
+      problems.push('发布前检测未通过（--strict）');
+      return { problems, warnings, check: null, published: false, zipName };
+    }
 
     // 1) 内嵌技能：从唯一真源复制
     const emb = embedSkills(pkg, stageDir, opts);
@@ -495,14 +665,16 @@ function buildOne(pkg, opts) {
     }
 
     if (problems.length > 0 && !opts.force) {
-      return { problems, warnings, check, size, published: false, embed: emb, ownIcon: av.ownIcon, skillIcon };
+      return { problems, warnings, check, size, published: false, embed: emb, ownIcon: av.ownIcon, skillIcon, zipName };
     }
 
-    const finalZip = path.join(DIST, `${pkg.name}.zip`);
+    // 产物文件名带版本号：dist/<包名>-v<版本>.zip
+    const finalZip = path.join(DIST, zipName);
     fs.copyFileSync(zipPath, finalZip);
+    const pruned = pruneOldZips(pkg, zipName, opts);
 
     return {
-      problems, warnings, check, size, published: true, zip: finalZip,
+      problems, warnings, check, size, published: true, zip: finalZip, zipName, pruned,
       embed: emb, ownIcon: av.ownIcon, skillIcon,
     };
   } finally {
@@ -522,12 +694,17 @@ ${C.bold('晓得 / joy2know 打包工具')}
 
   选项
     --no-check         跳过深度自检（selfcheck.py）
-    --strict           深度自检发现问题即中止
+    --strict           深度自检 / 发布前检测报告有问题即中止
     --force            即使有错误也写出 zip
     --no-skill-icons   不把技能图标写进内嵌技能目录
+    --keep-old-zips    保留 dist/ 里同包的旧版本 zip（默认清理）
+    --no-manifest      不重写 dist/发布清单.md
     --list             等价于 pnpm list
     --help             显示本帮助
 
+  ${C.bold('产物')}      dist/<包名>-v<版本>.zip（带版本号，同包只留最新一版）
+  ${C.bold('发布清单')}  dist/发布清单.md：前四节自动生成，末两节人工维护
+  ${C.bold('检测报告')}  packages/<包名>/<包名>.md：发布前检测，开发期文档，不进 zip（规范见 AGENT.md）
   ${C.bold('内嵌技能')}  写在包根 ${EMBED_MANIFEST} 里，构建时从 packages/<技能名>/ 复制
   ${C.bold('图标')}      avatars/<包名>.png（自身）· avatars/<包名>/<文件名>.png（团队成员）
               avatars/<技能名>.png（技能图标，唯一真源）
@@ -538,6 +715,191 @@ ${C.bold('晓得 / joy2know 打包工具')}
 const stripAnsi = (s) => String(s).replace(/\x1b\[[0-9;]*m/g, '');
 const pad = (s, n) =>
   s + ' '.repeat(Math.max(0, n - [...stripAnsi(s)].reduce((a, c) => a + (c.charCodeAt(0) > 255 ? 2 : 1), 0)));
+
+// ---------------------------------------------------------------- 发布清单
+
+const two = (n) => String(n).padStart(2, '0');
+function fmtStamp(d) {
+  return `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())} ${two(d.getHours())}:${two(d.getMinutes())}`;
+}
+
+/** 状态：本地版本 vs 平台侧最后版本 */
+function publishStatusOf(pkg, entry) {
+  const local = versionOf(pkg);
+  const pv = entry?.platform?.version || null;
+  if (!pv) return '待上传';
+  return pv === local ? '已提交' : '**已提交** ·【本地升级】';
+}
+
+/** 一行的体积 / zip 单元格 */
+function zipCellOf(pkg) {
+  const name = zipNameOf(pkg);
+  const size = builtSizeOf(name);
+  return { name, size, cell: size ? `\`${name}\`` : `\`${name}\` ⚠未构建`, sizeCell: size || '—' };
+}
+
+function renderSkillSection(skills, cfg) {
+  const L = [];
+  L.push(`## 一、技能（Skill）· ${skills.length} 个`);
+  L.push('');
+  L.push('> 技能包 **zip 内不含图标** —— 发布时需另外上传 `avatars/<包名>.png`（512×512 PNG，≤500KB）。');
+  L.push('');
+  L.push('| # | 中文名（display_name） | 英文名（display_name_en） | 本地版本 | 发布 zip（带版本号） | 体积 | 建议发布类目 | 平台侧最后版本 | 状态 |');
+  L.push('|---|---|---|---|---|---|---|---|---|');
+  skills.forEach((p, i) => {
+    const meta = skillMetaOf(p);
+    const e = cfg.packages[p.name] || {};
+    const cat = e.suggestedCategory
+      ? (e.categoryConfirmed ? `${e.suggestedCategory} ★已实证` : e.suggestedCategory)
+      : '—';
+    const z = zipCellOf(p);
+    const pv = e.platform?.version || '—';
+    L.push(`| ${i + 1} | ${meta.zh} | ${meta.en} | ${versionOf(p)} | ${z.cell} | ${z.sizeCell} | ${cat} | ${pv} | ${publishStatusOf(p, e)} |`);
+  });
+  L.push('');
+  const notes = [];
+  for (const p of skills) {
+    const e = cfg.packages[p.name] || {};
+    if (e.categoryNote) notes.push(`- \`${p.name}\`：${e.categoryNote}`);
+    if (e.platform?.note) notes.push(`- \`${p.name}\`（平台侧）：${e.platform.note}`);
+  }
+  if (notes.length) {
+    L.push('**逐包备注**');
+    L.push('');
+    L.push(notes.join('\n'));
+    L.push('');
+  }
+  return L;
+}
+
+function renderExpertSection(pkgs, cfg, team) {
+  const count = pkgs.length;
+  const L = [];
+  L.push(team
+    ? `## 三、专家团（Expert Team）· ${count} 个`
+    : `## 二、单专家（Expert）· ${count} 个`);
+  L.push('');
+  L.push(team
+    ? '> 图标（团自身 + 全部成员）已在包内，无需另传。`categoryId` 随包提交 —— 发布页一般无需再选类目。'
+    : '> 图标（自身）已在包内，无需另传。`categoryId` 随包提交 —— 发布页一般无需再选类目。');
+  L.push('');
+  L.push('| # | 中文名（profession.zh） | 英文名（profession.en） | categoryId | 本地版本 | 发布 zip（带版本号） | 体积 | 内嵌技能（版本） | 平台侧最后版本 | 状态 |');
+  L.push('|---|---|---|---|---|---|---|---|---|---|');
+  pkgs.forEach((p, i) => {
+    const meta = expertMetaOf(p);
+    const e = cfg.packages[p.name] || {};
+    const embed = (p.embed || [])
+      .map((s) => {
+        const sp = pkgsAll.find((x) => x.name === s);
+        return `\`${s}\`${sp ? ' ' + versionOf(sp) : ''}`;
+      })
+      .join('、') || '—';
+    const z = zipCellOf(p);
+    const pv = e.platform?.version || '—';
+    L.push(`| ${i + 1} | ${meta.zh} | ${meta.en} | \`${meta.categoryId}\` | ${versionOf(p)} | ${z.cell} | ${z.sizeCell} | ${embed} | ${pv} | ${publishStatusOf(p, e)} |`);
+  });
+  L.push('');
+  const notes = [];
+  for (const p of pkgs) {
+    const e = cfg.packages[p.name] || {};
+    if (e.platform?.note) notes.push(`- \`${p.name}\`（平台侧）：${e.platform.note}`);
+  }
+  if (notes.length) {
+    L.push('**逐包备注**');
+    L.push('');
+    L.push(notes.join('\n'));
+    L.push('');
+  }
+  return L;
+}
+
+// 全量包引用（构建清单时填，供内嵌技能显示版本）
+let pkgsAll = [];
+
+function renderManifest(pkgs, cfg, stamp) {
+  const skills = pkgs.filter((p) => p.isSkill && !p.isExpert);
+  const experts = pkgs.filter((p) => p.isExpert && p.expertSubtype !== 'team');
+  const teams = pkgs.filter((p) => p.isExpert && p.expertSubtype === 'team');
+
+  const byVer = {};
+  for (const p of pkgs) byVer[versionOf(p)] = (byVer[versionOf(p)] || 0) + 1;
+  const verLine = Object.entries(byVer)
+    .sort((a, b) => b[0].localeCompare(a[0], undefined, { numeric: true }))
+    .map(([v, c]) => `${v} ×${c}`)
+    .join('、');
+
+  const L = [];
+  L.push('# 发布清单 · 晓得 / joy2know');
+  L.push('');
+  L.push('> **前四节由 `pnpm build` 自动重写** —— 数据取自 packages/ 的实际版本与 `release.config.json`。');
+  L.push('> **请勿手工编辑这些表格**：改了下一次构建就会覆盖。要改「建议发布类目 / 平台侧版本」，改 `release.config.json`。');
+  L.push('> 人工维护的两节在文末 ——「五、发布时要注意」与「六、发布历史」，构建不会改动。');
+  L.push('');
+  L.push(`**生成时间**：${stamp}  ·  **包总数**：${pkgs.length}（技能 ${skills.length} · 专家 ${experts.length} · 专家团 ${teams.length}）`);
+  L.push('');
+  L.push(`**本地版本**：${verLine}`);
+  L.push('');
+  L.push('**状态口径**：`待上传` = 平台侧从未上线；`已提交` = 平台侧最后一个版本与本地一致；`已提交 ·【本地升级】` = 平台侧还是旧版，本地已抬高版本、**需要重传**（走「更新」而非「新建」）。');
+  L.push('');
+  L.push('---');
+  L.push('');
+  L.push(...renderSkillSection(skills, cfg));
+  L.push('---');
+  L.push('');
+  L.push(...renderExpertSection(experts, cfg, false));
+  L.push('---');
+  L.push('');
+  L.push(...renderExpertSection(teams, cfg, true));
+  L.push('---');
+  L.push('');
+  L.push('## 四、产物规则（发布前对照）');
+  L.push('');
+  L.push('- **产物文件名**：`dist/<包名>-v<版本>.zip`（带版本号，便于区分是哪一版）。');
+  L.push('- **同包只留最新一版**：每次构建后自动清理该包的旧版本 zip 与旧的无版本号 zip；`--keep-old-zips` 可保留。');
+  L.push('- **zip 第一层必须是包目录名**（`<包名>/…`）—— 平台靠它解析，**外层文件名不参与解析**，改名不影响上传。');
+  L.push('- **体积上限**：技能 3 MB · 专家 / 专家团 20 MB · 单张图标 500 KB @ 512×512。');
+  L.push('- **技能包不含图标**：技能图标在后台发布时单独上传，不占 zip 配额。');
+  L.push('- **`★已实证` 的含义**：该建议类目来自平台的判定 / 驳回原文；其余建议类目只是**方向参考**，发布时以下拉框里最接近的一项为准，**首选看平台给出的判定提示**。');
+  L.push('');
+  return L.join('\n');
+}
+
+const DEFAULT_MANUAL_TAIL = `\n---
+
+## 五、发布时要注意
+
+> 本节由人工维护，构建不会改动。
+
+（待补充）
+
+---
+
+## 六、发布历史
+
+> 本节由人工维护，构建不会改动。**每次发布 / 重传都要在这里追加一行**：日期 · 包名 · 版本 · 上传的文件名 · 结果。
+> 文件名按当时的实际产物记录（早期无版本号的产物照原样写，别追改历史）。
+
+| 发布日期 | 包名 | 类型 | 版本 | 上传文件 | 结果 |
+|---|---|---|---|---|---|
+`;
+
+/** 重写 dist/发布清单.md：AUTO 区自动生成，AUTO:END 之后的人工段落原样保留 */
+function writeManifest(pkgs, cfg) {
+  let tail = DEFAULT_MANUAL_TAIL;
+  if (exists(MANIFEST)) {
+    const old = fs.readFileSync(MANIFEST, 'utf8');
+    const i = old.indexOf(AUTO_END);
+    if (i >= 0) {
+      const rest = old.slice(i + AUTO_END.length);
+      if (rest.trim()) tail = rest.replace(/^\s*\n/, '\n');
+    }
+  }
+  pkgsAll = pkgs;
+  const stamp = fmtStamp(new Date());
+  const out = `${AUTO_BEGIN}\n${renderManifest(pkgs, cfg, stamp)}\n${AUTO_END}\n${tail}`;
+  fs.writeFileSync(MANIFEST, out);
+  return MANIFEST;
+}
 
 function cmdList(pkgs) {
   const ownIconState = (p) => {
@@ -556,8 +918,8 @@ function cmdList(pkgs) {
   console.log('');
   console.log(C.bold(`packages/ 共 ${pkgs.length} 个包`) + C.dim('   （dist/ 为 zip 产物目录）'));
   console.log('');
-  console.log(C.dim('  ' + pad('包名', 30) + pad('类型', 8) + pad('展示名', 18) + pad('自身图标', 12) + '内嵌技能'));
-  console.log(C.dim('  ' + '─'.repeat(100)));
+  console.log(C.dim('  ' + pad('包名', 30) + pad('类型', 8) + pad('版本', 9) + pad('展示名', 18) + pad('自身图标', 12) + '内嵌技能'));
+  console.log(C.dim('  ' + '─'.repeat(108)));
 
   let embedTotal = 0;
   let missingSkillIcons = 0;
@@ -577,7 +939,7 @@ function cmdList(pkgs) {
       });
       embedCell = `${p.embed.length} 个 ` + parts.join(' ');
     }
-    console.log('  ' + pad(p.name, 30) + pad(type, 8) + pad(displayNameOf(p), 18) + pad(ownIconState(p), 12) + embedCell);
+    console.log('  ' + pad(p.name, 30) + pad(type, 8) + pad(versionOf(p), 9) + pad(displayNameOf(p), 18) + pad(ownIconState(p), 12) + embedCell);
   }
   console.log('');
   console.log(C.dim(`  内嵌技能引用 ${embedTotal} 处（去重后 ${new Set(pkgs.flatMap((p) => p.embed)).size} 个技能），副本数为 0 —— 构建时才从 packages/ 复制`));
@@ -595,6 +957,8 @@ function main() {
     strict: argv.includes('--strict'),
     force: argv.includes('--force'),
     skillIcons: !argv.includes('--no-skill-icons'),
+    keepOldZips: argv.includes('--keep-old-zips'),
+    noManifest: argv.includes('--no-manifest'),
   };
 
   if (argv.includes('--help') || argv.includes('-h')) return usage();
@@ -657,14 +1021,15 @@ function main() {
   // ---- 汇总表 ----
   console.log('');
   console.log(C.bold('打包结果'));
-  console.log(C.dim('  ' + pad('包名', 30) + pad('类型', 8) + pad('内嵌技能', 10) + pad('zip', 12) + '状态'));
-  console.log(C.dim('  ' + '─'.repeat(78)));
+  console.log(C.dim('  ' + pad('包名', 30) + pad('版本', 9) + pad('类型', 8) + pad('体积', 11) + pad('产物文件', 38) + '状态'));
+  console.log(C.dim('  ' + '─'.repeat(112)));
   for (const { pkg, r } of results) {
-    const type = pkg.isExpert ? (pkg.expertSubtype === 'team' ? '专家团' : '专家') : '技能';
+    const type = typeLabelOf(pkg);
     const size = r.size ? (r.size / 1024).toFixed(1) + ' KB' : '—';
     const state = r.published ? C.green('✓ 已写入 dist/') : C.red('✗ 未写出');
-    const emb = r.embed && r.embed.count > 0 ? `${r.embed.count} 个` : '—';
-    console.log('  ' + pad(pkg.name, 30) + pad(type, 8) + pad(emb, 10) + pad(size, 12) + state);
+    const emb = r.embed && r.embed.count > 0 ? C.dim(` 内嵌 ${r.embed.count}`) : '';
+    console.log('  ' + pad(pkg.name, 30) + pad(versionOf(pkg), 9) + pad(type, 8) + pad(size, 11)
+      + pad(r.published ? r.zipName : '—', 38) + state + emb);
   }
   console.log('');
 
@@ -710,6 +1075,23 @@ function main() {
     process.exit(1);
   }
   console.log(C.green(`全部完成：${results.length} 个包已写入 dist/`));
+
+  // ---- 旧产物清理明细 ----
+  const prunedAll = results.flatMap((x) => (x.r.pruned || []).map((f) => ({ pkg: x.pkg.name, f })));
+  if (prunedAll.length) {
+    console.log('');
+    console.log(C.bold('已清理同包旧产物') + C.dim('（每次构建只留该包最新一版；--keep-old-zips 可保留）'));
+    for (const x of prunedAll) console.log('  ' + C.dim(`${x.pkg} → 删除 dist/${x.f}`));
+  }
+
+  // ---- 发布清单 ----
+  if (!opts.noManifest) {
+    const cfg = loadReleaseConfig();
+    if (cfg.error) console.log('\n' + C.yellow('! ') + cfg.error + C.dim('（发布清单里的类目/平台版本会缺项）'));
+    writeManifest(pkgs, cfg);
+    console.log('');
+    console.log(C.bold('发布清单') + C.dim(`  ${norm(path.relative(ROOT, MANIFEST))} 已按实际版本重写（人工段落保留）`));
+  }
 }
 
 main();

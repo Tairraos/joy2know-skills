@@ -7,7 +7,9 @@
   "license": "CC-BY-4.0",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "list": "node scripts/build.mjs --list"
+    "list": "node scripts/build.mjs --list",
+    "checkdocs": "node scripts/init-checkdocs.mjs",
+    "selfcheck": "python3 scripts/selfcheck.py"
   },
   "engines": {
     "node": ">=18"

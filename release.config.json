@@ -1,0 +1,117 @@
+{
+  "$comment": [
+    "发布参考信息 —— 单一真源。dist/发布清单.md 的前四节由 `pnpm build` 从本文件 + packages/ 实际状态生成，",
+    "不要再手工改清单里的表格（会被下一次构建覆盖）。",
+    "packages.<包名>.suggestedCategory：发布时在下拉框里找最接近的一项。categoryConfirmed=true 表示该值",
+    "来自平台的判定/驳回原文（目前只有 joy2know-asset-ledger 一项是实证的），其余均为按能力方向的推断，",
+    "发布时以平台给出的判定提示为准。",
+    "packages.<包名>.platform：平台侧最后一个成功的版本。null = 从未上线。version 与包内版本不一致时，",
+    "构建会自动在清单里标【本地升级】。"
+  ],
+  "packages": {
+    "joy2know-asset-ledger": {
+      "suggestedCategory": "工具 > 图片处理",
+      "categoryConfirmed": true,
+      "categoryNote": "2026-09-23 首次提交被打回，驳回原文：「至少应包含工具 > 图片处理类目」",
+      "platform": null
+    },
+    "joy2know-character": {
+      "suggestedCategory": "工具 > 图片处理",
+      "categoryConfirmed": false,
+      "categoryNote": "角色卡服务于出图一致性，与图片处理同族；也可能被平台判入内容创作",
+      "platform": null
+    },
+    "joy2know-clarify": {
+      "suggestedCategory": "效率 > 表达与写作",
+      "categoryConfirmed": false,
+      "platform": {
+        "version": "1.0.0",
+        "date": null,
+        "note": "平台侧现存 1.0.0（上传日期未记录）；本地已 1.1.0，重传时走「更新」而非「新建」"
+      }
+    },
+    "joy2know-cmdforge": {
+      "suggestedCategory": "工具 > 开发工具",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-code-scholar": {
+      "suggestedCategory": null,
+      "categoryConfirmed": false,
+      "categoryNote": "专家包：类目写在包内 plugin.json 的 categoryId，清单直接读该字段，此处留空",
+      "platform": null
+    },
+    "joy2know-codebase": {
+      "suggestedCategory": "工具 > 开发工具",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-conversation-digest": {
+      "suggestedCategory": "效率 > 文档与总结",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-dashboard": {
+      "suggestedCategory": "工具 > 数据与表格",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-deck": {
+      "suggestedCategory": "效率 > 演示与文档",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-design-tokens": {
+      "suggestedCategory": "工具 > 设计",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-errorfix": {
+      "suggestedCategory": "工具 > 开发工具",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-humanize": {
+      "suggestedCategory": "内容创作 > 文案",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-logdetective": {
+      "suggestedCategory": "工具 > 开发工具",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-mr": {
+      "suggestedCategory": null,
+      "categoryConfirmed": false,
+      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative）",
+      "platform": {
+        "version": "1.0.0",
+        "date": null,
+        "note": "平台侧现存 1.0.0（上传日期未记录）；本地已 1.1.0，重传时走「更新」而非「新建」"
+      }
+    },
+    "joy2know-musician": {
+      "suggestedCategory": "内容创作 > 音乐",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-storyboard": {
+      "suggestedCategory": "内容创作 > 视频",
+      "categoryConfirmed": false,
+      "platform": null
+    },
+    "joy2know-cine-team": {
+      "suggestedCategory": null,
+      "categoryConfirmed": false,
+      "categoryNote": "专家团：类目读包内 plugin.json 的 categoryId（06-ContentCreative），与专家共用同一套行业分类",
+      "platform": null
+    },
+    "joy2know-polish-team": {
+      "suggestedCategory": null,
+      "categoryConfirmed": false,
+      "categoryNote": "专家团：类目读包内 plugin.json 的 categoryId（06-ContentCreative）",
+      "platform": null
+    }
+  }
+}
