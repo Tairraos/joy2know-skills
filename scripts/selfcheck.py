@@ -340,6 +340,47 @@ def check_expert(base, name, skill_names):
                 if re.match(r"^\s*[\w\-]+\s*:[^\s>|]", ln) and not ln.rstrip().endswith(":"):
                     bad(f"[expert] 疑似冒号后未空格: {ln!r}")
 
+    # 7) 专家团 members[] 结构（2026-09-23 补：此前**不校验字段数**，
+    #    polish-team 的反向验证给某成员加 `extra_field` 后仍报「全部自检通过」——校验器盲区）。
+    #    既定结构：每项**恰好 5 个字段** `id` / `name` / `profession` / `avatar` / `role`，
+    #    且 `agents[]` 文件名（去 .md）与 `members[].id` **严格一一对应**、只有主理人等于 `agentName`。
+    if pj.get("expertType") == "team":
+        MEMBER_FIELDS = {"id", "name", "profession", "avatar", "role"}
+        members = pj.get("members") or []
+        if not members:
+            bad("[expert] 专家团 members[] 为空或缺失")
+        seen_ids = []
+        for i, mb in enumerate(members):
+            tag = mb.get("id") or f"#{i}"
+            got = set(mb)
+            extra, lack = got - MEMBER_FIELDS, MEMBER_FIELDS - got
+            if extra or lack:
+                bad(f"[expert] members[{tag}] 字段不合规："
+                    f"多出 {sorted(extra) or '无'} / 缺少 {sorted(lack) or '无'}"
+                    f"（应恰好 {sorted(MEMBER_FIELDS)}，共 5 个）")
+            else:
+                ok(f"[expert] members[{tag}] 字段数=5 且全为规定字段")
+            if tag in seen_ids:
+                bad(f"[expert] members[] 出现重复 id: {tag}")
+            seen_ids.append(tag)
+
+        # agents[] 文件名（去 .md）↔ members[].id 严格一一对应
+        agent_bases = {os.path.basename(a)[:-3] if a.endswith(".md") else os.path.basename(a)
+                       for a in pj.get("agents", [])}
+        mset = set(seen_ids)
+        only_agents = sorted(agent_bases - mset)
+        only_members = sorted(mset - agent_bases)
+        if only_agents or only_members:
+            bad(f"[expert] agents[] ↔ members[].id 非一一对应："
+                f"仅在 agents[] {only_agents or '无'}；仅在 members[] {only_members or '无'}")
+        else:
+            ok(f"[expert] agents[] ↔ members[].id 一一对应（{len(mset)} 个）")
+        only_lead = [x for x in agent_bases if x == agent_name]
+        if len(only_lead) > 1:
+            bad(f"[expert] 有 {len(only_lead)} 个 agent 文件名等于 agentName（应只有主理人 1 个）")
+        elif len(only_lead) == 1:
+            ok(f"[expert] 主理人文件名带团前缀且等于 agentName: {only_lead[0]}")
+
     # 主源与内嵌副本一致性
     for s in pj.get("skills", []):
         folder = os.path.basename(s.rstrip("/"))
