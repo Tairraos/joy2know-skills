@@ -116,7 +116,8 @@ Healing and nostalgic, 76 BPM, Intimate room reverb, Smooth vocals, Polished pro
 ## 七、校验
 
 ```bash
-python3 scripts/suno_check.py 歌词.txt --dialect cantonese
+python3 scripts/suno_check.py 歌词.txt --dialect cantonese --style "Cantonese, Cantopop, Traditional Cantonese Enunciation, ..."
 ```
 
 脚本会检查：特征字密度（低于阈值说明语系没锁死）、是否混入普通话虚词、风险字命中、Style 语言锁是否到位。
+**最后一项要靠 `--style` 才有数据** —— 不带这个参数，语言锁与 `distorted` 冲突都查不了。

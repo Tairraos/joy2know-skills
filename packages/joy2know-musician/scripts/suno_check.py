@@ -7,17 +7,21 @@
      它只做结构检查，不评价文风——文风好不好由人和耳朵判断。
 
 检查项：
-  1. 是否写了 [Language:] / [Accent:]
+  1. 是否写了 [Language:] / [Accent:]（**器乐模式下反过来**：写了才提示删）
   2. 段落标签是否为复合结构（至少含一项描述）
-  3. 必留段落是否齐全（Intro / Chorus / Outro / End）
+  3. 必留段落是否齐全（默认 Intro / Chorus / Outro / End；--loop 放宽为 Intro / End）
   4. 括号是否配对（圆括号 与 (— —) 两种）
   5. 标签里是否混入了中文（会被当人声唱出）
-  6. Style 是否写在最前、语言锁是否到位（--style 指定 Style 行时）
+  6. Style 首字段：有人声看语言锁，器乐看是否有 `instrumental, no vocals` 声明
   7. 方言模式：特征字密度 / 普通话虚词污染 / 入声风险字
+  8. 器乐模式（--instrumental）：方括号外有无会被唱出来的文字、有无残留的人声类行内指令
+  9. 循环模式（--loop）：有无 fade out、BPM 是否写死、必留段落是否合规
 
 用法：
     python3 suno_check.py <歌词文件> [--dialect cantonese] [--style "Style 文本"]
-    python3 suno_check.py <歌词文件> --json      # 机器可读输出
+    python3 suno_check.py <歌词文件> --instrumental            # 纯器乐包
+    python3 suno_check.py <歌词文件> --instrumental --loop     # 器乐 + 循环素材
+    python3 suno_check.py <歌词文件> --json                    # 机器可读输出
 
 退出码：0 = 无错误（可能有警告）；1 = 有错误；2 = 文件读不了
 """
@@ -30,6 +34,16 @@ import sys
 # ---------- 规则数据 ----------
 
 REQUIRED_SECTIONS = ["Intro", "Chorus", "Outro", "End"]
+
+# 器乐 / 循环包放宽后的必留段：循环素材本来就没有 Chorus，也不该有渐弱的 Outro。
+REQUIRED_SECTIONS_LOOP = ["Intro", "End"]
+
+# 器乐声明的写法（Style 里至少要命中一个）
+INSTRUMENTAL_RE = r"instrumental|no\s+vocals?|without\s+vocals?|no\s+singing|no\s+voice"
+
+# 人声描述词：出现在器乐包的 Style 里就是与 `No vocals` 打架
+VOCAL_DESC_RE = (r"\b(female|male|breathy|whispered|whisper|layered|smooth|husky|airy|"
+                 r"raspy|child|duet|choir|gospel)\s+(vocals?|voice)")
 
 # 粤语强特征字（卡死语系用）
 CANTONESE_MARKERS = list("嘅咗嗰啲唔冇系哋佢边点咩而阵仲喎啩嘞呢睇瞓攞揸企")
@@ -103,28 +117,54 @@ def section_name(tag):
     return tag.strip()
 
 
-def check(text, dialect, style):
+def check(text, dialect, style, instrumental=False, loop=False):
     errors, warns, info = [], [], []
     lines = text.splitlines()
 
-    # 1. 语言锁
+    # 1. 人声锁。
+    #    有人声路径 = 语言锁（必须写）；器乐路径 = 同一位置声明「不唱」，
+    #    此时 [Language:]/[Accent:] 反而是有害的（会在 Style 之外再宣告一次"有人声"）。
     lang = re.search(r"\[Language:\s*([^\]]+)\]", text)
     accent = re.search(r"\[Accent:\s*([^\]]+)\]", text)
-    if not lang:
-        errors.append("缺少 [Language: XXX]，Suno 无法锁定语言")
-    if not accent:
-        errors.append("缺少 [Accent: XXX]，方言歌没有这一行必跑偏")
+    if instrumental:
+        if lang or accent:
+            warns.append(
+                "[Language:]/[Accent:] 出现在纯器乐包里 —— 语言与发音要求等于宣告"
+                "「这首有人声」，会诱导出哼唱与无词垫音，建议删掉这两行")
+        else:
+            info.append("未写 [Language:]/[Accent:]（器乐包应当如此）")
+    else:
+        if not lang:
+            errors.append("缺少 [Language: XXX]，Suno 无法锁定语言"
+                          "（若这是纯器乐包，请加 --instrumental 重跑）")
+        if not accent:
+            errors.append("缺少 [Accent: XXX]，方言歌没有这一行必跑偏"
+                          "（若这是纯器乐包，请加 --instrumental 重跑）")
     if lang:
         info.append(f"语言 = {lang.group(1).strip()}")
         if re.search(r"\bChinese\b", lang.group(1), re.I) and not re.search(
                 r"Mandarin|Cantonese|Hokkien|Wu|Hakka", lang.group(1), re.I):
             errors.append("[Language] 只写了 Chinese，会被默认成普通话——请写具体语言")
 
-    # 2. Style 语言锁
+    # 2. Style 首字段（有人声 = 语言锁；器乐 = 器乐声明）
     if style:
         first = style.split(",")[0].strip()
         info.append(f"Style 首字段 = {first}")
-        if re.search(r"\bChinese\b", first, re.I) and not re.search(
+        if instrumental:
+            if not re.search(INSTRUMENTAL_RE, style, re.I):
+                errors.append(
+                    "声明为纯器乐，但 Style 里找不到 instrumental / no vocals —— "
+                    "这是唯一能压住人声的字段，且必须写在最前")
+            elif not re.search(INSTRUMENTAL_RE, first, re.I):
+                warns.append(
+                    f"Style 首字段是「{first}」，器乐声明不在最前 —— "
+                    f"靠后的声明压不住流派自带的人声联想，建议挪到第一位")
+            bad = re.search(VOCAL_DESC_RE, style, re.I)
+            if bad:
+                errors.append(
+                    f"Style 里的人声描述「{bad.group(0)}」与 No vocals 直接打架，"
+                    f"模型会挑一个执行 —— 器乐包请删掉一切人声描述词")
+        elif re.search(r"\bChinese\b", first, re.I) and not re.search(
                 r"Mandarin|Cantonese|Hokkien|Wu|Hakka", first, re.I):
             errors.append("Style 首字段只写了 Chinese，方言会被打回普通话")
 
@@ -135,8 +175,13 @@ def check(text, dialect, style):
     for name, raw, ln in secs:
         base = section_name(name)
         compound = any(sep in name for sep in ("–", "-", "—")) or "," in name
-        # [End] 与 [Language]/[Accent] 不要求复合
+        # [End] 与 [Language]/[Accent] 不要求复合；
+        # 但循环包的收尾方式必须交代清楚，裸 [End] 说明没写怎么接回开头。
         if base.lower() == "end":
+            if loop and not compound:
+                warns.append(
+                    f"第 {ln} 行 [End] 是裸标签 —— 循环包要在这里交代收尾方式"
+                    f"（如 `[End – Return to opening chord and texture, Clean cut, No fade out]`）")
             continue
         if re.match(r"^(Language|Accent)\s*:", name, re.I):
             continue
@@ -145,11 +190,14 @@ def check(text, dialect, style):
         if has_cjk(name):
             errors.append(f"第 {ln} 行标签含中文「{name}」，会被当人声唱出——标签一律用英文")
 
-    # 4. 必留段落
+    # 4. 必留段落（循环素材放宽为 Intro + End：没有 Chorus，也不该有渐弱的 Outro）
+    required = REQUIRED_SECTIONS_LOOP if loop else REQUIRED_SECTIONS
     bases = [section_name(s[0]).lower() for s in secs]
-    for req in REQUIRED_SECTIONS:
+    for req in required:
         if req.lower() not in bases:
             errors.append(f"缺少必留段落 [{req}]")
+    if loop:
+        info.append("循环模式：必留段落放宽为 Intro + End（不要求 Chorus / Outro）")
 
     # 5. 括号配对
     for i, line in enumerate(lines, 1):
@@ -158,7 +206,57 @@ def check(text, dialect, style):
         if "(—" in line and "—)" not in line:
             warns.append(f"第 {i} 行 (— 音效括号未闭合：{line.strip()[:40]}")
 
-    # 6. 方言检查
+    # 6. 器乐模式专项：方括号外不许有内容，人声类行内指令要清掉
+    if instrumental:
+        stray = []
+        for i, line in enumerate(lines, 1):
+            s = line.strip()
+            if not s:
+                continue
+            residual = re.sub(r"\([^()]*\)", "", s)             # 去掉行内指令
+            residual = re.sub(r"\[[^\[\]]*\]", "", residual)    # 去掉段落标签
+            if residual.strip():
+                stray.append((i, s[:40]))
+        if stray:
+            errors.append(
+                f"声明为纯器乐，但方括号外有 {len(stray)} 行文字会被当作歌词唱出来"
+                f"（首个在第 {stray[0][0]} 行：{stray[0][1]}）—— 器乐包方括号外必须留空")
+        vocal_cues = []
+        for i, line in enumerate(lines, 1):
+            for m in re.finditer(r"\(([^()]*)\)", line):
+                if "—" not in m.group(1):
+                    vocal_cues.append((i, m.group(0)))
+        if vocal_cues:
+            warns.append(
+                f"第 {vocal_cues[0][0]} 行 {vocal_cues[0][1]} 是人声类行内指令的写法"
+                f"（规则 5：非人声音效应写成 (—...—)），器乐包里可能被当作和声或垫音")
+
+    # 7. 循环模式专项：禁淡出、锁死 BPM
+    #    注意先剔掉「No fade out / No fade in」这类**否定写法** —— 它们正是规范要求写的，
+    #    若直接搜 "fade out" 会把合规的收尾标签判成违规（文档要求这么写、脚本却报错）。
+    def _wants_fade(s):
+        return bool(re.search(r"fade[ -]?out|fading",
+                              re.sub(r"no\s+fade[ -]?(out|in)", "", s, flags=re.I), re.I))
+
+    if loop:
+        faded = [(ln, raw) for name, raw, ln in secs if _wants_fade(raw)]
+        if faded:
+            errors.append(
+                f"第 {faded[0][0]} 行写了 fade out（{faded[0][1]}）—— 循环素材不能淡出，"
+                f"否则每圈之间出现音量豁口；收尾请改成回到开头的和弦与织体、干净切断")
+        if style:
+            if _wants_fade(style):
+                errors.append("Style 里写了 fade out —— 循环素材不能淡出，请改成 `No fade out`")
+            if not re.search(r"seamless\s+loop|loop", style, re.I):
+                warns.append("循环包建议在 Style 里写 `Seamless loop, No fade in, No fade out`")
+            if not re.search(r"\d{2,3}\s*bpm", style, re.I):
+                errors.append(
+                    "循环包必须在 Style 里写死 BPM 数字（如 `84 BPM`）—— BPM 不锁死，"
+                    "输出会漂移、循环点落在小节中间，怎么剪都有断层")
+        else:
+            info.append("未提供 --style，跳过器乐声明与 BPM 检查（这两项依赖 Style 文本）")
+
+    # 8. 方言检查
     if dialect:
         markers = DIALECT_MARKERS.get(dialect)
         body = "\n".join(
@@ -196,6 +294,21 @@ def check(text, dialect, style):
         if style and re.search(r"distorted|bitcrushed", style, re.I):
             errors.append("Style 含 distorted/bitcrushed，与方言平滑人声冲突，必破音")
 
+    # 9. 看起来像器乐包却没声明 → 显式提醒（不静默、也不替用户猜）
+    if not instrumental:
+        lyric_lines = []
+        for line in lines:
+            s = line.strip()
+            if not s or re.match(r"^\s*\[", s):
+                continue
+            if re.sub(r"\([^()]*\)", "", s).strip():
+                lyric_lines.append(s)
+        if not lyric_lines:
+            warns.append(
+                "方括号外没有任何内容，看起来是纯器乐包 —— 若确实无人声，请加 --instrumental "
+                "重跑（当前按有人声规则检查，上面关于 [Language:]/[Accent:] 的错误不适用）；"
+                "若只是漏填语言锁，请补上")
+
     return errors, warns, info
 
 
@@ -205,6 +318,11 @@ def main():
     ap.add_argument("--dialect", choices=list(DIALECT_MARKERS) + KNOWN_UNMAPPED_DIALECTS,
                     help="方言模式（已内置特征字表的：cantonese；其余已知方言会跳过字表检查）")
     ap.add_argument("--style", help="Style 文本（用于检查语言锁与冲突指令）")
+    ap.add_argument("--instrumental", action="store_true",
+                    help="纯器乐包：不要求 [Language:]/[Accent:]，改为检查器乐声明、"
+                         "方括号外有无歌词、有无残留人声描述")
+    ap.add_argument("--loop", action="store_true",
+                    help="循环素材：必留段落放宽为 Intro + End，检查 fade out 与 BPM 是否锁死")
     ap.add_argument("--json", action="store_true", help="输出 JSON")
     args = ap.parse_args()
 
@@ -218,14 +336,22 @@ def main():
         print(f"[读取失败] {args.file}: {e}", file=sys.stderr)
         sys.exit(2)
 
-    errors, warns, info = check(text, args.dialect, args.style)
+    errors, warns, info = check(text, args.dialect, args.style,
+                                instrumental=args.instrumental, loop=args.loop)
 
     if args.json:
         print(json.dumps({"errors": errors, "warnings": warns, "info": info},
                          ensure_ascii=False, indent=2))
         sys.exit(1 if errors else 0)
 
-    print(f"校验：{args.file}" + (f"  [方言: {args.dialect}]" if args.dialect else ""))
+    tags = []
+    if args.dialect:
+        tags.append(f"方言: {args.dialect}")
+    if args.instrumental:
+        tags.append("纯器乐")
+    if args.loop:
+        tags.append("循环")
+    print(f"校验：{args.file}" + (f"  [{', '.join(tags)}]" if tags else ""))
     if info:
         print("\n信息")
         for i in info:

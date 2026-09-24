@@ -11,9 +11,15 @@
 | 部分 | 作用 | 常用词 |
 |---|---|---|
 | 段落名 | 告诉 AI 这是歌的哪一段 | Intro / Verse 1 / Pre-Chorus / Chorus / Verse 2 / Instrumental Break / Bridge / Outro / End |
+| 段落名（器乐 / 循环用） | 没人声时改按**编曲功能**命名 | Intro / Loop A / Loop B / Build / Climax / Resolve / Break / Solo / Loop End / End |
 | 情绪描述 | 定这一段要什么情绪 | Intimate / Grand and anthemic / Melancholic / Tender / Tense / Triumphant |
 | 演唱风格 | 定人声怎么唱 | Half-whispered / Belted / Breathy / Smooth vocals / Clear enunciation / Layered vocals |
 | 声场与乐器 | 定编曲与空间 | Panning left / Wide stereo / Close-mic / No percussion / Rising strings / Solo piano |
+
+**器乐包用功能性段落名。** 没有人声时，`Verse` / `Chorus` 这类「给谁唱」的命名失去意义，
+改用编曲功能命名：`[Loop A]`、`[Build]`、`[Climax]`、`[Resolve]`、`[Break]`、`[Solo]`。
+循环包的首尾要**同名同源**（`[Loop Start]` 与 `[Loop End]` 的织体与和弦一致，接缝才听不出来）。
+「演唱风格」一栏在器乐包里整列不用 —— 它不是"留空"，是**不存在**。
 
 **例子：**
 ```
@@ -67,6 +73,17 @@
 
 **冲突提示：** `distorted` / `bitcrushed` 与 `Smooth vocals, Polished production` 互斥。方言歌和治愈歌一律选后者，并显式写 `[No distortion]`。
 
+**器乐与循环（D / E 路径专用）**
+```
+instrumental, no vocals   纯器乐声明（写在 Style 第一位）
+Seamless loop             无缝循环
+No fade in / No fade out  不淡入 / 不淡出（循环素材必写）
+Consistent dynamics       动态稳定（循环素材要平，不要大起伏）
+Clean cut                 干净切断
+No percussion             无打击乐
+Sustained pad             持续铺底
+```
+
 ## 四、多语系 / 方言强锁
 
 **三处都要锁，缺一不可：**
@@ -79,6 +96,11 @@
 3. **歌词正文** —— 用本土特征字彻底卡死语系（见 `@references/cantonese-lock.md`）
 
 **禁止：** 只写 `Chinese`。它会被默认成普通话，方言需求直接失效。
+
+**纯器乐包例外：** 本节的三处锁**全部不适用**。没有人声就没有语言要锁 ——
+Style 第一位改写成 `Instrumental, No vocals`，歌词开头**不写** `[Language:]` / `[Accent:]`
+（不是留空占位，是根本不该有这两行，方括号外的一切都会被尝试唱出来）。
+理由是这两行本身就在宣告「这首有人声」，详见 `@SKILL.md` 规则 2 的例外段。
 
 ## 五、Style 九字段顺序
 
@@ -98,6 +120,10 @@ Language, Accent, Genre, Vocal description, Instruments, Mood, Tempo, Atmosphere
 | Atmosphere | 空间与氛围（如 `Intimate room reverb`） |
 | Production style | 制作质感（如 `Polished analog production`） |
 
+**纯器乐包的写法：** 第 1、2 位（`Language` / `Accent`）合成一位 `Instrumental, No vocals`；
+第 4 位 `Vocal description` 换成演奏主体（如 `Solo grand piano`），其余各项照旧。
+逐字段的对照表与理由见 `@references/game-bgm-loop.md` 第三节。
+
 ## 六、常见错误
 
 | 错误 | 后果 | 改法 |
@@ -110,3 +136,7 @@ Language, Accent, Genre, Vocal description, Instruments, Mood, Tempo, Atmosphere
 | 忘记 `[End]` | 结尾可能不完整 | 末尾固定加 |
 | 括号不配对 | 解析错乱 | 用 `scripts/suno_check.py` 查 |
 | 副歌闭口韵 | 唱不上去，情绪出不来 | 副歌改开口韵 |
+| 器乐包填语言锁 | 诱导出哼唱与无词垫音 | 首位改 `Instrumental, No vocals`，删掉 `[Language:]` / `[Accent:]` |
+| 器乐包 Style 里留着人声描述 | 与 `No vocals` 打架，模型挑一个执行 | 人声词一个不留，`Vocal description` 换成演奏主体 |
+| 循环包写 `Fade out` | 循环点接不上，每圈一个音量豁口 | 收尾改成回到开头的和弦与织体、干净切断 |
+| 循环包不写 BPM | 输出漂移，循环点落在小节中间 | Style 里写死数字 BPM |
