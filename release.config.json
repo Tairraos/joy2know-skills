@@ -29,7 +29,18 @@
     "  边界四：**写进本文件前必须重新检索一次**。平台侧会变（审核通过、下架、新上架），",
     "          照抄上一轮的读数会把过期状态固化成「真源」。",
     "  复核节奏：已建「每周自动复核」定时任务（2026-09-25）—— 它只能发现 ③ 的变化，",
-    "          发现不了 ②（接口读不到），② 仍然靠用户报告。"
+    "          发现不了 ②（接口读不到），② 仍然靠用户报告。",
+    "",
+    "★ ② 的读数来源（2026-09-25 起）：**开发者页截图**。",
+    "  用户端的推荐市场只反映 ③；② 藏在登录后的「发布管理」页。所以状态同步的正确姿势是：",
+    "  用户截一张发布管理页的图 → 逐包把「在架版本 / assetId / 在审版本」落进本文件。",
+    "  platform.assetId 取自卡片上显示的 os_/oe_ 前缀 id；**已发布行**的 id 可确认是资产 id，",
+    "  **在审行**的 id 是否同为资产 id 未实证（也可能是在审记录 id）—— 核对时以平台页实际显示为准。",
+    "",
+    "★ 上传类型必须选对，否则包再好也进不去（2026-09-25 实证）：",
+    "  平台前端按「类型」挑校验器 —— 技能要 `<包名>/SKILL.md`，专家要 `<包名>/.codebuddy-plugin/plugin.json`。",
+    "  专家包的 SKILL.md 内嵌在 `<包名>/skills/<技能名>/SKILL.md`，**按技能口径查永远查不到根级 SKILL.md**，",
+    "  于是报「未找到 SKILL.md，请确保该路径文件存在」。规则复刻与本地预检见 `scripts/platformcheck.py`。"
   ],
   "packages": {
     "joy2know-asset-ledger": {
@@ -40,7 +51,7 @@
       "submitted": {
         "version": "1.2.0",
         "date": null,
-        "note": "2026-09-23 曾因类目被打回（见上方类目备注）；这批是否即「改类目后的重提」，市场读不出来。"
+        "note": "09-23 因类目被打回，这批即「改类目后的重提」—— 开发者页显示已在审，**上一轮记的「读不出是否重提」由此解除**。"
       }
     },
     "joy2know-character": {
@@ -51,7 +62,7 @@
       "submitted": {
         "version": "1.2.0",
         "date": null,
-        "note": "此前从未上架，这是首次提交。"
+        "note": "首次上架，从未在架过。"
       }
     },
     "joy2know-clarify": {
@@ -61,7 +72,8 @@
         "version": "1.1.0",
         "skillId": "skill_2099154350141239296",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）—— 此前记录的 1.0.0 已被 1.1.0 覆盖。"
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）—— 此前记录的 1.0.0 已被 1.1.0 覆盖。",
+        "assetId": "os_36cdeff4eff0914e"
       },
       "submitted": {
         "version": "1.2.0",
@@ -75,7 +87,8 @@
         "version": "1.1.0",
         "skillId": "skill_2102019463359930368",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_0b971c83da02a521"
       },
       "submitted": {
         "version": "1.2.0",
@@ -86,11 +99,11 @@
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目写在包内 plugin.json 的 categoryId，清单直接读该字段，此处留空",
-      "platform": null,
-      "submitted": {
-        "version": "1.2.0",
+      "platform": {
+        "version": "1.1.0",
+        "assetId": "oe_5574ee7b30d046de",
         "date": null,
-        "note": "此前从未上架，这是首次提交。"
+        "note": "2026-09-25 由开发者页截图**实证在架 1.1.0**（assetId `oe_5574ee7b30d046de`）—— 此前人工记的「从未上架」**是错的**（专家包不在市场检索范围，一直没人核过）。本地 1.2.0 的提交**失败了**，报「未找到 SKILL.md」—— 根因是上传时被判成技能包（见 docs/平台资产规范.md 第十一节）。"
       }
     },
     "joy2know-codebase": {
@@ -100,11 +113,8 @@
         "version": "1.1.0",
         "skillId": "skill_2102019532563116032",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_dec94259d6bddb1d"
       }
     },
     "joy2know-conversation-digest": {
@@ -114,11 +124,8 @@
         "version": "1.1.0",
         "skillId": "skill_2101576091784466432",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_dec7156d1db4eca1"
       }
     },
     "joy2know-dashboard": {
@@ -128,11 +135,8 @@
         "version": "1.1.0",
         "skillId": "skill_2101578699018956800",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_cc23da54ba259c0d"
       }
     },
     "joy2know-deck": {
@@ -142,11 +146,8 @@
         "version": "1.1.0",
         "skillId": "skill_2101576067084210176",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_c12e5973735dbcbf"
       }
     },
     "joy2know-design-tokens": {
@@ -156,11 +157,8 @@
         "version": "1.1.0",
         "skillId": "skill_2102019512580087808",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_f53fdc7a9f91abdb"
       }
     },
     "joy2know-errorfix": {
@@ -170,11 +168,8 @@
         "version": "1.1.0",
         "skillId": "skill_2102019491210108928",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_2ba4d08cd81517e9"
       }
     },
     "joy2know-humanize": {
@@ -184,7 +179,8 @@
         "version": "1.1.0",
         "skillId": "skill_2102571934082871296",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0，与本地一致 —— 本包无需重传。"
+        "note": "2026-09-25 复核：在架（③）1.1.0，与本地一致 —— 本包无需重传。",
+        "assetId": "os_5e9356f928882d4b"
       }
     },
     "joy2know-logdetective": {
@@ -194,11 +190,8 @@
         "version": "1.1.0",
         "skillId": "skill_2101576133517791232",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_b6698fe9188adfc1"
       }
     },
     "joy2know-mr": {
@@ -208,7 +201,8 @@
       "platform": {
         "version": "1.0.0",
         "date": null,
-        "note": "2026-09-25 复核（首读 09-24）**无法复核**：专家包不在推荐市场检索范围，平台侧真实版本读不到。此处的 1.0.0 是人工记录；2026-09-23 曾以 joy2know-mr-v1.2.0.zip 重传，结果未记录（同日改名试传被驳回）。**name 不可改**：平台驳回原文为「name 是资产的唯一标识，不允许修改」，已全部回退。重传前请以发布页显示的实际版本为准"
+        "note": "专家包，无法自动复核。**name 不可改**：平台驳回原文为「name 是资产的唯一标识，不允许修改」，已全部回退。",
+        "assetId": "oe_376ee759f0c7d86d"
       },
       "submitted": {
         "version": "1.2.0",
@@ -223,12 +217,13 @@
         "version": "1.1.0",
         "skillId": "skill_2102571990915461120",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。注意本地已 1.3.0。"
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。注意本地已 1.3.0。",
+        "assetId": "os_9de09c09ff62aea4"
       },
       "submitted": {
-        "version": "1.2.0",
+        "version": "1.3.0",
         "date": null,
-        "note": "⚠️ 提交之后本包又升到 **1.3.0**（补纯器乐与循环 BGM 路径）→ 过审后需再交一次 `joy2know-musician-v1.3.0.zip`。"
+        "note": "交的是 1.3.0（补纯器乐与循环 BGM 路径那版），与本地一致 —— **过审即追平，不必再交**。"
       }
     },
     "joy2know-storyboard": {
@@ -238,41 +233,48 @@
         "version": "1.1.0",
         "skillId": "skill_2102019558763569152",
         "date": null,
-        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。"
-      },
-      "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "note": "2026-09-25 复核：在架（③）1.1.0（首读 09-24）。skillId 见 platform.skillId。",
+        "assetId": "os_18ee949b469d87ee"
       }
     },
     "joy2know-cine-team": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家团：类目读包内 plugin.json 的 categoryId（06-ContentCreative），与专家共用同一套行业分类",
-      "platform": null,
+      "platform": {
+        "assetId": "oe_c044234d33471929",
+        "date": null,
+        "note": "专家团不在推荐市场检索范围，平台侧在架版本无法自动读取；截图上该卡只显示「在审 1.3.0」，看不出是否曾有在架版本，按人工记录仍记「从未上线」。"
+      },
       "platformNote": "专家团不在推荐市场检索范围，平台侧状态无法自动读取；按人工记录为「从未上线」",
       "submitted": {
-        "version": "1.2.0",
+        "version": "1.3.0",
         "date": null,
-        "note": "⚠️ 提交之后本包又升到 **1.3.0**（内嵌 musician 口径对齐）→ 过审后需再交一次 `joy2know-cine-team-v1.3.0.zip`。"
+        "note": "交的是 1.3.0（内嵌 musician 1.3.0 那版），与本地一致。"
       }
     },
     "joy2know-polish-team": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家团：类目读包内 plugin.json 的 categoryId（06-ContentCreative）",
-      "platform": null,
+      "platform": {
+        "assetId": "oe_47e82c0a9493f4bc",
+        "date": null,
+        "note": "同上，无法自动读取；截图只显示「在审 1.1.0」。"
+      },
       "platformNote": "专家团不在推荐市场检索范围，平台侧状态无法自动读取；按人工记录为「从未上线」",
       "submitted": {
-        "version": "1.2.0",
-        "date": null
+        "version": "1.1.0",
+        "date": null,
+        "note": "⚠️ 在审版本 **落后于本地**：本地已 1.2.0，在审的是 1.1.0。1.1.0 过审后需再交一次 `joy2know-polish-team-v1.2.0.zip`。"
       }
     }
   },
   "submittedBatches": [
-    "**1.2 批 · 17 个包**（技能 13 · 专家 2 · 专家团 2）已整体提交、**平台侧审核中**（提交日期未记录；2026-09-25 由小乐告知）。",
-    "② 态**用户端与接口都读不到** —— 只有开发者账号登录平台「发布管理」页才可见，所以这里是人工记录，逐包落在 `release.config.json` 的 `submitted`。",
-    "唯一没提交的是 `joy2know-humanize`：它本地 1.1.0 与在架 1.1.0 一致，无需重传。",
-    "`joy2know-musician` 与 `joy2know-cine-team` 是**提交之后才又升到 1.3.0** 的两个包 —— 它们同时具有 ① 与 ②：在审的是 1.2.0，本地已是 1.3.0。"
+    "**2026-09-25 开发者页截图实测** —— 上一轮「1.2 批 · 17 个包整体提交」的记录**是错的**（当时由口头汇总，未核页面）。",
+    "**真实状态：在审只有 8 个包** —— 技能 5（`asset-ledger`、`character`、`clarify`、`cmdforge`、`musician`）· 专家 1（`mr`）· 专家团 2（`cine-team`、`polish-team`）；其余 9 个技能仍停在在架 1.1.0，从未提交 1.2.0。",
+    "② 态**只有开发者账号的发布管理页可见**，用户端与接口都读不到 —— 所以这两个字段只能人工记录，**截图是当前唯一可靠的读数来源**（2026-09-25 补记）。",
+    "`joy2know-humanize` 无需重传：在架 1.1.0 = 本地 1.1.0。",
+    "需要你再动一次的 **10 个**：`codebase`、`conversation-digest`、`dashboard`、`deck`、`design-tokens`、`errorfix`、`logdetective`、`storyboard`（8 个技能交 1.2.0）、`code-scholar`（1.2.0 上次传失败，换专家入口重传）、`polish-team`（在审 1.1.0 落后，需补交 1.2.0）。"
   ]
 }
