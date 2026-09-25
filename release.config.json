@@ -6,7 +6,21 @@
     "来自平台的判定/驳回原文（目前只有 joy2know-asset-ledger 一项是实证的），其余均为按能力方向的推断，",
     "发布时以平台给出的判定提示为准。",
     "packages.<包名>.platform：平台侧最后一个成功的版本。null = 从未上线。version 与包内版本不一致时，",
-    "构建会自动在清单里标【本地升级】。"
+    "构建会自动在清单里标【本地升级】。",
+    "",
+    "★ platform.version 的来源与边界（2026-09-24 首读，2026-09-25 复核确认）：",
+    "  读法：用「推荐市场」检索接口按关键词（如「晓得」）搜一批，返回的 version 即平台侧已上架版本，",
+    "        与本机已安装的同一技能版本一致，两处互相印证；platform.skillId 是同一批返回里的稳定平台主键，",
+    "        可用来在平台侧唯一定位该资产（改名也不会变），核对状态时优先用 id 而不是名字。",
+    "  边界一：市场只收录**技能**，专家与专家团不在检索范围 —— 它们的 platform 无法自动复核，",
+    "          只能沿用人工记录并在 note 里标明「无法复核」。",
+    "  边界二：市场反映的是**最后成功上架**的版本；处于「审核中 / 已被驳回」的提交不会体现在这里。",
+    "          所以本值读不出审核状态，只能读出版本号。",
+    "  边界三：open.workbuddy.cn/dashboard 页面本身**读不到**（需登录 + 纯 JS 渲染，",
+    "          服务端只返回 17KB 前端壳）；市场检索是当前唯一可自动化的平台侧读数通道。",
+    "  边界四：**写进本文件前必须重新检索一次**。平台侧会变（新上传、审核通过、下架），",
+    "          照抄上一轮的读数会把过期状态固化成「真源」。2026-09-25 复核时 12 个技能仍全部是 1.1.0，",
+    "          与 09-24 读数一致 —— 这才敢把 09-24 的值继续留用。"
   ],
   "packages": {
     "joy2know-asset-ledger": {
@@ -25,15 +39,21 @@
       "suggestedCategory": "效率 > 表达与写作",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.0.0",
+        "version": "1.1.0",
+        "skillId": "skill_2099154350141239296",
         "date": null,
-        "note": "平台侧现存 1.0.0（上传日期未记录）；本地已 1.2.0，重传时走「更新」而非「新建」"
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录）；此前记录的 1.0.0 已被更高版本覆盖。本地已 1.2.0，重传时走「更新」而非「新建」"
       }
     },
     "joy2know-cmdforge": {
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102019463359930368",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-code-scholar": {
       "suggestedCategory": null,
@@ -44,42 +64,82 @@
     "joy2know-codebase": {
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102019532563116032",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-conversation-digest": {
       "suggestedCategory": "效率 > 文档与总结",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2101576091784466432",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-dashboard": {
       "suggestedCategory": "工具 > 数据与表格",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2101578699018956800",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-deck": {
       "suggestedCategory": "效率 > 演示与文档",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2101576067084210176",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-design-tokens": {
       "suggestedCategory": "工具 > 设计",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102019512580087808",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-errorfix": {
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102019491210108928",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-humanize": {
       "suggestedCategory": "内容创作 > 文案",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102571934082871296",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0 —— **与本地版本一致，无需重传**（本包是 1.2.0 那轮唯一没抬版本的）"
+      }
     },
     "joy2know-logdetective": {
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2101576133517791232",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-mr": {
       "suggestedCategory": null,
@@ -88,30 +148,42 @@
       "platform": {
         "version": "1.0.0",
         "date": null,
-        "note": "平台侧现存 1.0.0（上传日期未记录）；本地已 1.2.0，重传时走「更新」而非「新建」。**name 不可改**：2026-09-23 改名 joy2know-articulate 后重传被平台驳回（name 是资产唯一标识），已全部回退"
+        "note": "2026-09-25 复核（首读 09-24）**无法复核**：专家包不在推荐市场检索范围，平台侧真实版本读不到。此处的 1.0.0 是人工记录；2026-09-23 曾以 joy2know-mr-v1.2.0.zip 重传，结果未记录（同日改名试传被驳回）。**name 不可改**：平台驳回原文为「name 是资产的唯一标识，不允许修改」，已全部回退。重传前请以发布页显示的实际版本为准"
       }
     },
     "joy2know-musician": {
       "suggestedCategory": "内容创作 > 音乐",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102571990915461120",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.3.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-storyboard": {
       "suggestedCategory": "内容创作 > 视频",
       "categoryConfirmed": false,
-      "platform": null
+      "platform": {
+        "version": "1.1.0",
+        "skillId": "skill_2102019558763569152",
+        "date": null,
+        "note": "2026-09-25 复核（首读 09-24）经推荐市场检索读到平台侧现存 1.1.0（上传日期未记录，发布历史里缺这一轮）；本地已 1.2.0，重传时走「更新」而非「新建」"
+      }
     },
     "joy2know-cine-team": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家团：类目读包内 plugin.json 的 categoryId（06-ContentCreative），与专家共用同一套行业分类",
-      "platform": null
+      "platform": null,
+      "platformNote": "专家团不在推荐市场检索范围，平台侧状态无法自动读取；按人工记录为「从未上线」"
     },
     "joy2know-polish-team": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家团：类目读包内 plugin.json 的 categoryId（06-ContentCreative）",
-      "platform": null
+      "platform": null,
+      "platformNote": "专家团不在推荐市场检索范围，平台侧状态无法自动读取；按人工记录为「从未上线」"
     }
   }
 }
