@@ -300,7 +300,10 @@ function loadReleaseConfig() {
   if (!exists(RELEASE_CONFIG)) return { packages: {}, error: `${path.basename(RELEASE_CONFIG)} 不存在` };
   try {
     const j = readJson(RELEASE_CONFIG);
-    return { packages: j.packages || {}, error: null };
+    // ★ 必须把顶层其它键一并带出去（如 submittedBatches、$comment）——
+    //   只 return { packages } 会让「配置里写了、渲染时读不到」这种脱节静默发生：
+    //   数据在文件里、清单里却没有，且没有任何告警。
+    return { ...j, packages: j.packages || {}, error: null };
   } catch (e) {
     return { packages: {}, error: `${path.basename(RELEASE_CONFIG)} 解析失败：${e.message}` };
   }
@@ -729,12 +732,38 @@ function fmtStamp(d) {
   return `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())} ${two(d.getHours())}:${two(d.getMinutes())}`;
 }
 
-/** 状态：本地版本 vs 平台侧最后版本 */
+/**
+ * 状态：本地版本 vs 平台侧两个不同的事实。
+ *   platform.version  = 平台侧**在架**（已审核通过）的版本 —— 唯一能自动读到的，
+ *                        但它是「审核通过的老版本」，不代表最新提交。
+ *   submitted.version = **已提交、审核中**的版本 —— 读不到，只能人工记录。
+ * 把两者混为一谈，就会把「已经交上去在等审核」误记成「还没传」。
+ */
+/**
+ * 发布状态三态（2026-09-25 与用户对齐口径）：
+ *   ① 开发完待提交   —— 两个字段都没有，只在本地
+ *   ② 提交完待审核   —— entry.submitted，**只有开发者账号的发布管理页可见**，接口读不到 → 人工记录
+ *   ③ 审核完成（已上架）—— entry.platform，普通用户在推荐市场里已能看到
+ * ②③ 可同时存在：在审的新版本还没过审时，③ 仍是上一个已过审的老版本。
+ */
 function publishStatusOf(pkg, entry) {
   const local = versionOf(pkg);
-  const pv = entry?.platform?.version || null;
-  if (!pv) return '待上传';
-  return pv === local ? '已提交' : '**已提交** ·【本地升级】';
+  const onShelf = entry?.platform?.version || null;   // ③
+  const pending = entry?.submitted?.version || null;  // ②
+  const shelfTxt = onShelf ? `在架 ${onShelf}` : '首次上架';
+
+  if (pending === local) return `② **待审核**（${shelfTxt}）`;
+  if (pending) return `② **待审核**（交 ${pending}，${shelfTxt}）+【本地升级】`;
+  if (onShelf === local) return '③ 审核完成 · 已上架';
+  if (onShelf) return `③ **已上架**（在架 ${onShelf}）+【本地升级】`;
+  return '① 开发完待提交';
+}
+
+/** 平台侧单元格：在架版本，若有审核中的提交则追加「→ 新版本 ⏳」 */
+function platformCellOf(entry) {
+  const onShelf = entry?.platform?.version || '—';
+  const pending = entry?.submitted?.version;
+  return pending ? `${onShelf} → ${pending} ⏳` : onShelf;
 }
 
 /** 一行的体积 / zip 单元格 */
@@ -750,7 +779,7 @@ function renderSkillSection(skills, cfg) {
   L.push('');
   L.push('> 技能包 **zip 内不含图标** —— 发布时需另外上传 `avatars/<包名>.png`（512×512 PNG，≤500KB）。');
   L.push('');
-  L.push('| # | 中文名（display_name） | 英文名（display_name_en） | 本地版本 | 发布 zip（带版本号） | 体积 | 建议发布类目 | 平台侧最后版本 | 状态 |');
+  L.push('| # | 中文名（display_name） | 英文名（display_name_en） | 本地版本 | 发布 zip（带版本号） | 体积 | 建议发布类目 | 平台侧版本（在架 → 审核中） | 状态 |');
   L.push('|---|---|---|---|---|---|---|---|---|');
   skills.forEach((p, i) => {
     const meta = skillMetaOf(p);
@@ -759,7 +788,7 @@ function renderSkillSection(skills, cfg) {
       ? (e.categoryConfirmed ? `${e.suggestedCategory} ★已实证` : e.suggestedCategory)
       : '—';
     const z = zipCellOf(p);
-    const pv = e.platform?.version || '—';
+    const pv = platformCellOf(e);
     L.push(`| ${i + 1} | ${meta.zh} | ${meta.en} | ${versionOf(p)} | ${z.cell} | ${z.sizeCell} | ${cat} | ${pv} | ${publishStatusOf(p, e)} |`);
   });
   L.push('');
@@ -768,6 +797,7 @@ function renderSkillSection(skills, cfg) {
     const e = cfg.packages[p.name] || {};
     if (e.categoryNote) notes.push(`- \`${p.name}\`：${e.categoryNote}`);
     if (e.platform?.note) notes.push(`- \`${p.name}\`（平台侧）：${e.platform.note}`);
+    if (e.submitted?.note) notes.push(`- \`${p.name}\`（审核中）：${e.submitted.note}`);
   }
   if (notes.length) {
     L.push('**逐包备注**');
@@ -789,7 +819,7 @@ function renderExpertSection(pkgs, cfg, team) {
     ? '> 图标（团自身 + 全部成员）已在包内，无需另传。`categoryId` 随包提交 —— 发布页一般无需再选类目。'
     : '> 图标（自身）已在包内，无需另传。`categoryId` 随包提交 —— 发布页一般无需再选类目。');
   L.push('');
-  L.push('| # | 中文名（profession.zh） | 英文名（profession.en） | categoryId | 本地版本 | 发布 zip（带版本号） | 体积 | 内嵌技能（版本） | 平台侧最后版本 | 状态 |');
+  L.push('| # | 中文名（profession.zh） | 英文名（profession.en） | categoryId | 本地版本 | 发布 zip（带版本号） | 体积 | 内嵌技能（版本） | 平台侧版本（在架 → 审核中） | 状态 |');
   L.push('|---|---|---|---|---|---|---|---|---|---|');
   pkgs.forEach((p, i) => {
     const meta = expertMetaOf(p);
@@ -801,7 +831,7 @@ function renderExpertSection(pkgs, cfg, team) {
       })
       .join('、') || '—';
     const z = zipCellOf(p);
-    const pv = e.platform?.version || '—';
+    const pv = platformCellOf(e);
     L.push(`| ${i + 1} | ${meta.zh} | ${meta.en} | \`${meta.categoryId}\` | ${versionOf(p)} | ${z.cell} | ${z.sizeCell} | ${embed} | ${pv} | ${publishStatusOf(p, e)} |`);
   });
   L.push('');
@@ -809,6 +839,7 @@ function renderExpertSection(pkgs, cfg, team) {
   for (const p of pkgs) {
     const e = cfg.packages[p.name] || {};
     if (e.platform?.note) notes.push(`- \`${p.name}\`（平台侧）：${e.platform.note}`);
+    if (e.submitted?.note) notes.push(`- \`${p.name}\`（审核中）：${e.submitted.note}`);
   }
   if (notes.length) {
     L.push('**逐包备注**');
@@ -845,7 +876,18 @@ function renderManifest(pkgs, cfg, stamp) {
   L.push('');
   L.push(`**本地版本**：${verLine}`);
   L.push('');
-  L.push('**状态口径**：`待上传` = 平台侧从未上线；`已提交` = 平台侧最后一个版本与本地一致；`已提交 ·【本地升级】` = 平台侧还是旧版，本地已抬高版本、**需要重传**（走「更新」而非「新建」）。');
+  L.push('**发布状态三种**：① `开发完待提交`（只在本地）→ ② `提交完待审核`（**只有开发者账号的发布管理页能看到**，用户端看不到）→ ③ `审核完成`（已上架，用户端可见）。');
+  L.push('');
+  L.push('> 「平台侧版本（在架 → 审核中）」一列：前者是 **③**（市场检索读得到），箭头后是 **②**（接口读不到、只能人工记录）。');
+  L.push('> 标 `+【本地升级】` 的 = 提交之后本地又抬了版本，**过审后还得再交一次**。②③ 同时存在是常态。');
+  L.push('');
+  L.push('> ⚠️ **本表的「平台侧版本」只对技能可信** —— 市场检索只收录技能；专家与专家团读不到，该列是人工记录。');
+  if (cfg.submittedBatches?.length) {
+    L.push('');
+    L.push('### 审核中的批次（②）');
+    L.push('');
+    for (const b of cfg.submittedBatches) L.push(`- ${b}`);
+  }
   L.push('');
   L.push('---');
   L.push('');
