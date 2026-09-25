@@ -73,8 +73,23 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent
-DIST = REPO / "dist"
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def default_artifact_dir() -> Path:
+    """默认产物目录（本脚本要能同时用在两种地方）。
+
+    ① 本仓库：脚本在 `scripts/`，产物在 `../dist`；
+    ② 把脚本放进技能包后，在任何业务项目里直接跑 —— 此时产物在该项目的 `./dist`。
+    两者都不存在时返回 ①，由调用处报「没找到 zip」并提示用 `--dir` / `--zip`。
+    """
+    for cand in (SCRIPT_DIR.parent / "dist", Path.cwd() / "dist"):
+        if cand.is_dir():
+            return cand
+    return SCRIPT_DIR.parent / "dist"
+
+
+DIST = default_artifact_dir()
 
 MB = 1048576
 
@@ -343,7 +358,8 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser(description="复刻平台上传校验，本地预检 dist/ 产物")
     ap.add_argument("--zip", help="只检查这一个 zip")
-    ap.add_argument("--dir", default=str(DIST), help=f"产物目录（默认 {DIST}）")
+    ap.add_argument("--dir", default=str(DIST),
+                    help=f"产物目录（默认 {DIST}；它不是本仓库时用这个参数指过去）")
     ap.add_argument("--json", action="store_true", help="输出 JSON")
     ap.add_argument("--selftest", action="store_true", help="跑阳性对照与篡改验证")
     args = ap.parse_args()
@@ -356,7 +372,10 @@ def main():
     else:
         targets = sorted(Path(args.dir).glob("*.zip"))
     if not targets:
-        print("没有找到任何 zip", file=sys.stderr)
+        print(f"没找到任何 zip —— 找过：{args.dir}", file=sys.stderr)
+        print("  （默认依次找「脚本上一级/dist」与「当前目录/dist」两处）", file=sys.stderr)
+        print("  产物目录不在默认位置时，指一下：--dir <产物目录>；或单个包：--zip <包.zip>", file=sys.stderr)
+        print("  只想确认这个检查器本身有效：--selftest", file=sys.stderr)
         return 2
 
     reports = [check_zip(t) for t in targets if t.exists()]
