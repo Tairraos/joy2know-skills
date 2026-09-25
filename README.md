@@ -179,7 +179,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-cmdforge` | 晓得·命令制造局 | 1.2.0 | 把自然语言需求变成可用的正则、命令行或 SQL，附逐段解释、测试用例与危险等级 | 9.5 KB | ② 待审核（在架 1.1.0） |
 | `joy2know-dashboard` | 晓得·一页看懂 | 1.2.0 | 把 Excel 表格数据变成一个能直接发的可交互单文件 HTML 看板 | 8.7 KB | ② 待审核（在架 1.1.0） |
 | `joy2know-deck` | 晓得·讲得清 | 1.2.0 | 把长报告提炼成 15 页能讲的 PPT 结构，每页附口播稿 | 7.6 KB | ② 待审核（在架 1.1.0） |
-| `joy2know-musician` | 晓得·音乐人 | 1.3.0 | 用 Suno 高阶语法产出可直接粘贴的歌曲包：默认治愈风格、支持方言防跑偏，并含纯器乐与循环 BGM 路径（压制人声幻觉、锁死 BPM、首尾同源） | 35.2 KB | ② 待审核（在架 1.1.0） |
+| `joy2know-musician` | 晓得·音乐人 | 1.3.0 | 用 Suno 高阶语法产出可直接粘贴的歌曲包：默认治愈风格、支持方言防跑偏，并含纯器乐与循环 BGM 路径（压制人声幻觉、锁死 BPM、首尾同源） | 35.2 KB | ② 待审核（交 1.3.0，在架 1.1.0）+【本地升级】 |
 | `joy2know-conversation-digest` | 晓得·对话归纳 | 1.2.0 | 只归纳 WorkBuddy 里的对话，还原成「我问了什么 / 怎么答的 / 产出了哪些文件」的学习流水 | 20.6 KB | ② 待审核（在架 1.1.0） |
 | `joy2know-humanize` | 晓得·凡人腔调 | 1.1.0 | 只改中文论述文里规则清单明确命中的机器腔调，其余逐字保留；带规则表自检 + 改写门禁四道检查 | 52.3 KB | ③ 审核完成 · 已上架 |
 
@@ -211,7 +211,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 |---|---|---|---|---|---|---|---|
 | `joy2know-mr` | 晓得·表达条理与可视化专家 | 专家 | 1.2.0 | `joy2know-clarify` 1.2.0 | — | 740.1 KB | ② 待审核（在架 1.0.0） |
 | `joy2know-code-scholar` | 晓得·代码考古学家 | 专家 | 1.2.0 | `joy2know-codebase` 1.2.0 | — | 737.7 KB | ② 待审核（在架 1.1.0） |
-| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.3.0 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` **1.3.0** | 7 角色 | 4275.7 KB | ② 待审核（首次上架） |
+| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.3.0 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` **1.3.0** | 7 角色 | 4275.7 KB | ② 待审核（交 1.3.0，首次上架）+【本地升级】 |
 | `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.2.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-deck` 1.2.0、`joy2know-dashboard` 1.2.0 | 5 角色（1 主理 + 4 成员） | 3920.5 KB | ② 待审核（首次上架） |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
