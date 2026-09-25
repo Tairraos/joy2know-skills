@@ -46,7 +46,12 @@
    **R7 已上线的包 `name` 冻结**（`name` 是平台侧资产唯一主键 —— 改了「更新」链路就断，
    2026-09-23 改名 `joy2know-articulate` 重传被平台驳回，已回退）；**未上线的包要改名则同改 8 处**
    （目录 · `plugin.json` 四处 · 角色文件名与 frontmatter · 检测报告文件名 · 自身图标 · 台账与配置键）。
-   七条的完整定义与反例见 `docs/平台资产规范.md` 第十二节。**这七条也是门 3、门 2 的判定依据**。
+   **R8 升一个技能，必须查谁内嵌了它**（`grep -rl "<技能名>" packages/*/skills.json packages/*/.codebuddy-plugin/plugin.json`）：
+   构建对「内嵌技能」列只做**实时读取、不拦版本不匹配** → 会出现「清单显示嵌着新版、旧 zip 里其实是旧版」，
+   **且 0 告警**；更要命的是**内嵌方的 `agents/*.md` 正文往往复述了被引用技能的规则**，
+   技能改了规则而正文没跟 → **团队继续照旧指令人做错事，自检全绿**（自检不看正文）。
+   2026-09-25 实例：`musician` 升 1.3.0 后，`cine-team` 的 `cine-music.md` 仍写着「任何歌都要三处语言锁」。
+   七条的完整定义与反例见 `docs/平台资产规范.md` 第十二节。**这些也是门 3、门 2 的判定依据**。
 
 ---
 
@@ -78,7 +83,7 @@
 |---|---|
 | 前四节的表格（版本 / 体积 / 包名 / 状态 / 建议类目） | **不要手改** —— 由 `pnpm build` 按实际版本 + `release.config.json` 重写 |
 | 某个包的建议发布类目、是否已实证 | `release.config.json` 的 `suggestedCategory` / `categoryConfirmed` |
-| 平台侧最后版本与备注 | `release.config.json` 的 `platform.version` / `platform.note` |
+| 平台侧最后版本与备注 | `release.config.json` 的 `platform.version` / `platform.note` / `platform.skillId`（稳定主键） |
 | 「五、发布时要注意」 | 直接编辑 `发布清单.md`（构建不会动） |
 | 「六、发布历史」 | 直接编辑 `发布清单.md`（构建不会动） |
 
@@ -89,6 +94,11 @@
    - 更新 `release.config.json` 里该包的 `platform.version`（与 `note` 若有必要）；
    - 在 `发布清单.md`「六、发布历史」**追加一行**：日期 · 包名 · 类型 · 版本 · 上传文件 · 结果；
    - 若平台给出了类目判定，回填 `release.config.json` 的 `suggestedCategory` + `categoryConfirmed: true`。
+2b. **想确认平台侧现在是什么版本（不必等人）** → 用**推荐市场检索**（关键词如「晓得」）读一批：
+   返回的 `version` 即**最后成功上架**版本，`skillId` 是稳定主键，一并记进 `platform`。
+   **`open.workbuddy.cn/dashboard` 读不到**（17KB 前端壳 + 需登录）；市场**只覆盖技能**，专家/团只能人工记录。
+   **边界：写进 `release.config.json` 前必须重新检索一次** —— 平台侧会变，照抄上一轮等于把过期值固化成真源
+   （2026-09-25 就是这样发现 `clarify` 的 1.0.0 已被 1.1.0 覆盖、以及 `musician` 其实在架）。
 3. **被打回** → 「五、发布时要注意」里追加一条**可执行的下一步**（改哪里、传哪个文件、选什么），
    不要只写「被打回了」。
 4. **日期口径**：不知道确切日期就写「日期未记录」，**不许编日期**。文件按当时的**实际产物名**写，
