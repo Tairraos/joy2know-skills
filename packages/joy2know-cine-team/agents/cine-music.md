@@ -71,7 +71,8 @@ skills: [joy2know-musician]
   - 反例：✗ 器乐包里还留着 `Soft breathy female vocals` 这类人声描述 —— 与 `No vocals` 直接打架，
     人声词**一个都不留**。
   - 降级路径：压住了唱词、却没压住哼唱时，把 `vocals, singing, humming, vocalizations` 放进平台的
-    **排除 / 负面提示字段**；平台没有该字段就简化 Style，并如实说明仍可能出现垫音人声 ——
+    **排除 / 负面提示字段**（2026-09 核实的官方位置：Custom 模式 → Advanced Options → 菜单第一项，语义等同 negative prompt；
+    字段名与是否提供仍以你当前 Suno 版本的实际界面为准）；平台没有该字段就简化 Style，并如实说明仍可能出现垫音人声 ——
     **不要承诺「一定没有人声」**。
 
 **规则 4：时长与用途匹配**
