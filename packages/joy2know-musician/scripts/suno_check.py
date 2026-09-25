@@ -9,12 +9,12 @@
 检查项：
   1. 是否写了 [Language:] / [Accent:]（**器乐模式下反过来**：写了才提示删）
   2. 段落标签是否为复合结构（至少含一项描述）
-  3. 必留段落是否齐全（默认 Intro / Chorus / Outro / End；--loop 放宽为 Intro / End）
+  3. 必留段落是否齐全（默认 Intro / Chorus / Outro / End；**器乐包与 --loop 均放宽为 Intro / End**）
   4. 括号是否配对（圆括号 与 (— —) 两种）
   5. 标签里是否混入了中文（会被当人声唱出）
   6. Style 首字段：有人声看语言锁，器乐看是否有 `instrumental, no vocals` 声明
   7. 方言模式：特征字密度 / 普通话虚词污染 / 入声风险字
-  8. 器乐模式（--instrumental）：方括号外有无会被唱出来的文字、有无残留的人声类行内指令
+  8. 器乐模式（--instrumental）：方括号外有无会被唱出来的文字、有无残留的人声类行内指令；必留段落放宽为 Intro + End
   9. 循环模式（--loop）：有无 fade out、BPM 是否写死、必留段落是否合规
 
 用法：
@@ -190,14 +190,18 @@ def check(text, dialect, style, instrumental=False, loop=False):
         if has_cjk(name):
             errors.append(f"第 {ln} 行标签含中文「{name}」，会被当人声唱出——标签一律用英文")
 
-    # 4. 必留段落（循环素材放宽为 Intro + End：没有 Chorus，也不该有渐弱的 Outro）
-    required = REQUIRED_SECTIONS_LOOP if loop else REQUIRED_SECTIONS
+    # 4. 必留段落（器乐包与循环素材都放宽为 Intro + End：
+    #    器乐里没有「副歌」这个概念，循环素材也不该有渐弱的 Outro）
+    relaxed = loop or instrumental
+    required = REQUIRED_SECTIONS_LOOP if relaxed else REQUIRED_SECTIONS
     bases = [section_name(s[0]).lower() for s in secs]
     for req in required:
         if req.lower() not in bases:
             errors.append(f"缺少必留段落 [{req}]")
     if loop:
         info.append("循环模式：必留段落放宽为 Intro + End（不要求 Chorus / Outro）")
+    elif instrumental:
+        info.append("纯器乐：必留段落放宽为 Intro + End（器乐无副歌，也不该有渐弱的 Outro）")
 
     # 5. 括号配对
     for i, line in enumerate(lines, 1):
@@ -320,9 +324,9 @@ def main():
     ap.add_argument("--style", help="Style 文本（用于检查语言锁与冲突指令）")
     ap.add_argument("--instrumental", action="store_true",
                     help="纯器乐包：不要求 [Language:]/[Accent:]，改为检查器乐声明、"
-                         "方括号外有无歌词、有无残留人声描述")
+                         "方括号外有无歌词、有无残留人声描述；必留段落放宽为 Intro + End")
     ap.add_argument("--loop", action="store_true",
-                    help="循环素材：必留段落放宽为 Intro + End，检查 fade out 与 BPM 是否锁死")
+                    help="循环素材：在器乐放宽的基础上，另检查 fade out 与 BPM 是否锁死")
     ap.add_argument("--json", action="store_true", help="输出 JSON")
     args = ap.parse_args()
 

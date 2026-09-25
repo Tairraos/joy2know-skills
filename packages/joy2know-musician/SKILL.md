@@ -3,7 +3,7 @@ name: joy2know-musician
 display_name: 晓得·音乐人
 display_name_en: joy2know Musician
 description: >-
-  用 Suno V4.5+ 的高阶语法写可直接粘贴的歌曲包：复合段落标签、行内指令、声场控制、Style 语言锁，
+  用 Suno 的高阶语法（v4.5–v6 通用）写可直接粘贴的歌曲包：复合段落标签、行内指令、声场控制、Style 语言锁，
   默认输出治愈、有画面感、带人生哲理的作品；用户指定任何风格、语言或方言（含粤语）时按同一套技巧适配，
   并用「词汇锁 + 协音字 + 声调补偿」解决方言发音撕裂、破音、跑偏；
   纯器乐与循环路径另有一套写法，用于压制人声幻觉、锁死 BPM、让首尾同源，服务游戏 BGM 与背景垫乐。
@@ -18,7 +18,7 @@ description_zh: >-
   用 Suno 高阶语法产出可直接粘贴的歌曲包，默认治愈风格，支持指定风格与方言并做防跑偏处理；
   纯器乐与循环素材另有压制人声幻觉、锁死 BPM、首尾同源的写法。
 description_en: >-
-  Write ready-to-paste Suno V4.5+ song packs using advanced syntax: compound section tags, inline cues,
+  Write ready-to-paste Suno song packs (v4.5–v6) using advanced syntax: compound section tags, inline cues,
   stereo-field control and a Style language lock. Defaults to a healing, imagery-rich, philosophical style;
   adapts to any genre, language or dialect (including Cantonese) the user names, using word-locks and
   tonal compensation to stop AI from drifting, cracking or breaking on pronunciation. Also covers the
@@ -27,7 +27,7 @@ description_en: >-
   only — it does not call any music generation API, cannot guarantee identical results, and does not
   deliver an already-spliced seamless audio file (trimming and crossfading still happen in your editor).
 category: writing
-version: 1.3.0
+version: 1.4.0
 author: 晓得乐
 ---
 
@@ -75,6 +75,8 @@ author: 晓得乐
 2. **定人声锁（Style 第一字段）。** 有人声：目标语言写进 Style 的**第一个字段**，并在歌词最前写
    `[Language: XXX]` 与 `[Accent: XXX]`；方言必须连带写明具体语系（见规则 2）。
    **纯器乐（D / E 路径）：这一位改写 `Instrumental, No vocals`，并且不写 `[Language:]` / `[Accent:]`** —— 理由见规则 2 的例外段。
+   **用户要求「多首歌保持同一个人声」时**：这不是提示词能解决的事 —— 同一段 Style 每次生成的音色都会漂。
+   应引导他用平台的 Style Persona / Voices 去锁，并明说「一致靠平台功能、不靠提示词」（见 `@references/model-and-controls.md` 第四节）。
 3. **组装 Style。** 有人声按九字段顺序：`Language, Accent, Genre, Vocal description, Instruments, Mood, Tempo, Atmosphere, Production style`；
    器乐包把前两位合成一位 `Instrumental, No vocals`，再把 `Vocal description` 换成演奏主体（如 `Solo grand piano`）。
    写完附一行中文翻译（「**歌曲风格：** …」）。
@@ -121,8 +123,11 @@ author: 晓得乐
 - 反例：✗ 器乐包 Style 里还留着 `Soft breathy female vocals` 这类人声描述 —— 与 `No vocals` 直接打架，
   模型会挑一个执行，挑错就是一段无词人声。器乐包里描述人声的词**一个都不留**。
 - 降级路径：**压住了唱词、却没压住哼唱**时，把 `vocals, singing, humming, vocalizations` 这类词放进平台的
-  **排除 / 负面提示字段（Exclude / Negative）**——它比在 Style 里写否定词可靠。
-  该字段是否提供、叫什么名字，以你当前 Suno 版本的实际界面为准（本技能不写死版本差异）；
+  **排除 / 负面提示字段（Exclude）**——它比在 Style 里写否定词可靠。
+  **该字段的位置（2026-09 核实的官方文档）**：Custom 模式 → **Advanced Options（高级选项）** →
+  菜单**第一项**即 Exclude；语义等同 negative prompt。
+  字段是否提供、叫什么名字仍以你当前 Suno 版本的实际界面为准（本技能不写死版本差异）；
+  **官方未给分隔符示例 —— 按英文逗号枚举是稳妥做法，但别向用户声称这是官方规定的语法**。
   没有这个字段时，靠「简化 Style + 全篇不出现任何人声词」把概率压到最低，
   并如实告诉用户仍有可能出现垫音人声 —— **不要承诺「一定没有人声」**。
 
@@ -261,6 +266,7 @@ Consistent dynamics, Polished production
 - 默认治愈风格的完整配方（乐器、速度、和声走向、文风参数）→ `@references/healing-style.md`
 - 粤语等方言的词汇锁、风险字表、声调补偿写法 → `@references/cantonese-lock.md`
 - 纯器乐 / 游戏 BGM / 无缝循环的完整配方（编制、动态分层、循环点做法、后期与响度、可复制模板）→ `@references/game-bgm-loop.md`
+- **模型怎么选（v6 / v6-wild / v6-mini）、滑杆怎么调（Weirdness / Style Influence）、Exclude 填在哪、怎么让多首歌人声一致** → `@references/model-and-controls.md`
 
 ## 八、完成判据
 

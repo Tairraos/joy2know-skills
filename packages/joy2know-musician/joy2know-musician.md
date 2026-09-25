@@ -4,16 +4,17 @@
 > 规范见仓库根 `AGENT.md` 第 3–4 节。**下次检测先读本文件**，只重测有变化的部分与「未覆盖项」。
 >
 > **口径说明**：本报告每条结论对应一次**真实运行**（命令 + 样本 + 输出要点）。
-> 脚本实测跑在 `/tmp/j2k-check/musician-v130/` 的副本上（`packages/` 内不留 `__pycache__`），
-> 解释器用受管版本 `/Users/xiaole/.workbuddy/binaries/python/envs/default/bin/python`（已装 pyyaml）。
-> 本轮用例集由 `run_cases.py` 驱动（19 条），并对 **git 原始版本 v1.2.0** 跑同一套做对照（`run_cases.py old`）；
-> 反向验证由 `run_evidence.py` 篡改副本脚本完成（5 项）。**未使用「读代码推断它能跑」替代运行**。
+> 脚本实测跑在 `/tmp/j2k-check/musician-v140/samples/` 的样本上（`packages/` 内不留 `__pycache__`），
+> 解释器用受管版本 `/Users/xiaole/.workbuddy/binaries/python/envs/default/bin/python`。
+> 本轮（v1.4.0）为**文档升级 + 缺陷修复轮**：真跑 8 条用例（3 阳性 / 5 反向），
+> 修复后做**双向验证**（合规路径必须 0 红字 **且** 该报的错必须仍然报）。
+> **未使用「读代码推断它能跑」替代运行**。
 
 - **包名**：joy2know-musician
 - **类型**：技能
-- **对应版本**：1.3.0
+- **对应版本**：1.4.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-24
+- **最后检测**：2026-09-25
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -21,27 +22,28 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-     26791  SKILL.md                          技能正文（9 必填 frontmatter 齐全，version 1.3.0，342 行）
-     18045  scripts/suno_check.py             唯一脚本：Suno 歌曲包结构/器乐/循环校验（370 行）
-     10226  references/game-bgm-loop.md       【本轮新增】纯器乐 · 游戏 BGM · 无缝循环
+     27640  SKILL.md                          技能正文（9 必填 frontmatter 齐全，version 1.4.0，349 行）
+     18378  scripts/suno_check.py             唯一脚本：Suno 歌曲包结构/器乐/循环校验（379 行）
+     10226  references/game-bgm-loop.md       纯器乐 · 游戏 BGM · 无缝循环
       7187  references/suno-syntax.md         复合标签/行内指令/Style 九字段/控制词表
+      6421  references/model-and-controls.md  【本轮新增】模型选型 / Creative Sliders / Exclude / Voices
       5031  references/healing-style.md       默认治愈配方（乐器/BPM/文风内核/器乐化改法）
       4912  references/cantonese-lock.md      粤语三方锁、特征字表、风险字、声调补偿
-     20974  joy2know-musician.md              本文件（开发期文档，不进 zip）
+     25146  joy2know-musician.md              本文件（开发期文档，不进 zip）
 ```
 
 **零第三方依赖核对**：`suno_check.py` 仅 `import argparse / json / re / sys`（全标准库），
 无任何外部包 import；SKILL.md 未声明「零第三方依赖」字样，但实现确实零依赖。
-包体（不含本报告）**72192 字节 ≈ 70.5 KB**，远低于技能包 3 MB 上限。**结论：零第三方依赖守住。**
+包内文件小计（不含本报告）**79,795 字节 ≈ 77.9 KB**，远低于技能包 3 MB 上限。**结论：零第三方依赖守住。**
 
-**本轮体积变化**：技能正文 14.1 KB → 26.8 KB（+12.7 KB），新增 reference 10.2 KB，
-脚本 8.6 KB → 18.0 KB。**增量全部来自新增的器乐/循环路径**，无冗余副本。
+**本轮体积变化**：技能正文 26.8 KB → 27.6 KB（+0.8 KB），脚本 18.0 KB → 18.4 KB（+0.3 KB），
+新增 reference `model-and-controls.md` 6.4 KB。**增量来自模型/滑杆/Exclude/Voices 的知识补齐与一处缺陷修复**，无冗余副本。
 
 ---
 
 ## 二、能力清单与验证结果
 
-样本目录：`/tmp/j2k-check/musician-v130/samples/`。结果取值：✅通过 / ❌失败 / ⚠️部分 / 未覆盖。
+样本目录：v1.3.0 轮 = `/tmp/j2k-check/musician-v130/samples/`；**v1.4.0 轮 = `/tmp/j2k-check/musician-v140/samples/`**（6 个样本 `s1`–`s6`，v140 目录仍在，可复跑）。结果取值：✅通过 / ❌失败 / ⚠️部分 / 未覆盖。
 
 ### 2.1 本轮新增能力（v1.3.0）
 
@@ -75,7 +77,50 @@
 | — | frontmatter 9 必填 + 引用落地 | `selfcheck.py packages/joy2know-musician` | ✅ | 通过 10 项 / 0 问题；**4 个 `@references/*` 引用全部有效**（含新增 game-bgm-loop.md） |
 | — | 全系列一致性（R6） | `series_audit.py` | ✅ | **本包告警条目为 0** —— 首轮曾报「`--style` 未文档化」，已补 SKILL §三.7 与 cantonese-lock §七 |
 
-**用例集总账：新版 19/19 通过。**
+**用例集总账（v1.3.0 轮）：新版 19/19 通过。**
+
+### 2.3 本轮新增（v1.4.0）：知识补齐 + 缺陷 7 修复
+
+**A. 文档升级**（新增 `@references/model-and-controls.md`，SKILL.md 四处联动）
+
+| # | 补了什么 | 落点 | 依据 |
+|---|---|---|---|
+| D1 | 模型选型：v6 / v6-wild / v6-mini 及各自可用等级；**免费账号只能用 v6-mini**；模型不在提示词控制范围内 | 新 reference §一 | help.suno.com 官方原文（2026-09-25 读） |
+| D2 | Creative Sliders：Weirdness（Safe↔Chaos，**50% 是「正常预期结果」基准**）、Style Influence（Loose↔Strong）、Audio Influence（仅上传音频时出现） | 新 reference §二 | 官方原文；**官方未给默认值，文件内明确「不要编造具体数值」** |
+| D3 | **Exclude 的确切位置**：Custom → Advanced Options → 菜单第一项，语义等同 negative prompt | 新 reference §三 + SKILL 规则 2 例外段 + `cine-team/agents/cine-music.md` | 官方原文；同时保留「以你当前版本实际界面为准」的不确定性提示 |
+| D4 | Voices 已取代 Personas、**Style Persona 仍保留在 Voices 内**；「多首歌要同一人声」靠平台功能而非提示词 | 新 reference §四 + SKILL §三.2 | 官方原文；SKILL 明写「**不要**承诺用同一段 Style 就能保证音色一致」 |
+| D5 | 去写死版本号：`Suno V4.5+` → `Suno 的高阶语法（v4.5–v6 通用）` | description / description_en | 与该技能「不写死版本差异」的既有原则一致 |
+
+**B. 缺陷 7 修复后的双向验证**（缺陷说明见第六节）
+
+| # | 用例 | 命令要点 | 结果 | 证据要点 |
+|---|---|---|---|---|
+| V1 | 人声合规（阳性） | `s1_heal.txt --style "Mandarin, … , 76 BPM, …"` | ✅ | 错误 0 / 退出 0 |
+| V2 | **器乐非循环（本次修复目标）** | `s2_instru.txt --instrumental --style "Instrumental, No vocals, …, 72 BPM, …"` | ✅ | **错误 0 / 退出 0**（改前 = 2 error）；新增 info「纯器乐：必留段落放宽为 Intro + End」 |
+| V3 | 循环合规（阳性） | `s3_loop.txt --instrumental --loop --style …` | ✅ | 错误 0 / 退出 0 |
+| V4 | 器乐缺 `[End]`（反向） | `s4_bad_no_end.txt --instrumental --loop` | ✅ | 错误 1「缺少必留段落 [End]」/ 退出 1 |
+| V5 | 器乐只有 Intro（反向） | `s5_instru_only_intro.txt --instrumental` | ✅ | 错误 1「缺少必留段落 [End]」/ 退出 1（**改前 = 3 错「缺 Chorus / Outro / End」** —— 多出来的 2 条正是被误加的副歌要求） |
+| V6 | **人声包缺 Chorus/Outro（防误放对照）** | `s6_vocal_no_chorus.txt --style …` | ✅ | **仍报 2 错**「缺少必留段落 [Chorus]/[Outro]」/ 退出 1 —— 证明放宽**只作用于器乐路径**，没有把口径整体放松 |
+| V7 | 器乐样本不加开关（反向） | `s2_instru.txt --style …` | ✅ | 错误 4 / 退出 1；「若确实无人声，请加 --instrumental 重跑」的出口提示仍在 |
+| V8 | 循环包未锁 BPM（反向） | `s3_loop.txt --instrumental --loop --style "…（无 BPM）"` | ✅ | 错误 1「循环包必须在 Style 里写死 BPM 数字」/ 退出 1 |
+
+**C. 改前 / 改后同一套用例对照**（旧版脚本 = `git show HEAD:…/suno_check.py`，即 v1.3.0）
+
+| 用例 | 改前（v1.3.0 脚本） | 改后（v1.4.0） | 说明 |
+|---|---|---|---|
+| V2 器乐非循环（合规） | ❌ **错误 2**「缺少必留段落 [Chorus]/[Outro]」/ 退出 1 | ✅ 错误 0 / 退出 0 | **修复目标本身**：合规路径从「被判红」变为「0 红字」 |
+| V5 器乐只有 Intro | ❌ 错误 3「缺 Chorus / Outro / **End**」/ 退出 1 | ✅ 错误 1（只剩真该报的 `[End]`） | 改前多出的 2 条全是误报，真缺陷（缺 End）被淹在噪声里 |
+| V6 人声缺 Chorus/Outro | ❌ 错误 2 / 退出 1 | ❌ 错误 2 / 退出 1 | **阴性对照**：人声路径前后一致，证明放宽**只作用在器乐分支** |
+
+> 这三行是本次修复唯一的判据 —— **既证明合规路径被救活（V2/V5 翻转），也证明没有顺手把口径整体放松（V6 不翻转）**。
+
+**用例集总账（v1.4.0 轮）：8/8 通过 —— 3 阳性（合规路径必须 0 红字）+ 5 反向（该报的错必须仍报）。**
+
+> **本轮踩到的坑（记下来防再犯）**：首轮用 `… | tail -4; echo "退出码=$?"` 取退出码，
+> **`$?` 取到的是管道末端 `tail` 的退出码（恒为 0），且 `tail -4` 把「错误 N 项」那段截掉了** ——
+> 于是 V2/V4 双双被误读成「脚本失效」。改用「不经管道重定向到文件 + 单独取 `$?` + 断言错误条数与文案」
+> 后结论才正确。**这是本项目的第 8 种假测试形态：管道掩盖退出码 + 截断掩盖错误段。**
+
 
 ---
 
@@ -218,18 +263,35 @@
   「禁淡出」初版直接搜 `fade out`，而规范收尾写法 `[End – … No fade out]` 恰好含这四个字 ——
   文档要求写、脚本却报错。真跑 C8 时发现，改为**先剔除 `No fade out / No fade in` 再匹配**。
   （同类自伤还有一处：`)` 对 `(— —)` 的解析顺序，构造样本时一并核过。）
+- **【已修 2026-09-25 · v1.3.0 → v1.4.0】缺陷 7（中·非硬）· 1.3.0 只修了一半：器乐包仍按人声口径索要 Chorus/Outro**：
+  1.3.0 修掉了「器乐包被索要语言锁」那一半，但**必留段落只对 `--loop` 放宽**。实现是
+  `required = REQUIRED_SECTIONS_LOOP if loop else REQUIRED_SECTIONS` —— **只看 `loop`，不看 `instrumental`**，
+  而**同一文件第 38 行的注释**却写着「**器乐 / 循环包**放宽后的必留段」。
+  **实测后果**：一份**按 §三.4 写的合规非循环器乐包**（`[Intro] + [End]`）被判
+  **2 error「缺少必留段落 [Chorus] / [Outro]」**；而**硬塞一对 Chorus/Outro 反而 0 error 全绿**——
+  器乐里根本没有「副歌」这个概念，**工具在逼用户写错的东西**。
+  这属于 1.3.0 修过的那类「工具与文档口径不一致 / 反向激励」（缺陷 4/5）**在同一处的残留**：
+  上轮改了「语言锁」这半，漏了「必留段落」这半。
+  **已修**：改为 `relaxed = loop or instrumental`，器乐路径同样放宽为 `Intro + End`；
+  并把 3 处文本（文件头检查项 3 / 检查项 8、`--instrumental` 与 `--loop` 的 `--help`、第 4 步注释）与实现对齐。
+  **双向验证**见 2.3 节：V2（改前 2 error → 改后 0 error）与 **V6（人声包缺 Chorus/Outro 仍报 2 error，未被误放）**。
 
-> **严重度判定说明**：缺陷 4/5 影响的是**用户实际用法**，但**均已在本版修复并有对应用例**；
+> **严重度判定说明**：缺陷 4/5/7 影响的是**用户实际用法**（合规产出被判红、或工具逼人写错东西），
+> 但**均已在本版修复并有对应用例**（缺陷 7 另补了「防误放」对照 V6）；
 > 剩余 8 项未覆盖均为**能力边界**（文风、跨生成物一致性、真机试听）或**已知的既有缺口**（标题、九字段）。
 > 按仓库口径（非阻断性 + 有明确未覆盖项）→ **⚠️ 有条件通过**。
 > 若维护者认为「合法路径被判红」属硬缺陷、要求必须有真机试听记录才放行，应改判 **❌** 并优先补第 5 项。
 
 **待办**：
 
+- **扫一遍同类残留（本轮新提）**：缺陷 7 的本质是「1.3.0 只修了判据的一半」—— 教训是
+  **修缺陷时要沿同一条判据把所有分支都过一遍**，而不是只修被观察到的那一个表现。
+  本轮已核「语言锁 + 必留段落」两条路径化判断；其余组合（如 `--dialect` × `--instrumental`、
+  `--loop` 下的裸 `[End]` 与 BPM 缺失叠加）尚未逐一对照，列入下次。
 - 顺手补未覆盖项 1/2（Style 字段数校验、标题存在性与 `(Instrumental)` 标注校验），让校验更闭环。
-- **未覆盖项 5 是本包最该补的一条**：拿真机试听一版器乐包（`instru_normal` 的提示词直接粘进 Suno），
-  把「是否真的没有哼唱」「循环点是否对得上」写进履历 —— 这是唯一能验证新增内容**有用**的方式。
-- 改完必须跑回归：本报告第二节全量 19 条重跑（本轮已做），并对新增检查补反向验证（本轮 T1–T5 已做）。
+- **未覆盖项 5 是本包最该补的一条**：拿真机试听一版器乐包（把本轮 `s2_instru.txt` 的提示词直接粘进 Suno），
+  把「是否真的没有哼唱」「循环点是否对得上」写进履历 —— 这是唯一能验证这些内容**有用**的方式。
+- 改完必须跑回归：本报告第二节全量用例重跑（本轮已按 2.3 节 8 条重跑，含防误放对照）。
 
 ---
 
@@ -240,3 +302,4 @@
 | 2026-09-23 | 1.1.0 | ⚠️ 有条件通过 | 首次成文（覆写骨架）。在 /tmp 副本上用受管 Python 真跑 `suno_check.py`：20 项能力 + 11 组边界/错误样本全覆盖（主流程/语言锁/复合标签/必留段/括号/方言密度·污染·风险字/distorted 冲突/降级路径/`--json`）；4 组反向验证（篡改 `[Language:]` 正则→本应通过的样本现报错、删 frontmatter `author`→selfcheck 报缺、简体污染→3 warn、应通过样本 0 错误不乱报）。字段自检 9 通过/0 问题。发现 3 处真实缺陷（编码异常裸堆栈、普通话虚词表仅简体、未内置方言降级死代码）+ 6 项未覆盖。**未改包内任何文件。** |
 | 2026-09-23 | 1.2.0 | ⚠️ 有条件通过 | **修复轮**：缺陷 1 → 读取异常补 `UnicodeDecodeError`（置于 `OSError` 前）+ 指明「转存 UTF-8」；缺陷 2 → `MANDARIN_LEAKS` 简繁成对收词（有意不收「時候」，避免误报合规粤语）；缺陷 3 → 新增 `KNOWN_UNMAPPED_DIALECTS` 使「未内置字表」分支可达，并把**污染检查移出字表分支**（未内置字表的方言也要查污染）。SKILL §三.6 与 cantonese-lock 反例同步。验收：**真跑 15/15，同一套用例对 git 原始版本 7/15**（失败 8 条精确对应三处缺陷；M3/M4/M6/M7/M8 阴性对照两侧均通过）。 |
 | 2026-09-24 | 1.3.0 | ⚠️ 有条件通过 | **补空档轮（用户提出）**：① **纯器乐路径的规则空档** —— §二 D 允许省 Lyrics，而 §四 规则 2 / §五 强制语言锁与 `[Language:]`，器乐包无路可走；实测旧版把**合规器乐包判 2 error**、循环包判 **4 error**。② **缺「游戏 BGM / 无缝循环」场景**。改法：规则 2 的**第一位重新定义为「人声锁」**（有人声=语言锁，无人声=`Instrumental, No vocals`，位置与职责不变），并新增 **§十 场景配方**（三处冲突裁决 + 循环四条硬约束 + 子场景速查）；新增 reference `game-bgm-loop.md`（四道压人声门、Style 逐字段对照、循环点与后期、动态分层、Stinger、四套模板、失败模式）；脚本新增 **`--instrumental` / `--loop`**（含「开关不是放水口」的反向检查：声明器乐却有歌词 → error）。§六 第 2 条扩为「**补全与规则偏离都要标注**」（把用户自发的做法固化成规范）。prompt 与 description 补 BGM/循环/器乐触发词。验收：**真跑 19/19**；同一套用例对 **v1.2.0 为 12 条 n/a + 6 条通过 + 1 条失败**（n/a 证明能力原本不存在，6 条通过证明未破坏既有行为）；**反向验证 5/5**（T1–T5 篡改检查逻辑，目标文案有/无全部反转）；`series_audit` 本包告警 **0**（首轮曾因 `--style` 未文档化告警，已补文档）；字段自检 10 通过/0 问题。修掉缺陷 4/5（旧版反向激励）与开发期自伤 6。**未覆盖项 8 条，其中「真机试听验证」列为首要待办。** |
+| 2026-09-25 | 1.4.0 | ⚠️ 有条件通过 | **知识补齐 + 缺陷 7 修复轮**：① **知识补齐** —— 依 help.suno.com 官方原文新增 reference `model-and-controls.md`（v6 / v6-wild / v6-mini 选型与免费账号边界、Creative Sliders 的 Weirdness（Safe↔Chaos，50% 为正常基准）/ Style Influence（Loose↔Strong）/ Audio Influence、**Exclude 的确切位置 = Custom → Advanced Options 首项**、Voices 已取代 Personas 而 Style Persona 保留在 Voices 内），SKILL 四处联动，并把 `Suno V4.5+` 去写死为 `v4.5–v6 通用`。② **修缺陷 7** —— 1.3.0 只修了「语言锁」那半，**必留段落仍只对 `--loop` 放宽**，致合规的非循环器乐包被判 2 error（而硬塞 Chorus/Outro 反而全绿 = 工具在逼人写错）；改为 `relaxed = loop or instrumental` 并同步 3 处文本。验收：**真跑 8/8**（3 阳性 + 5 反向，含 V6「人声包缺 Chorus/Outro 仍报 2 error」防误放对照）；V2 改前 2 error → 改后 0 error；`selfcheck` 11 项通过（含新增 `@references/model-and-controls.md` 引用有效）。**新增第 8 种假测试形态**：`… \| tail -4; echo $?` 取到的是 `tail` 的退出码、且截断了错误段，导致 V2/V4 一度被误读为「脚本失效」。**另注**：本机已安装版（`~/.workbuddy/skills/joy2know-musician/`）仍是市场版 **1.1.0**，其 `suno_check.py` 与仓库版 hash 不同 —— 需重装才能拿到 1.4.0。 |
