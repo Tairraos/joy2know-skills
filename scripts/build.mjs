@@ -65,6 +65,8 @@ const RELEASE_CONFIG = path.join(ROOT, 'release.config.json');
 // **放在仓库根**（不在 dist/）：dist/ 是 gitignore 的产物目录，清单里记着发布历史，
 // 属于版本化资产，删一次 dist 不该把历史一起丢掉。
 const MANIFEST = path.join(ROOT, '发布清单.md');
+// README 的「资产总表」也有状态列 —— 与清单同源，构建时一起同步，避免两处口径漂移。
+const README = path.join(ROOT, 'README.md');
 // 老位置遗留的清单（曾经放在 dist/），构建时顺手清掉，避免两处并存误导人
 const LEGACY_MANIFEST_RE = /^发布清单(?:-\d+(?:\.\d+)*)?\.md$/;
 const AUTO_BEGIN = '<!-- AUTO:BEGIN -->';
@@ -746,17 +748,38 @@ function fmtStamp(d) {
  *   ③ 审核完成（已上架）—— entry.platform，普通用户在推荐市场里已能看到
  * ②③ 可同时存在：在审的新版本还没过审时，③ 仍是上一个已过审的老版本。
  */
-function publishStatusOf(pkg, entry) {
+/**
+ * 发布状态 —— **规则只在这里算一次**，发布清单与 README 共用，只是渲染不同
+ * （README 不加粗）。返回 { num, label, emph, detail, upgrade }。
+ */
+function publishStateOf(pkg, entry) {
   const local = versionOf(pkg);
   const onShelf = entry?.platform?.version || null;   // ③
   const pending = entry?.submitted?.version || null;  // ②
   const shelfTxt = onShelf ? `在架 ${onShelf}` : '首次上架';
 
-  if (pending === local) return `② **待审核**（${shelfTxt}）`;
-  if (pending) return `② **待审核**（交 ${pending}，${shelfTxt}）+【本地升级】`;
-  if (onShelf === local) return '③ 审核完成 · 已上架';
-  if (onShelf) return `③ **已上架**（在架 ${onShelf}）+【本地升级】`;
-  return '① 开发完待提交';
+  if (pending === local) return { num: '②', label: '待审核', emph: '待审核', detail: shelfTxt, upgrade: false };
+  if (pending) return { num: '②', label: '待审核', emph: '待审核', detail: `交 ${pending}，${shelfTxt}`, upgrade: true };
+  if (onShelf === local) return { num: '③', label: '审核完成 · 已上架', emph: null, detail: null, upgrade: false };
+  if (onShelf) return { num: '③', label: '已上架', emph: '已上架', detail: `在架 ${onShelf}`, upgrade: true };
+  return { num: '①', label: '开发完待提交', emph: null, detail: null, upgrade: false };
+}
+
+/** 渲染一行状态文字。bold=true 给发布清单用（②/③ 的关键词加粗），false 给 README 用。 */
+function renderStatus(s, bold) {
+  const label = bold && s.emph ? `**${s.label}**` : s.label;
+  const body = s.detail ? `${s.num} ${label}（${s.detail}）` : `${s.num} ${label}`;
+  return s.upgrade ? `${body}+【本地升级】` : body;
+}
+
+/** 发布清单里的状态单元格 */
+function publishStatusOf(pkg, entry) {
+  return renderStatus(publishStateOf(pkg, entry), true);
+}
+
+/** README 资产总表里的状态单元格（同一条规则，不加粗） */
+function readmeStatusOf(pkg, entry) {
+  return renderStatus(publishStateOf(pkg, entry), false);
 }
 
 /** 平台侧单元格：在架版本，若有审核中的提交则追加「→ 新版本 ⏳」 */
@@ -947,6 +970,54 @@ function writeManifest(pkgs, cfg) {
   const out = `${AUTO_BEGIN}\n${renderManifest(pkgs, cfg, stamp)}\n${AUTO_END}\n${tail}`;
   fs.writeFileSync(MANIFEST, out);
   return MANIFEST;
+}
+
+/**
+ * 同步 README「资产总表」两张表的状态列。
+ *
+ * 为什么放在构建里：状态口径**只能有一份**。此前 README 的状态列是手改的，
+ * 于是出现「清单已按真源重建、README 还停在上一轮」的静默漂移（2026-09-25 实证）。
+ * 这里与发布清单共用 `publishStateOf` + `readmeStatusOf`，不另抄一份判断。
+ *
+ * **只改每行最后一格**，其余单元格（作用说明等）逐字保留。
+ * 只认「表头含 `包名` 与 `展示名`」的资产表 —— README 里还有别的表也以
+ * ``| `joy2know-xxx` |`` 开头（内嵌技能表），不设限会把它们改坏。
+ *
+ * 返回 { updated, skipped, missing }，由调用处报出去 ——
+ * **批改类脚本必须报「处理了几条 / 跳过了哪些」**，否则就是静默漏改。
+ */
+function syncReadmeStatus(pkgs, cfg) {
+  const res = { updated: 0, skipped: 0, missing: [] };
+  if (!exists(README)) return res;
+  const byName = new Map(pkgs.map((p) => [p.name, p]));
+  const lines = fs.readFileSync(README, 'utf8').split('\n');
+  let inAsset = false;
+  const seen = new Set();          // 只在**资产表内**见过的包名 —— 别处（内嵌技能表）出现不算
+
+  const out = lines.map((line) => {
+    if (!line.trim() || /^#{2,3}\s/.test(line)) { inAsset = false; return line; }
+    if (/^\|\s*包名\s*\|/.test(line) && line.includes('展示名')) { inAsset = true; return line; }
+    if (!inAsset) return line;
+
+    const m = /^\|\s*`([^`]+)`\s*\|/.exec(line);
+    if (!m) return line;
+    seen.add(m[1]);
+    const pkg = byName.get(m[1]);
+    if (!pkg) { res.skipped++; return line; }
+
+    const cells = line.split('|');
+    if (cells.length < 4) { res.skipped++; return line; }
+    const idx = cells.length - 2;              // 行以 `|` 收尾 → 末位是空串，真实末格在倒数第二
+    const want = readmeStatusOf(pkg, cfg.packages[pkg.name] || {});
+    if (cells[idx].trim() === want) return line;   // 幂等：已经一致就不动
+    cells[idx] = ` ${want} `;
+    res.updated++;
+    return cells.join('|');
+  });
+
+  for (const p of pkgs) if (!seen.has(p.name)) res.missing.push(p.name);
+  if (res.updated) fs.writeFileSync(README, out.join('\n'));
+  return res;
 }
 
 /**
@@ -1158,8 +1229,14 @@ function main() {
     }
     writeManifest(pkgs, cfg);
     const stale = pruneLegacyManifests();
+    const rd = syncReadmeStatus(pkgs, cfg);
     console.log('');
     console.log(C.bold('发布清单') + C.dim(`  ${norm(path.relative(ROOT, MANIFEST))} 已按实际版本重写（人工段落保留）`));
+    console.log(C.bold('README') + C.dim(`  README.md 资产总表状态列：同步 ${rd.updated} 行` +
+      (rd.skipped ? `，跳过 ${rd.skipped} 行（不在 packages/ 里）` : '')));
+    if (rd.missing.length) {
+      console.log('  ' + C.yellow('! ') + C.dim(`有 ${rd.missing.length} 个包没出现在 README 资产总表里：${rd.missing.join('、')}`));
+    }
     for (const f of stale) console.log('  ' + C.dim(`已清理旧位置 dist/${f}（清单已迁到仓库根，两处并存会看错）`));
   }
 }
