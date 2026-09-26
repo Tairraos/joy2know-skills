@@ -28,9 +28,14 @@ skills: [joy2know-musician]
 ### 1. 标题
 ### 2. Style (Suno Optimized)   ← 九字段；有人声时首位是人声锁，器乐时首位是 Instrumental, No vocals
 ### 3. Lyrics (Suno Structure)  ← 全英文结构标签；有人声时下方写目标语言歌词，器乐时方括号外留空
+### 4. 粘贴前设置              ← Variety 归 0（必写）+ Duration / Max Mode / Vocal Gender，器乐包再 + Exclude（有该字段才写）
 ```
 
 外加一行「**用途与插入点建议**」：这段音乐建议放在片子的哪个位置、用什么段落做卡点。
+
+第 4 块不是可选项：**Variety 默认 `Normal` 会改写上面那份 Style**（见规则 1 的「配套动作」）。
+免费档还要多说两句 —— 额度 50 credits/天（一次生成 2 首共 10）、**Max Mode 翻倍消耗**、
+且免费账号产出**无商业授权**；本团队是给正式短片配乐，这一条要在交付里点出来。
 
 **选人声还是器乐：** 主题曲 / 插曲 / 片尾曲（要人唱）走**人声**；背景垫乐、氛围铺底、要一直放下去的循环、
 30 秒以内的场景配乐一律走**器乐**，默认不写歌词。用户说「配乐 / BGM」而没说要歌时，**默认器乐**——
@@ -70,10 +75,19 @@ skills: [joy2know-musician]
     **你以为在关人声，实际是在下反向指令**，而且人声轨道一旦混进来，整条音轨都得重做。
   - 反例：✗ 器乐包里还留着 `Soft breathy female vocals` 这类人声描述 —— 与 `No vocals` 直接打架，
     人声词**一个都不留**。
-  - 降级路径：压住了唱词、却没压住哼唱时，把 `vocals, singing, humming, vocalizations` 放进平台的
-    **排除 / 负面提示字段**（2026-09 核实的官方位置：Custom 模式 → Advanced Options → 菜单第一项，语义等同 negative prompt；
-    字段名与是否提供仍以你当前 Suno 版本的实际界面为准）；平台没有该字段就简化 Style，并如实说明仍可能出现垫音人声 ——
-    **不要承诺「一定没有人声」**。
+  - **配套动作（必写，两档都适用）：提醒用户把 `Variety` 归 0。**
+    Suno 官方 v6 FAQ 原文：Variety *"is designed to introduce variety in your outputs by **adjusting and
+    updating your style prompts**"*，官方给的办法是 *"reduce the Variety slider to 0"*。
+    它是**唯一会改写你写的 Style 的控件**，而本规则的人声锁 / 器乐声明 / BPM / `Seamless loop` 全在 Style 里；
+    实测它**默认就是 `Normal`**，不改等于白写，而且**不报任何错**。
+  - 降级路径（**按可靠性排序，第一条优先**）：① 把 `vocals, singing, humming, vocalizations` 放进平台的
+    **排除 / 负面提示字段（Exclude）**；② **没有这个字段时不要卡住**：Style 简化到 4–7 个标签、
+    全篇不出现任何人声词、换更纯器乐的流派词（环境 / 氛围 / 后摇比 pop、trap、soul 稳得多）。
+    **该字段的位置与可用性（2026-09-25 实测，请照实说）**：它在 Advanced（自定义）模式的折叠面板里 ——
+    早期资料叫它 **Advanced Options**，实测按钮名是 **More Options**；
+    ⚠️ **实测同一面板里 Vocal Gender / Duration / Max Mode / Weirdness / Style Influence / Variety /
+    Personalize 都在，唯独没有 Exclude** —— 该字段**可能因档位或版本灰度而缺席**。
+    所以**有就用、没有就走第 ② 条**，并如实说明仍可能出现垫音人声 —— **不要承诺「一定没有人声」**。
 
 **规则 4：时长与用途匹配**
 
@@ -101,6 +115,8 @@ skills: [joy2know-musician]
 ## 输出纪律
 
 - 收齐信息后**纯净输出**，严禁解释创作思路。
+- 文末除「假设与待替换」外，**必须带「粘贴前设置」那一块**（第 4 段）：**Variety 归 0 是必写项** ——
+  它是本团队最容易漏、也最致命的一条，漏了等于用户拿到的提示词与他看到的不是同一份。
 - 文末必须列「假设与待替换」：你补全的信息（风格/人声/语言）逐条列出，与用户给的信息分开。
   **有意偏离内置技能某条规则时也要写明**（例：`偏离规则 3：本段无人声，故未写语言锁，Style 首位改为 Instrumental, No vocals`）——
   偏离可以不发生，但**不许悄悄发生**。

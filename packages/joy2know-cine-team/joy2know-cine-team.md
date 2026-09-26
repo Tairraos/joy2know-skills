@@ -7,13 +7,20 @@
 > 反向验证的错样本跑在 `/tmp/j2k-check/cine-team/` 的副本上（`packages/` 内不留 `__pycache__`）。
 > **注意**：该临时目录必须同时放一份 `avatars/`（本仓库真源），否则会因找不到
 > `avatars/joy2know-cine-team.png` 报一条**假红灯** —— 见第四节的踩坑记录。
+>
+> **本轮（v1.5.0）为「内嵌联动升级轮」**：本包内嵌 `joy2know-musician`，
+> 该技能本轮把 Suno v6 世代的**实测控件现状**（免费档只可选 `v6-mini`、`Variety` 默认 Normal
+> 且**会改写 Style**）写进了正文与校验脚本。按本仓库的**内嵌联动铁律**，本包必须同轮跟进 ——
+> 本轮实际改动 **3 处**：① `agents/cine-music.md` **正文口径同步**（这是「两层过期」的
+> 第 ② 层，最容易漏且自检查不到）；② `plugin.json` 版本；③ 包内 `README.md` 版本行。
+> 全部经过**产物内逐字节核对**（见第二节「构建暂存形态」一行的实测证据）。
 
 - **包名**：joy2know-cine-team
 - **类型**：专家团（`expertType: "team"`，1 主理人 + 6 成员）
-- **对应版本**：1.4.0
+- **对应版本**：1.5.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-25
-- **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
+- **最后检测**：2026-09-26（同日随内嵌技能 `joy2know-musician` 的描述修正**同轮重建**，包内文本一字未动）
+- **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证 + 上传预检
 
 ---
 
@@ -31,14 +38,15 @@
     4522  agents/cine-prompt.md             提示词工程师·珀西
     5306  agents/cine-consistency.md        一致性管理员·柯拉
     3885  agents/cine-post.md               后期顾问·奥托
-    8185  agents/cine-music.md              音乐人·小音（1.4.0 轮：补 Exclude 位置到「压不住哼唱」降级路径）
-   23701  joy2know-cine-team.md             本文件（开发期文档，不进 zip）
+    9974  agents/cine-music.md              音乐人·小音（1.5.0 轮：同步「More Options + Variety 归 0 + 第 4 段设置块」）
+    38736  joy2know-cine-team.md             本文件（开发期文档，不进 zip）
 ```
 
 **零第三方依赖核对**：本包无 `scripts/`、无任何可执行代码与网络调用。
-源包体（不含本报告）**44.3 KB**；发布后 zip 另含构建注入的 8 张头像与 3 个内嵌技能。
-**1.4.0 轮已实测产物**：`dist/joy2know-cine-team-v1.4.0.zip` = **4280.2 KB**（专家团上限 20 MB，余量充足），
-第一层为 `joy2know-cine-team/`，内嵌 `joy2know-musician` 读到 **1.4.0**（见第二节 1.4.0 行）。
+源包体（不含本报告）**47,337 字节 ≈ 46.2 KB**；发布后 zip 另含构建注入的 8 张头像与 3 个内嵌技能。
+**1.5.0 轮已实测产物**：`dist/joy2know-cine-team-v1.5.0.zip` = **4286.7 KB**（专家团上限 20 MB，余量充足），
+第一层为 `joy2know-cine-team/`，内嵌 `joy2know-musician` 读到 **1.5.0**，
+且内嵌的 `references/model-and-controls.md` 与 `scripts/suno_check.py` **与源包逐字节一致**（见第 2.4 节）。
 
 **头像规格（8 张，已逐一实测）**：团队图标 + 7 名成员头像全部 **512×512、377–410 KB**，
 均 ≤500 KB 且 ≈512² 方图，**8/8 合规**。
@@ -49,7 +57,7 @@
 
 | 能力 / 待验证项 | 验证方式（命令与样本） | 结果 | 证据要点 |
 |---|---|---|---|
-| plugin.json 15 字段齐全 + JSON 可解析 | `$V/bin/python scripts/selfcheck.py packages/joy2know-cine-team` | ✅ 通过 | 通过 **26 项 / 0 未通过**（对源目录跑，另有 5 条**提示**：内嵌技能与头像「构建时才注入」、zip 未生成） |
+| plugin.json 15 字段齐全 + JSON 可解析 | `$V/bin/python scripts/selfcheck.py packages/joy2know-cine-team` | ✅ 通过 | **1.5.0 轮复跑：通过 35 项 / 0 未通过**（对源目录跑，另有 5 条**提示**：内嵌技能与头像「构建时才注入」、zip 未生成）。<br>⚠️ **本行数字在 1.4.0 轮修正过一次**：初稿沿抄了 1.1.0 时代的「26 项」（校验器在 1.3.0 轮扩过判据、已变 35 项）—— 属**照抄旧结论**，真跑后改正；1.5.0 轮复跑确认仍是 35 项 |
 | 官方硬约束：`displayDescription.zh` 40–50 汉字 | 同上 | ✅ 通过 | 实测 **48 汉字**（脚本判定落在 40–50 内；注意该检查**只管 zh，不管 en**，见「四」与第五节盲区说明） |
 | 官方硬约束：`defaultInitPrompt` == `quickPrompts[0]` | 同上 | ✅ 通过 | 两版（zh/en）逐字相同 |
 | 官方硬约束：`tags` / `quickPrompts` 各 3 个 | 同上 | ✅ 通过 | 各 3 |
@@ -65,8 +73,9 @@
 | 包内无硬编码凭证 | selfcheck `[sec]` 项 | ✅ 通过 | 未发现疑似凭证 |
 | 反向验证：10 组「应该被抓」的错样本 | 见第五节 | ✅ 通过 | **10/10 全部被抓**，且每组只亮**对应那一条**（未误伤其它检查项） |
 | 团队成员的实际协作行为（建团队 / 调度 / 中转 / 不代写） | — | 未覆盖 | 需真实运行团队，见第六节 |
-| 构建暂存形态（注入 `skills/` 与 `avatars/` 后） | `build.mjs joy2know-cine-team` + 解包实测 | ✅ 通过（1.4.0 轮复测） | zip 4280.1 KB；第一层仅 `joy2know-cine-team/`；`settings.json`+`setting.json` 均在；内嵌 `musician` 读到 `version: 1.4.0`，且**新增的 `references/model-and-controls.md` 已随构建入包**（实测 `unzip -p` 读到 1.4.0、`unzip -l` 见到该文件） |
-| 成员文件 ↔ 被内嵌技能真源的口径一致（22 条） | `crosscheck.py`（读技能 `SKILL.md` / 脚本 `--help` / 包内 json） | ✅ 通过（1.3.0 轮新增） | 22/22；改前对照 13/22；3 组篡改各只打中一条 |
+| 构建暂存形态（注入 `skills/` 与 `avatars/` 后） | `build.mjs joy2know-cine-team` + 解包实测 | ✅ 通过（1.5.0 轮复测） | zip **4286.7 KB**；第一层仅 `joy2know-cine-team/`；`settings.json`+`setting.json` 均在；内嵌 `musician` 读到 **`version: 1.5.0`**；且**内嵌 `references/model-and-controls.md` 与 `scripts/suno_check.py` 均与源包 `diff` 逐字节一致**（本轮三处改动里最容易被「构建读实时源、清单显示新版」掩盖的一环，实测排除） |
+| 成员文件 ↔ 被内嵌技能真源的口径一致 | `crosscheck.py`（读技能 `SKILL.md` / 脚本 `--help` / 包内 json） | ⚠️ **连续第二轮降级为手工核对** | 1.3.0 轮 22/22（改前 13/22）；**1.4.0 轮脚本已随 `/tmp` 清理消失、未入库，无法重跑** —— 1.4.0 与 1.5.0 两轮只能逐条手工比对。1.5.0 轮比对四处：「人声锁三处」「**More Options 位置 + Exclude 可能缺席**」「必留段落」「版本号 1.5.0」，结论一致；**待办升级为 P1：校验器必须入库**（连着两轮替它手工兜底，说明它不是一次性工具） |
+| 上传预检：产物走哪个上传入口 | `platformcheck.py --zip dist/joy2know-cine-team-v1.5.0.zip` | ✅ 通过（1.4.0 轮新增，1.5.0 轮复跑） | 按 **Expert** 类型上传通过；预检同时报出按 **Skill** 上传会失败（超 3 MB + 缺根级 `SKILL.md`）、按 **BuddyApp** 上传会因 `file_too_large`（上限 3 MB）失败 —— **这正是历史上真实踩过的「入口选错」坑**，现在上传前就能判出来 |
 
 **复现命令**
 
@@ -116,6 +125,41 @@ $V/bin/python /tmp/j2k-check/cine-team-v130/crosscheck.py /tmp/j2k-check/cine-te
 X7 最初写成 `has(SKILL, "| 必留段落（§三.4）", "| Intro + End |")` —— **两段式字符串匹配，不锚定到具体那一行**。
 篡改 2 因此**没能打中**（技能别处还有一行也含 `| Intro + End |`，把它喂绿了）。改为**锚定整行**后，篡改 2 才准确变红。
 **教训：断言范围必须等于实测范围**——「文档里有这串字」不等于「这一条规则写对了」。
+
+### 1.5.0 轮新增验证（内嵌联动 · 成员正文口径同步）
+
+**为什么本轮必须动本包**：`joy2know-musician` 升到 1.5.0，而本包 `skills.json` 与 `plugin.json` 都内嵌了它。
+按仓库铁律，**升内嵌技能必须查「谁内嵌了它」**，并防**两层过期**：
+① 包版本号没抬（构建会重建产物，但清单会显示新版、旧 zip 里其实是旧版 —— 且 **0 告警**）；
+② **成员正文复述了被引用技能的规则，技能改了而正文没跟** —— 这一层**自检看不出来**（自检不看正文语义）。
+
+**第 ② 层过期本轮真的发生了**：`agents/cine-music.md` 第 73–76 行仍写着
+「官方位置：Custom 模式 → **Advanced Options** → 菜单第一项」，而实测按钮名已是 **More Options**，
+且该字段**在免费账号里根本没有**；同时成员正文**全篇没有 Variety** ——
+而 Variety 恰恰是唯一会改写 Style 的控件。不同步的后果很具体：
+**团队会继续按旧口径，指令人去一个不存在的字段里填负面提示。**
+
+| # | 同步点 | 改前 | 改后 | 真源 |
+|---|---|---|---|---|
+| S1 | Exclude 位置 | `Advanced Options → 菜单第一项` | `More Options`（Advanced 模式的折叠面板），**并注明可能因档位 / 版本灰度缺席** | 界面实测 2026-09-25 |
+| S2 | 降级路径结构 | 单条（就是填 Exclude） | **两条、按可靠性排序**：① 填 Exclude；② 无该字段时简化 Style + 全篇无人声词 + 换更纯器乐的流派 | 承接 S1 的实测 |
+| S3 | Variety | **全文未提** | 新增「配套动作（必写）：提醒用户把 `Variety` 归 0」，并附官方原文 | help.suno.com v6 FAQ 原文 |
+| S4 | 输出形态 | 三段（标题 / Style / Lyrics）+ 用途建议 | **加第 4 段「粘贴前设置」**（Variety 归 0 必写）+ 免费档三条限制提示 | 承接 S3 |
+| S5 | 版本落点 | `plugin.json` 1.4.0；README 版本行 1.4.0 | 两处同升 **1.5.0**（README 版本行正是 1.4.0 轮踩过坑的落点，本轮**先查后改**） | 本轮改动 |
+
+| # | 验什么 | 命令 | 结果 | 证据要点 |
+|---|---|---|---|---|
+| T1 | 内嵌技能版本真的进了产物 | `unzip -p dist/…v1.5.0.zip joy2know-cine-team/skills/joy2know-musician/SKILL.md \| grep -m1 '^version:'` | ✅ | 输出 `version: 1.5.0` —— 读的是**产物里的副本**，不是源目录 |
+| T2 | 内嵌 reference 未漂移 | `unzip -p … references/model-and-controls.md` → 与源文件 `diff` | ✅ | **逐字节一致** |
+| T3 | 内嵌脚本未漂移 | `unzip -p … scripts/suno_check.py` → 与源文件 `diff` | ✅ | **逐字节一致** |
+| T4 | 成员正文新版真的入包 | `unzip -p … agents/cine-music.md \| grep -c "More Options"` | ✅ | 计数 = 1；**旧包里跑这条会是 0** —— 因此这条判据本身是双相的，不是「有就算过」 |
+| T5 | 版本落点无遗漏 | 逐个查 `plugin.json` / `README.md` / `settings.json` / `setting.json` / `skills.json` | ✅ | 版本号只落在 `plugin.json` 与包内 `README.md` 两处，两处都已升 |
+
+**用例集总账（1.5.0 轮）：5/5 同步点 + 5/5 验证项，全绿。**
+
+**本轮新踩的坑（记下来防再犯）**：用检索工具查 `1.4.0` 时，**`.codebuddy-plugin/plugin.json` 没有出现在结果里**
+—— 因为该工具**默认跳过隐藏文件与隐藏目录**。差一点据此判定「版本号只落在 README 一处」。
+→ **凡查「版本号有哪些落点」，必须显式包含点开头的目录**，并用 `ls -a` 核对目录清单，**不能只信一次检索的结果**。
 
 ---
 
@@ -171,10 +215,13 @@ X7 最初写成 `has(SKILL, "| 必留段落（§三.4）", "| Intro + End |")` �
   随机性（要求「首镜先生成 2–3 个候选再定」，不许承诺必成）、版权（提醒授权、不主动写入）；
   §四 Phase 0 另有「禁止连环追问、用户没答就按默认值走并标注假设」。
 - **零依赖是否守住**：✅ 结构性成立（无 `scripts/`、无 import、无网络调用）。
-- **值来源是否可追溯**：✅ 源包体各文件版本号一致为 **1.4.0**（`plugin.json`、`README.md` 的「## 版本」行）；头像真源在仓库根
-  `avatars/`（构建注入），包内不留副本 —— 单一真源成立。
-  （**本轮实测抓到一次不一致**：`plugin.json` 已升 1.4.0，而 `README.md` 版本行仍停在 `1.3.0 · 作者：晓得乐` ——
-  上一轮只改了 `plugin.json`。已改齐，并把它记为本轮缺陷 3；这正是「包内版本号多落点，只改一处必留下静默不一致」的实例。）
+- **值来源是否可追溯**：✅ 源包体各文件版本号一致为 **1.5.0**（`plugin.json`、包内 `README.md` 的「## 版本」行）；
+  头像真源在仓库根 `avatars/`（构建注入），包内不留副本 —— 单一真源成立。
+  （1.4.0 轮实测抓到过一次不一致：`plugin.json` 已升 1.4.0，而 `README.md` 版本行仍停在 `1.3.0 · 作者：晓得乐` ——
+  上一轮只改了 `plugin.json`，当时记为本包缺陷 3。1.5.0 轮**先查后改**，两处同步升到 1.5.0，
+  并顺带查清「版本号到底有几个落点」= 只有这两处。
+  ⚠️ **查的过程中踩到一个坑**：检索工具**默认跳过 `.codebuddy-plugin/` 这类点开头的目录**，
+  第一次查 `1.4.0` 时 `plugin.json` 没出现在结果里 —— 险些据此判定「只有 README 一处」。已写入坑记录。）
 - **1.3.0 轮复核**：上轮那条 `description` 与 `displayDescription.en` 的口径冲突**已于 1.2.0 轮消除**，
   本轮重扫未见新增冲突。本轮的改动面是「成员文件 ↔ 内嵌技能真源」，**未触碰任何跨成员职责边界**：
   小音仍只出提示词包与插入点建议，转场卡点 / 混音 / 交付规格仍归奥托（Phase 4.5 与 §七 两处同口径）。
@@ -184,6 +231,14 @@ X7 最初写成 `has(SKILL, "| 必留段落（§三.4）", "| Intro + End |")` �
   重扫 `description` / `displayDescription.en` / `displayDescription.zh` 三处，**未见新增口径冲突**。
   但**校验强度本轮降级**：上一轮那套 22 条跨文件口径对照（`crosscheck.py`）是一次性工具、未入库，
   `/tmp` 目录已随系统清理消失，本轮**无法原样重跑**，只能降级为手工逐条比对（见第七节 1.4.0 行末尾的如实记录）。
+- **1.5.0 轮复核**：本轮改动面为「`agents/cine-music.md` 正文口径同步（Exclude 位置 / 两条降级路径 / Variety 配套动作 /
+  输出第 4 段）+ `plugin.json` 版本 + 包内 `README.md` 版本行」，**未触碰任何成员职责边界** ——
+  Variety 是「怎么把提示词兑现成生成设置」，Exclude 是「压不住哼唱时的退路」，
+  两者都落在小音原有的提示词职责内，没有把奥托的后期活儿（裁切 / 对齐循环点 / 响度）拉进来。
+  重扫 `description` / `displayDescription.en` / `displayDescription.zh` 三处，**未见新增口径冲突**。
+  **校验强度仍是手工级**：`crosscheck.py` 连续第二轮无法重跑（未入库），
+  两轮都为它手工兜底 —— 已把「校验器入库」从待办升为 **P1**：
+  **一个需要连着两轮人工替代的检查器，就已经不是一次性工具了。**
 
 **本节额外记录一条踩坑（与包本身无关，与检测方法有关）**：
 第一轮反向验证时，基线样本也报了一条 `[XX] [expert] avatar 缺失: avatars/team.png`。
@@ -343,4 +398,6 @@ README 是包内文档，没有任何自动检查盯着它。这两处正是本�
 | 2026-09-23 | 1.1.0 | ⚠️ 有条件通过 | 首次成文（覆写骨架）。字段自检 **26 通过 / 0 未通过**（源目录另有 5 条预期提示）；另人工核 `agents[]` ↔ `members[].id` ↔ `teamInfo.memberAgents` 三方一一对应、settings 双文件、Suno 角色是否真在内，逐张实测 8 张头像规格（512²/377–410 KB 全合规）与全仓图标台账（30/30 真图）。**10 组反向验证全抓**且未误伤。发现 1 处配置内部口径冲突（en 版漏音乐角色）+ 1 处 README 系统性脱节（4 个漏项）+ 8 项未覆盖。**未改包内任何文件。** |
 | 2026-09-23 | 1.2.0 | ⚠️ 有条件通过 | **修复轮**：缺陷 1 → README 四处补齐（五个→六个、补音乐人整行、补 Phase 4.5、补内置技能 joy2know-musician、同步目录结构注释）；缺陷 2 → `displayDescription.en` 由 Five 改 Six 并补「ready-to-paste theme song」，与顶层 description 及 zh 简介对齐。验收：**真跑 9/9，同一套用例对 git 原始版本 3/9**；判据取自 `plugin.json`/`skills.json`/主理人 md 而非人工读，可长期回归。另记录 1 处**校验器盲区**（selfcheck 不查 en 简介内容），已在报告待办中留痕。 |
 | 2026-09-25 | 1.3.0 | ⚠️ 有条件通过 | **联动升级轮**：内嵌的 `joy2know-musician` 升到 1.3.0（修掉「任何歌都要求三处语言锁」这条**反向指令**，改判为「人声锁」并新增纯器乐 / 循环 BGM 路径），本包**必须同步**否则团队会照旧指令人硬填语言锁。改 4 处：`agents/cine-music.md`（重写，人声/器乐分流 + 拒绝「用错换绿」）、`agents/joy2know-cine-lead.md`（成员表、信息收集第 5 问、Phase 4.5、汇编骨架第五节）、`README.md`（成员表、Phase 4.5、内置技能）、版本 1.2.0→1.3.0。验收：字段自检 **35 通过 / 0 未通过**（源目录 5 条预期提示）；新增 **22 条跨文件口径对照全部通过**（判据读技能真源，不写死）；**同一套对 git 原始版跑出 13/22**，红的 9 条逐条对应本轮改动；**3 组篡改反向验证各只打中对应那一条**；构建产物 `dist/joy2know-cine-team-v1.3.0.zip` 4275.7 KB，实测第一层、settings 双文件、内嵌 musician=1.3.0、新增 `game-bgm-loop.md` 已入包。**方法学失误 1 处已记**：X7 判据初版未锚定行，导致篡改 2 假绿，已改并复验。 |
-| 2026-09-25 | 1.4.0 | ⚠️ 有条件通过 | **内嵌技能再升级（联动）**：内嵌的 `joy2know-musician` 1.3.0 → **1.4.0**。该版做了两件事 —— ① 依 help.suno.com 官方原文新增 `references/model-and-controls.md`（模型选型 v6 / v6-wild / v6-mini 与免费账号边界、Creative Sliders、**Exclude 的确切位置 = Custom → Advanced Options 菜单首项**、Voices 已取代 Personas）；② 修掉缺陷：器乐包的必留段落此前**只对 `--loop` 放宽**，致按文档写的合规非循环器乐包被判 2 error。本包据此改 3 处：`agents/cine-music.md`（把 Exclude 位置补进「压不住哼唱」的降级路径，与内嵌真源同一表述）、`.codebuddy-plugin/plugin.json`（版本 1.3.0→1.4.0）、`README.md`（**版本行 1.3.0→1.4.0 —— 上一轮漏改，本轮复检抓到并记为缺陷 3**）。验收：`selfcheck` 对本包 **通过 26 项 / 0 未通过**（源目录 5 条预期提示，与上轮一致）；以 `grep -E` 逐条比对本包成员文件与技能真源在「人声锁 / Exclude 位置 / 必留段落」三处、以及 **`plugin.json` 与 `README.md` 版本行的一致性**，**结论一致**；构建产物 `dist/joy2know-cine-team-v1.4.0.zip`，实测第一层、`settings.json`+`setting.json` 双文件、**内嵌 musician = 1.4.0**、新增 `model-and-controls.md` 已入包。**方法学退步如实记录**：上一轮那套 22 条跨文件口径对照脚本（`crosscheck.py`）是**一次性工具、未入库**，本轮无法原样重跑，只能降级为手工逐条核对；**而缺陷 3（README 版本行）恰恰就是那条被判据 X17 覆盖、却因脚本未入库而失守的项** —— 已列入待办：把该类校验器入库，否则每轮都要重写（这正是本仓库「换个目录也能跑」那条经验的镜像：**工具不入库 = 每轮从零开始**）。**另注**：v1.4.0 轮的 `crosscheck.py` 与 `/tmp/j2k-check/cine-team-v130/` 均已随 `/tmp` 清理消失，本行是本轮唯一的实测记录。 |
+| 2026-09-25 | 1.4.0 | ⚠️ 有条件通过 | **内嵌技能再升级（联动）**：内嵌的 `joy2know-musician` 1.3.0 → **1.4.0**。该版做了两件事 —— ① 依 help.suno.com 官方原文新增 `references/model-and-controls.md`（模型选型 v6 / v6-wild / v6-mini 与免费账号边界、Creative Sliders、**Exclude 的确切位置 = Custom → Advanced Options 菜单首项**、Voices 已取代 Personas）；② 修掉缺陷：器乐包的必留段落此前**只对 `--loop` 放宽**，致按文档写的合规非循环器乐包被判 2 error。本包据此改 3 处：`agents/cine-music.md`（把 Exclude 位置补进「压不住哼唱」的降级路径，与内嵌真源同一表述）、`.codebuddy-plugin/plugin.json`（版本 1.3.0→1.4.0）、`README.md`（**版本行 1.3.0→1.4.0 —— 上一轮漏改，本轮复检抓到并记为缺陷 3**）。验收：`selfcheck` 对本包 **通过 35 项 / 0 未通过**（源目录 5 条预期提示，与 1.3.0 轮持平；**初稿误抄 1.1.0 时代的「26 项」，本轮真跑改正 —— 记为本轮第 2 处「照抄旧结论」**）；以 `grep -E` 逐条比对本包成员文件与技能真源在「人声锁 / Exclude 位置 / 必留段落」三处、以及 **`plugin.json` 与 `README.md` 版本行的一致性**，**结论一致**；构建产物 `dist/joy2know-cine-team-v1.4.0.zip`，实测第一层、`settings.json`+`setting.json` 双文件、**内嵌 musician = 1.4.0**、新增 `model-and-controls.md` 已入包。**方法学退步如实记录**：上一轮那套 22 条跨文件口径对照脚本（`crosscheck.py`）是**一次性工具、未入库**，本轮无法原样重跑，只能降级为手工逐条核对；**而缺陷 3（README 版本行）恰恰就是那条被判据 X17 覆盖、却因脚本未入库而失守的项** —— 已列入待办：把该类校验器入库，否则每轮都要重写（这正是本仓库「换个目录也能跑」那条经验的镜像：**工具不入库 = 每轮从零开始**）。**另注**：v1.4.0 轮的 `crosscheck.py` 与 `/tmp/j2k-check/cine-team-v130/` 均已随 `/tmp` 清理消失，本行是本轮唯一的实测记录。 |
+| 2026-09-25 | 1.5.0 | ⚠️ 有条件通过 | **内嵌技能再升级（联动）**：内嵌的 `joy2know-musician` 1.4.0 → **1.5.0**。该版把 Suno v6 世代的**实测控件现状**写进正文与脚本 —— ① 免费档实际只可选 `v6-mini`（**v4.5 / v5 / v5.5 已于 2026-09-09 全部退役**，此前的「免费 = v4.5」认知作废）；② 新增 `Variety`：官方 v6 FAQ 原文说它 *"adjusting and updating your style prompts"*，即**会改写你写的 Style**，而语言锁 / BPM / `Seamless loop` 全在 Style 里 —— 因此定为红线动作「交付必带 Variety 归 0」；③ `Exclude` 位置实测为 **More Options**（非 Advanced Options）且**免费账号里没有该字段**，降级路径因此从一条改为两条。本包据此改 **3 处**：`agents/cine-music.md`（**正文口径同步** —— S1 Exclude 位置、S2 两条降级路径、S3 Variety 配套动作、S4 输出加第 4 段「粘贴前设置」）、`.codebuddy-plugin/plugin.json`（版本 1.4.0→1.5.0）、包内 `README.md`（版本行 1.4.0→1.5.0）。验收：`selfcheck` **通过 35 项 / 0 未通过**（源目录 5 条预期提示，与 1.4.0 轮持平）；**产物内逐字节核对** —— `unzip -p` 读内嵌 `SKILL.md` 得 `version: 1.5.0`，内嵌 `references/model-and-controls.md` 与 `scripts/suno_check.py` 与源包 `diff` **均逐字节一致**，内嵌 `agents/cine-music.md` 含「More Options」计数 1（**旧包跑这条会是 0，故判据双向可判**）；构建产物 `dist/joy2know-cine-team-v1.5.0.zip` = **4286.7 KB**，第一层仅 `joy2know-cine-team/`，`settings.json`+`setting.json` 均在；`platformcheck.py --zip` 按 **Expert** 通过（并报出按 Skill / BuddyApp 上传必失败）。**本轮最关键的一条**：`agents/cine-music.md` 的「两层过期第 ② 层」**真的发生了** —— 它仍写着旧位置 `Advanced Options`、且全篇没有 Variety，而**自检完全看不见正文语义**；这也再次印证「内嵌联动必须查正文，不能只查版本号」。**方法学仍退步**：`crosscheck.py` 连续第二轮未入库、无法重跑，只能手工比对四处（人声锁 / More Options + Exclude 缺席 / 必留段落 / 版本 1.5.0），结论一致 —— 「校验器入库」已升为 **P1**。**新踩的坑**：检索工具默认跳过 `.codebuddy-plugin/` 这类点开头目录，查版本落点时险些漏判。 |
+| 2026-09-26 | 1.5.0 | ⚠️ 有条件通过 | **随内嵌技能的描述修正同轮重建，版本号不抬**：`joy2know-musician` 的 `description_en` 被平台驳回（`解析失败：` / `Skill 英文描述：当前 1096 字符，上限 1000 字符`），该技能压到 **916 字符**后**同名重传**（不抬版本 —— 上传即被拒 = 平台侧从未存在过该版本，与「换入口重传不抬版本」同口径）。**本包内嵌它，因此带着同一份超限文件**：预检器对专家包的内嵌技能给出 ⚠️ 提示（「平台是否校验专家包里的内嵌技能」**未实证**，故不计入 pass/fail）。本轮**只重建、未改包内任何文本** —— `plugin.json` / `README.md` / `agents/*` 一字未动，版本仍 1.5.0。验收：`platformcheck.py` 扫全量 18 个产物**全绿**；`unzip -p dist/joy2know-cine-team-v1.5.0.zip joy2know-cine-team/skills/joy2know-musician/SKILL.md` 与 `dist/joy2know-musician-v1.5.0.zip` 内的同一文件**逐字节一致**（描述均 916 字符）。**本轮顺带补上一类可回归门禁**：`platformcheck.py` 新增 `DESC_LIMITS` 描述长度判据（`--selftest` 13 项 → **19 项**，含 1000 字符**边界**用例）—— 这是第一条同时覆盖「技能包自身」与「专家包内嵌技能」的描述长度检查。 |
