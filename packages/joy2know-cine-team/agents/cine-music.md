@@ -80,6 +80,7 @@ skills: [joy2know-musician]
     updating your style prompts**"*，官方给的办法是 *"reduce the Variety slider to 0"*。
     它是**唯一会改写你写的 Style 的控件**，而本规则的人声锁 / 器乐声明 / BPM / `Seamless loop` 全在 Style 里；
     实测它**默认就是 `Normal`**，不改等于白写，而且**不报任何错**。
+    2026-09-26 已做行为级对照：**归 0 时 Suno 最终记下的 tags 与提交的 Style 逐字一致；留在默认档会被改写。**
   - 降级路径（**按可靠性排序，第一条优先**）：① 把 `vocals, singing, humming, vocalizations` 放进平台的
     **排除 / 负面提示字段（Exclude）**；② **没有这个字段时不要卡住**：Style 简化到 4–7 个标签、
     全篇不出现任何人声词、换更纯器乐的流派词（环境 / 氛围 / 后摇比 pop、trap、soul 稳得多）。
