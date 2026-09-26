@@ -1,64 +1,128 @@
-本文由 `@SKILL.md` 第七节路由到此。只在遇到「换模型 / 调风格强度 / 排除某类元素 / 保持同一个人声」时读取。
+本文由 `@SKILL.md` 第七节路由到此。只在遇到「换模型 / 调控件 / 排除元素 / 保持同一个人声」时读取。
 
-# Suno 模型与创作控制（v6 时代）
+# Suno 模型与创作控制（v6 世代）
 
-> ⚠️ Suno 的界面与型号会变。本文记录的是 **2026-09-25 从官方帮助中心（help.suno.com）核实的原话**；
-> 你手上的版本若与本文不符，**以你当前界面的实际表现为准**，并把差异告诉用户。
+> **两处来源，分开标，别混：**
+> - **【官方】** = Suno 官方帮助中心（help.suno.com）与应用内文案，直接引用原文；
+> - **【实测】** = 2026-09-25 在一台**免费账号**的 `suno.com/create` 里逐控件读出来的现状。
+>
+> Suno 的界面与型号会变。本文记录的是以上时点的实况；**你手上的版本若与本文不符，
+> 以你当前界面的实际表现为准**，并把差异告诉用户。
 
-## 一、模型怎么选
+## 一、模型：v6 家族三档（v6 之前的型号已全部退役）
 
-官方当前是 **v6 世代**，三个变体：
+**【实测】** 模型选择器（`ALL MODELS`）里只有三档：
 
 | 变体 | 官方定位（原文） | 可用等级 |
 |---|---|---|
-| **v6** | *"Our most advanced model… stronger control and precision when you want your idea to come through clearly."*（最先进；想把想法准确呈现时，控制力与精确度最强） | Pro / Premier |
-| **v6-wild** | *"Built for experimentation… takes your ideas in less predictable directions."*（为实验而生，走向更难预测） | Pro / Premier |
-| **v6-mini** | *"A faster, more efficient way to create with the v6 generation experience… brings improved music generation to the Free plan."*（更快更省，**把 v6 体验带到了免费方案**） | **所有用户（含免费）** |
+| **v6** | *"Powerful. Versatile. Refined. Our best model yet."*（强大、全能、精致，目前最好的模型） | **Pro / Premier**（带 `Pro` 角标） |
+| **v6-wild** | *"Best for experimental ideas."*（最适合实验性想法） | **Pro / Premier**（带 `Pro` 角标） |
+| **v6-mini** | *"A free, more efficient version of premium v6 models."*（v6 付费型号的免费、更高效版本） | **所有用户（含免费）**（无角标） |
 
-**官方建议**（原文）：*"Start with v6 when you want the most control over your result, or try v6-wild when you're looking for a creative surprise."*
-→ 要**可控**用 v6；要**惊喜**用 v6-wild。
+- **v6 家族于 2026-09-09 上线，v4.5 / v5 / v5.5 同日全部退役**，选择器里不再提供任何旧版。
+  旧作仍可播放与分享，但对它们做续写 / 翻制 / 重制时**跑在 v6 上**。
+- **免费账号只能选 v6-mini。** 想知道自己是哪一档，看一眼选择器：带 `Pro` 角标的是付费型号。
+- **语法与长度限制没有变**：Style 1000 / Lyrics 5000 / Exclude 1000 / 单次最长 8 分钟。
+- **本技能的语法（复合段落标签、行内指令、语言锁）在 v4.5 到 v6 通用** —— 换型号**不需要**重写提示词结构。
+- **型号不在提示词的控制范围内。** 别在 Style 里写「请用 v6」；型号在界面右上角的选择器里选。
 
-**写作时的实际含义：**
+**对写作的实际含义**：免费用户要面对的是**当前免费档可选的那个型号** —— 2026-09-25 是 `v6-mini`。
+所以本技能的默认姿态是「**面向免费档做优化**」，具体四条动作见第四节。
+免费档优化**不是**降级写法，而是在免费档的额度与控件限制下把命中率做高。
 
-- **免费账号只能用 v6-mini** —— 别在提示词里写「请用 v6 旗舰模型」，模型**不在提示词的控制范围内**，是界面上选的。
-- 模型选择**不写进 Style**，也不靠提示词切换；在网页右上角的模型选择器里选。
-- 时长：模型已从 30 秒短片发展到**最长约 8 分钟**；但免费账号的单次时长与额度另有限制（见第五节）。
-- 本技能的语法（复合段落标签、行内指令、语言锁）**在 v4.5 到 v6 通用** —— 换模型**不需要**改写提示词结构。
+## 二、Custom 模式的控件清单
 
-## 二、两个（有时三个）滑杆：Creative Sliders
+**【实测】** 位置：Advanced（自定义）模式 → 折叠面板 **More Options**。
 
-**位置**：Custom（自定义）模式的创作面板。
-官方原文：*"Want to add some flavor to your tracks? Try Creative Sliders while making music in Custom mode."*
+> ⚠️ 早期资料把这个面板叫 "Advanced Options"。2026-09-25 实测按钮名是 **More Options**。
 
-| 滑杆 | 范围 | 含义 |
+| 控件 | 实测形态与默认值 | 作用 |
 |---|---|---|
-| **Weirdness** | **Safe ↔ Chaos** | 官方原文：*"goes from Safe to Chaos, where **50% is the 'normal' expected result**"* —— **50% 是「正常预期结果」的基准点** |
-| **Style Influence** | **Loose ↔ Strong** | 官方原文：*"lets you choose how close you stay to your style input from Loose to Strong"* —— 越靠 Strong，越贴合你写的 Style |
-| **Audio Influence** | 官方未说明 | **仅在使用 Audio Upload（上传音频）时出现**：*"If you're using an Audio Upload, you'll also get a third slider"* |
+| **Vocal Gender** | `Male` / `Female`，默认不选 | 人声性别。**要与 Style 里的 vocal 描述保持一致** |
+| **Duration** | `Custom` / `Auto`，默认 **Auto** | Auto 交给模型定长度；Custom 自填秒数（上下限以你界面为准） |
+| **Max Mode** | `Off` / `On`，默认 **Off** | 花更多算力换一致性；**消耗翻倍**（见第四节） |
+| **Weirdness** | 滑杆，默认 **50%** | Safe ↔ Chaos，结果的**常规程度** |
+| **Style Influence** | 滑杆，默认 **50%** | Loose ↔ Strong，**贴不贴**你写的 Style |
+| **Variety** | 滑杆，默认 **Normal** | **会改写你的 Style 文本**（第三节，本技能红线） |
+| **Personalize** | `My Taste` / `Off` / `On`，默认 **Off** | 用你的历史口味做个性化 |
+| **Exclude / Exclude Styles** | **本次实测未出现** | 负面提示；见第五节 |
 
-**官方没有给出默认值与推荐调节值** —— **不要编造具体数值**。可以给的判断依据是：
+**三个滑杆是三件不同的事** —— 社区常把它们混成一个「创意度」旋钮，于是流传的建议互相矛盾：
 
-- 希望「语言锁 / 方言锁」被严格执行 → **Style Influence 往 Strong 走**（Loose 会让它漂）
-- 结果总「不够像想要的」→ 先调 Style Influence，再考虑改 Style 文本
-- 结果总「太怪、唱腔跑偏」→ Weirdness 往 Safe 调（低于 50%）
-- 想要意外惊喜 → Weirdness 往 Chaos 调（高于 50%），但**方言包与循环素材不要这么干**
+| 控件 | 作用对象 | 什么时候动它 |
+|---|---|---|
+| **Variety** | **你的 Style 文本本身** | 要让标签**逐字生效** → 归 0 |
+| **Style Influence** | 对 Style 的**遵从度** | 结果总跑偏 → 往 Strong |
+| **Weirdness** | 结果的**常规程度** | 想要意外 → 往 Chaos；**50% 才是基准，不是「关」** |
 
-## 三、排除不想要的元素（Exclude）
+## 三、Variety：唯一会改写你 Style 的控件（本技能红线）
 
-**位置（官方原文）**：Custom 模式 → **Advanced Options（高级选项）** → 菜单**第一项**就是 Exclude。
-> *"Click on Advanced Options to open a menu that starts with Exclude"*
-> *"Enter any information (instruments, etc) that you do not want in your track"*
+**【官方原文】**（v6 FAQ）：
 
-**填什么**：写**不想要**的内容（乐器、流派、人声特征等），语义等同于 negative prompt
-（官方该文的关键词标签里就包含 "negative prompt"）。
+> *"The Variety slider is designed to introduce variety in your outputs by **adjusting and updating your style prompts**. If you'd like to retain full control of your style tags, **reduce the Variety slider to 0**."*
 
-**官方原文没有给出分隔符或写法示例** —— 所以：**按英文逗号分隔枚举**是稳妥做法，
+**中文翻译**：Variety 滑杆是为了给你的产出引入变化而设计的，它的做法是**调整并更新你的风格提示词**。
+如果你希望完整掌控自己的风格标签，请**把 Variety 滑杆调到 0**。
+
+**中文解读**：Variety 不是「给音频加随机性」，它改的是**你写的那段文字**。
+非 0 的 Variety 意味着「模型收到的提示词不是你写的那个」。这正是 v6 上线后最常见的抱怨
+——「我精心调的 Style 标签好像被无视了」「一句简短 Style 回来变成一大段」——的机制。
+
+**这条为什么对音乐人是致命的。** 本技能把三样关键东西全放在 Style 里：
+**语言锁 / 方言防破音指令 / 器乐声明**（规则 2），外加 **BPM 与 `Seamless loop`**（循环路径）。
+Variety 默认是 `Normal`，它会**在你提交之后改写这段文本** ——
+你写的 `Cantonese, Cantopop, Traditional Cantonese Enunciation` 可能被扩写成别的东西，
+而**全程 0 报错**，你只会看到「这首歌好像不太像我要的」。
+
+**硬性动作：凡是用本技能产出的包，交付时都带上一句「把 Variety 归 0」。**
+
+- 语言锁 / 方言包 → **必须归 0**
+- 器乐与循环包（BPM 与 `Seamless loop` 都写在 Style 里）→ **必须归 0**
+- 只有「就是要惊喜、不在乎标签逐字生效」时，才让它留在 Normal 或以上
+
+**另一个坑：不要把滑杆数值写进 Style 文本框。** 那是给模型读的文字，不是控件。
+写 `Weirdness: 20%` 不会移动滑杆，反而可能被当成风格描述的一部分。
+
+## 四、免费档怎么优化（本技能的默认姿态）
+
+免费档 == 现在能用 `v6-mini`。优化动作是**四条具体的**，不是「写得简单点」：
+
+1. **Variety 归 0。** 否则语言锁与 BPM 都可能被悄悄改写（第三节）。
+2. **别指望 Exclude。** 【实测】2026-09-25 免费账号的 More Options 里**没有**这个字段。
+   纯器乐压不住哼唱时，改走另一条：**Style 简化到 4–7 个标签 + 全篇不出现任何人声词 + 换更纯器乐的流派词**
+   （环境 / 氛围 / 后摇比 pop、trap、soul 稳得多）。见 `@SKILL.md` 规则 2 的例外段与第九节。
+3. **Max Mode 想清楚再开。** 【官方】它「花更多算力把这次生成做对」、**消耗更多积分**；
+   官方点名适合：**超过两分钟的歌 / 贴近原曲的 cover / 风格迁移 / 全程保持人声与风格一致**；
+   并明确说「**短歌与快速试想法，标准模式就够了**」。
+   换算到免费账号：一次生成 2 首共 **10 credits**，开 Max Mode 就是 **20**；免费额度 **50 credits/天**。
+4. **额度是硬约束，要留重试预算。** 50 credits/天 ≈ 10 首。
+   本技能默认建议「同一版生成 2–3 次挑一次」，循环素材更费（见 `@references/game-bgm-loop.md`）——
+   免费用户请把这两件事一起讲清楚，而不是只给提示词。
+
+**还必须如实告诉免费用户的两条账号层限制**（与提示词写得好坏无关）：
+
+- **无商业授权。** 官方明确免费档产出**仅限个人非商业使用**。要用于游戏 BGM、客户交付、任何变现 → 需要 Pro 及以上。
+- **下载额度极紧。** 终身仅数次试用下载，且**不按月重置**。生成很多、能留下的很少。
+
+## 五、排除不想要的元素（Exclude）
+
+**【官方原文】**（转述）：Custom 模式下展开选项菜单后，第一项是 Exclude ——
+*"Enter any information (instruments, etc) that you do not want in your track"*（填入你不想要的内容，如乐器等）。
+
+**填什么**：写**不想要**的东西（乐器、流派、人声特征），语义等同 negative prompt。
+
+**写法**：【官方】没有给出分隔符或示例 —— 所以**按英文逗号枚举**是稳妥做法，
 但**不要向用户声称这是官方规定的语法**。
 
-**本技能最常用的一处**：纯器乐包压不住哼唱时，把 `vocals, singing, humming, vocalizations`
-填进 Exclude（比在 Style 里写否定词可靠）。见 `@SKILL.md` 规则 2 的例外段。
+**【实测】2026-09-25 免费账号的 More Options 里没有看到该字段**（同一面板里 Vocal Gender、Duration、
+Max Mode、Weirdness、Style Influence、Variety、Personalize 都在，唯独没有它）。
+这可能是账号档位差异或版本灰度 —— **以你界面为准，有就用，没有就走第四节第 2 条的替代路径**。
 
-## 四、人声一致性：Voices 与 Style Persona
+**本技能最常用的一处**：纯器乐包压不住哼唱时，把 `vocals, singing, humming, vocalizations` 填进 Exclude
+（比在 Style 里写否定词可靠）。**没有这个字段时不要卡住**，按第四节第 2 条走，
+并如实告诉用户仍可能出现垫音人声 —— **不要承诺「一定没有人声」**。
+
+## 六、人声一致性：Voices 与 Style Persona
 
 - 官方已用 **Voices** 取代原来的 Personas 按钮；但 **Style Persona 仍保留在 Voices 之内**
   （官方原文：*"the Voices button has replaced Personas; however, Style Personas remain within Voices"*）。
@@ -71,16 +135,17 @@
 正确做法是引导用户用 **Style Persona / Voices** 去锁，并明确讲出
 **「人声一致性靠平台功能，不靠提示词」**。**不要**承诺「用同一段 Style 就能保证音色一致」。
 
-## 五、相关能力与账号额度（用于回答用户提问，不是写提示词的事）
+## 七、相关能力与账号额度（用于回答用户提问，不是写提示词的事）
 
-| 能力 | 官方要点 |
+| 能力 | 要点 |
 |---|---|
 | **Extend** | 让歌变长，或给它一个新的结尾 —— 需要更长 BGM 时用 |
-| **Stems** | Advanced Stem Separation 提供三种拆分模式；**stem 文件不额外消耗下载额度**（`Does not count as additional downloads beyond the song itself`） |
-| **下载格式** | MP3 **所有套餐**都有（Web 与移动端）；WAV 仅 Pro/Premier；MIDI 仅 Premier，且需在 Suno Studio 创建 |
-| **生成额度（免费）** | 50 credits/天，约 10 首/天 |
-| **下载额度（免费）** | **终身最多 7 次**试用下载；`Trial downloads do not reset each month`；`for personal, non-commercial use only` |
+| **单次时长** | v6 家族**所有三档**都能单次生成到 8 分钟；免费档的实际体验受额度限制 |
+| **Stems** | Advanced Stem Separation 提供多种拆分模式；stem 文件不额外消耗下载额度 |
+| **下载格式** | MP3 **所有套餐**都有；WAV 仅 Pro/Premier；MIDI 仅 Premier，且需在 Suno Studio 创建 |
+| **生成额度（免费）** | 50 credits/天，约 10 首/天；一次生成 2 首共 10 credits；**Max Mode 翻倍** |
+| **下载额度（免费）** | 终身仅数次试用下载；不按月重置；**仅个人非商业** |
 | **额度计算规则** | 重下同一首不另计；多格式算一次；失败/中断不计；**未用完不结转** |
 
-> 免费账号的**非商业**限制与「终身 7 次下载」是**账号层面的硬规则**，
+> 免费账号的**非商业**限制与**极紧的下载额度**是**账号层面的硬规则**，
 > 与提示词写得好不好无关 —— 用户要用于商业项目（游戏、视频、客户交付）时应当如实提醒。

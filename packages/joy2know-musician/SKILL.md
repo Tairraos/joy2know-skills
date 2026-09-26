@@ -3,10 +3,12 @@ name: joy2know-musician
 display_name: 晓得·音乐人
 display_name_en: joy2know Musician
 description: >-
-  用 Suno 的高阶语法（v4.5–v6 通用）写可直接粘贴的歌曲包：复合段落标签、行内指令、声场控制、Style 语言锁，
+  用 Suno 的高阶语法（**v4.5–v6 全代通用**）写可直接粘贴的歌曲包：复合段落标签、行内指令、声场控制、Style 语言锁，
   默认输出治愈、有画面感、带人生哲理的作品；用户指定任何风格、语言或方言（含粤语）时按同一套技巧适配，
   并用「词汇锁 + 协音字 + 声调补偿」解决方言发音撕裂、破音、跑偏；
   纯器乐与循环路径另有一套写法，用于压制人声幻觉、锁死 BPM、让首尾同源，服务游戏 BGM 与背景垫乐。
+  默认按免费档优化（当前免费可选 v6-mini），并把「把 Variety 归 0」这类界面控件动作一并交代；
+  需要 v6 旗舰 / v6-wild 等付费专有型号的能力时，会先问用户是否有付费账号，没有就产出免费档优化版。
   触发词：写首歌、做音乐、Suno、写歌词、配乐、主题曲、BGM、写一段旋律、治愈系歌曲、粤语歌、
   方言歌、suno prompt、write a song、song lyrics、music prompt、Suno style、
   纯音乐、不要人声、无人声、不做人声、器乐、instrumental、游戏 BGM、游戏背景音乐、无缝循环、
@@ -15,19 +17,21 @@ description: >-
   要求保证生成结果与你想象完全一致（AI 音乐有随机性，本技能提高命中率而非消除随机）；
   要求交付已剪好、开箱即无缝的音频文件（本技能给循环友好的写法与后期处理清单，裁切与交叉淡化仍要在你自己的编辑器里做）。
 description_zh: >-
-  用 Suno 高阶语法产出可直接粘贴的歌曲包，默认治愈风格，支持指定风格与方言并做防跑偏处理；
-  纯器乐与循环素材另有压制人声幻觉、锁死 BPM、首尾同源的写法。
+  用 Suno 高阶语法产出可直接粘贴的歌曲包，覆盖 v4.5–v6 全代语法，默认治愈风格，
+  支持指定风格与方言并做防跑偏处理；纯器乐与循环素材另有压制人声幻觉、锁死 BPM、首尾同源的写法；
+  默认按免费档（当前为 v6-mini）优化，需要付费专有型号特性时会先确认账号档位。
 description_en: >-
-  Write ready-to-paste Suno song packs (v4.5–v6) using advanced syntax: compound section tags, inline cues,
-  stereo-field control and a Style language lock. Defaults to a healing, imagery-rich, philosophical style;
-  adapts to any genre, language or dialect (including Cantonese) the user names, using word-locks and
-  tonal compensation to stop AI from drifting, cracking or breaking on pronunciation. Also covers the
-  instrumental and loop-ready paths used for game BGM and background beds: how to suppress phantom
-  humming and wordless vocals, lock the BPM, and match a loop's tail back to its head. Outputs prompts
-  only — it does not call any music generation API, cannot guarantee identical results, and does not
-  deliver an already-spliced seamless audio file (trimming and crossfading still happen in your editor).
+  Write ready-to-paste Suno song packs (v4.5–v6 syntax): compound section tags, inline cues, stereo-field control
+  and a Style language lock. Defaults to healing, imagery-rich, philosophical songs; adapts to any genre, language
+  or dialect you name (Cantonese included) via word-locks and tonal compensation, which stop the AI drifting,
+  cracking or breaking on pronunciation. Also covers instrumental and loop-ready paths for game BGM and background
+  beds: suppress phantom humming and wordless vocals, lock the BPM, match a loop's tail back to its head. Tuned
+  for the free tier by default (currently v6-mini); asks about your plan before using paid-only models, and passes
+  on the interface settings that matter (e.g. Variety = 0, so style tags are not rewritten). Prompts only — no
+  generation API call, no guarantee of identical results, no pre-spliced seamless audio file (trimming and
+  crossfading stay in your editor).
 category: writing
-version: 1.4.0
+version: 1.5.0
 author: 晓得乐
 ---
 
@@ -60,6 +64,7 @@ author: 晓得乐
 | **C. 方言路径** | 粤语、闽南语、四川话等 | 语言锁 + 词汇锁 + 协音字，见第四节规则 3，跑 `@references/cantonese-lock.md` |
 | **D. 纯器乐** | 「不要人声」「只要 BGM」「纯音乐」「不做人声」 | 走器乐路径：Style 首位写器乐声明、标签全英文、**方括号外留空**。写法见第十节 |
 | **E. 循环 / 游戏 BGM** | 「游戏 BGM」「无缝循环」「循环素材」「要能一直放下去」 | 走 D 路径 + 循环约束（禁淡出、锁死 BPM、首尾同源）。见第十节 |
+| **F. 付费专有型号** | 用户点名要 v6 旗舰 / v6-wild，或要商业授权、下载、Suno Studio | **先按第十一节确认档位**，再决定产出哪一版；不要默默按付费型号写 |
 
 **D 与 E 的关系：** E 是 D 的加强版 —— 循环素材默认也走纯器乐（带人声的循环听两遍就腻）。
 用户偏要「带人声的循环曲」时，人声部分照普通路径写，循环那几条约束照旧套用。
@@ -90,7 +95,11 @@ author: 晓得乐
    **普通话污染检查**，只跳过「特征字密度」一项并提示字表待补 —— 不要因为「密度查不了」就连污染也不查。
 7. **结构校验。** 跑 `scripts/suno_check.py <歌词文件> --style "<Style 全文>"`；**器乐包加 `--instrumental`，循环素材再加 `--loop`**，按报告修掉结构问题。
    **`--style` 别省** —— 器乐声明到没到位、BPM 有没有锁死、方言的防破音指令加没加，这三项只有拿到 Style 文本才查得出来。
-8. **纯净输出。** 收齐信息后**严禁解释**，直接输出三段（见第五节）。
+8. **交待界面动作（默认必做）。** 交付前把与本次提示词配套的**控件设置**一并说清，至少一句：
+   **「把 Variety 归 0」** —— 官方明确 Variety 会**改写你写的 Style 文本**，而本技能的语言锁、BPM、
+   `Seamless loop` 恰好全写在 Style 里（见 `@references/model-and-controls.md` 第三节）。
+   需要 v6 旗舰 / v6-wild 等**付费专有型号**、或要商业授权时，按第十一节先确认档位，**不要默默按付费型号写**。
+9. **纯净输出。** 收齐信息后**严禁解释**，直接输出三段 + 文末两块（见第五节）。
 
 ## 四、核心规则
 
@@ -111,6 +120,17 @@ author: 晓得乐
 - 反例：✗ `Chinese, pop, ...`（用户要粤语，结果出普通话）
 - 降级路径：用户没指定语言时，默认 `Mandarin, Standard Mandarin Enunciation`，并在产出里标注可替换。
 
+**配套动作 · 必须提醒把 Variety 归 0（v6 起的控件，2026-09 实测）。**
+
+这一位写在 Style 里。而 Suno 的 **Variety 滑杆默认就是 `Normal`**，官方原文说它
+*"is designed to introduce variety in your outputs by adjusting and updating your style prompts"*
+—— 即**它会改写你写的 Style 文本**（官方办法：*"reduce the Variety slider to 0"*）。
+不改，语言锁就等着被扩写成别的东西，**且全程 0 报错**——你只会觉得「这首歌不太像我要的」。
+
+所以凡是用本技能产出的包，交付时都要带上「**把 Variety 归 0**」这一句；
+方言包、器乐包、循环包（BPM 与 `Seamless loop` 也写在 Style 里）尤其不能漏。
+详见 `@references/model-and-controls.md` 第三节。
+
 **例外 · 纯器乐路径（D / E）：第一位改成 `Instrumental, No vocals`，并且不写 `[Language:]` / `[Accent:]`。**
 
 这一位的作用**始终是「约束人声」**，位置不变、职责不变，只是取值随「这首有没有人声」而变：
@@ -122,14 +142,19 @@ author: 晓得乐
   你以为在关人声，实际是在下反向指令。
 - 反例：✗ 器乐包 Style 里还留着 `Soft breathy female vocals` 这类人声描述 —— 与 `No vocals` 直接打架，
   模型会挑一个执行，挑错就是一段无词人声。器乐包里描述人声的词**一个都不留**。
-- 降级路径：**压住了唱词、却没压住哼唱**时，把 `vocals, singing, humming, vocalizations` 这类词放进平台的
-  **排除 / 负面提示字段（Exclude）**——它比在 Style 里写否定词可靠。
-  **该字段的位置（2026-09 核实的官方文档）**：Custom 模式 → **Advanced Options（高级选项）** →
-  菜单**第一项**即 Exclude；语义等同 negative prompt。
-  字段是否提供、叫什么名字仍以你当前 Suno 版本的实际界面为准（本技能不写死版本差异）；
-  **官方未给分隔符示例 —— 按英文逗号枚举是稳妥做法，但别向用户声称这是官方规定的语法**。
-  没有这个字段时，靠「简化 Style + 全篇不出现任何人声词」把概率压到最低，
-  并如实告诉用户仍有可能出现垫音人声 —— **不要承诺「一定没有人声」**。
+- 降级路径（按可靠性排序，**第一条优先**）：
+  ① 把 `vocals, singing, humming, vocalizations` 放进平台的**排除 / 负面提示字段（Exclude）**——
+     它比在 Style 里写否定词可靠；
+  ② **没这个字段时不要卡住**：简化 Style 到 4–7 个标签、全篇不出现任何人声词、换更纯器乐的流派词
+     （环境 / 氛围 / 后摇比 pop、trap、soul 稳得多），见第九节。
+- **该字段的位置与可用性（2026-09-25 实测，请照实说）**：
+  它在 Advanced（自定义）模式的折叠面板里 —— 早期资料叫它 **Advanced Options**，
+  实测按钮名是 **More Options**；**官方未给分隔符示例，按英文逗号枚举是稳妥做法，
+  但别向用户声称这是官方规定的语法**。
+  ⚠️ **实测同一面板里 Vocal Gender / Duration / Max Mode / Weirdness / Style Influence / Variety /
+  Personalize 都在，唯独没有 Exclude** —— 该字段**可能因档位或版本灰度而缺席**。
+  所以：**有就用，没有就走上面第 ② 条**，并如实告诉用户仍可能出现垫音人声 ——
+  **不要承诺「一定没有人声」**。
 
 **规则 3：方言必须彻底本土化 + 防破音（C 路径专属）**
 
@@ -228,6 +253,23 @@ Consistent dynamics, Polished production
 三处与有人声版的差别，不要漏：**①** Style 首位是器乐声明而不是语言锁；**②** 标题后的括号标注是 `(Instrumental)`
 而不是语言；**③** 结尾段是「回到开头的和弦与织体 + 干净切断」，**不是** `[Outro – Fade out ...]`。
 
+**三段之后必带两块**（这是交付的一部分，不算「解释」）：
+
+```text
+### 4. 粘贴前先做的界面设置
+- Variety 归 0        ← 否则它会改写上面那份 Style，语言锁/方言锁/BPM 都会被扩写
+- Duration: Auto（想控长度再改 Custom）
+- Max Mode: Off（免费额度紧张时务必关；2× 消耗）
+- Vocal Gender: 与 Style 里的 vocal 描述一致
+- Exclude（有就填）: vocals, singing, humming, vocalizations   ← 仅器乐包需要
+
+### 5. 假设与待替换
+- （逐条列出你替用户定的东西 + 本次的规则偏离）
+```
+
+**按档位追加的那一行**：若本次要用 v6 旗舰 / v6-wild，或用户提了商业授权 / 下载 / Suno Studio，
+这里要先按第十一节的问法确认档位，再决定这一块写什么。
+
 **反模式禁止清单：**
 
 | # | 反模式 | 为什么禁 |
@@ -243,6 +285,10 @@ Consistent dynamics, Polished production
 | 9 | 器乐包里填语言锁（`Mandarin, Standard Mandarin Enunciation`） | 等于告诉模型「这首有人声」，诱导出哼唱与无词垫音 |
 | 10 | 循环素材里写 `Fade out`、把收尾做成渐弱 | 尾部渐弱让循环点接不上，听第二遍就露馅 |
 | 11 | 承诺「这条提示词能直接出无缝循环」 | Suno 出的是素材，无缝靠裁到整数小节 + 交叉淡化，拍胸脯就是不诚实 |
+| 12 | 交完 Style 不提「把 Variety 归 0」 | Variety 会**改写你写的 Style**，语言锁与 BPM 都在里面 —— 不说等于让用户白写 |
+| 13 | 把滑杆数值写进 Style 文本框（如 `Weirdness: 20%`） | 那是给模型读的文字，不是控件；写了不移滑杆，还污染风格描述 |
+| 14 | 免费用户要 v6 旗舰特性却直接照写、不提档位 | 型号不在提示词控制范围内；不提，用户拿到的是他选不到的东西 |
+| 15 | 器乐包压不住哼唱就死磕 Exclude | 该字段**可能根本没有**（2026-09 实测免费账号缺失）；无字段时要给替代路径，见规则 2 例外段 |
 
 ## 六、防幻觉（硬约束，优先级最高）
 
@@ -266,13 +312,17 @@ Consistent dynamics, Polished production
 - 默认治愈风格的完整配方（乐器、速度、和声走向、文风参数）→ `@references/healing-style.md`
 - 粤语等方言的词汇锁、风险字表、声调补偿写法 → `@references/cantonese-lock.md`
 - 纯器乐 / 游戏 BGM / 无缝循环的完整配方（编制、动态分层、循环点做法、后期与响度、可复制模板）→ `@references/game-bgm-loop.md`
-- **模型怎么选（v6 / v6-wild / v6-mini）、滑杆怎么调（Weirdness / Style Influence）、Exclude 填在哪、怎么让多首歌人声一致** → `@references/model-and-controls.md`
+- **型号与档位怎么选（v6 / v6-wild / v6-mini、免费档能拿什么）、More Options 里每个控件干什么
+  （Variety / Style Influence / Weirdness / Max Mode / Personalize / Duration / Vocal Gender）、
+  Exclude 在哪且可能不存在、免费档的四条优化动作、怎么让多首歌人声一致** → `@references/model-and-controls.md`
 
 ## 八、完成判据
 
-**算做完（有人声包）：** 标题 + Style（九字段齐全且人声锁在最前）+ 歌词（含 `[Language:]`/`[Accent:]`、段落标签全部复合、以 `[End]` 结尾）+ 结构校验通过 + 文末列出「假设与待替换」。
+**算做完（有人声包）：** 标题 + Style（九字段齐全且人声锁在最前）+ 歌词（含 `[Language:]`/`[Accent:]`、段落标签全部复合、以 `[End]` 结尾）+ 结构校验通过 + 文末两块（「粘贴前先做的界面设置」**含 Variety 归 0** + 「假设与待替换」）。
 
-**算做完（器乐 / 循环包）：** 标题（括注 `(Instrumental)`）+ Style（首位 `Instrumental, No vocals`、**不含** `[Language:]`/`[Accent:]`、Style 里没有任何人声描述词，循环包还要写死 BPM 与 `Seamless loop, No fade in, No fade out`）+ 段落标签（方括号外留空、以 `[End – …]` 收束、**处处无 fade out**）+ 结构校验通过 + 文末列出「假设与待替换」（含本次的规则偏离）。
+**算做完（器乐 / 循环包）：** 标题（括注 `(Instrumental)`）+ Style（首位 `Instrumental, No vocals`、**不含** `[Language:]`/`[Accent:]`、Style 里没有任何人声描述词，循环包还要写死 BPM 与 `Seamless loop, No fade in, No fade out`）+ 段落标签（方括号外留空、以 `[End – …]` 收束、**处处无 fade out**）+ 结构校验通过 + 文末两块（界面设置 **含 Variety 归 0 与 Exclude 那一行** + 「假设与待替换」含本次的规则偏离）。
+
+**档位相关的额外判据：** 本次若用到 v6 旗舰 / v6-wild，或用户提到商业授权、下载、Suno Studio —— **必须先按第十一节问过档位**，并在产出里说明按哪一档写成。免费档产出还要如实交代三条限制（无商业授权、下载极紧、Max Mode 翻倍消耗）。
 
 **不自动做：** 不自动调用音乐生成接口；不自动开始做封面与 MV；不自动把歌词翻译成其他语言（用户要求才做）；
 不自动替用户剪音频、对齐循环点（本技能产出提示词包与后期清单，动手在用户的编辑器里）。
@@ -347,3 +397,40 @@ App 与提示音、片头片尾的短音乐（Stinger）。
 做法是从**同一版 Style 出发**用 Extend / Remix 逐层加浓，**不要另起一版 Style** —— 那是"两首不同的曲子"，不是两层。
 
 **要展开的（编制、循环点与后期步骤、Stinger、响度与格式、可复制模板、失败模式）→ `@references/game-bgm-loop.md`。**
+
+## 十一、账号档位与型号门禁（免费 / 付费）
+
+**默认不问。** 绝大多数产出只是「写提示词」，与档位无关 —— 这时**不要**上来就问账号，
+那只会平白多一轮交互。**只在下面三种情形才问：**
+
+1. 用户点名要 **v6 旗舰 / v6-wild**（**付费专有型号**）；
+2. 用户提到**商业用途**（游戏 BGM、客户交付、变现、平台分成）；
+3. 用户提到**下载 / stem 拆分 / Suno Studio / 超长时长**这类账号能力。
+
+**问法（一句话，不要发问卷）：**
+
+> 「你现在是免费账号还是 Pro？免费档只能选 v6-mini，v6 与 v6-wild 是 Pro 型号 ——
+> 如果你想用旗舰型号，我得知道你有没有升级。」
+>
+> （同步给他一个**自己就能确认的方法**：打开模型选择器，**带 `Pro` 角标的就是付费型号**。）
+
+**拿到答案之后怎么走：**
+
+| 档位 | 产出什么 | 必须一并交代 |
+|---|---|---|
+| **免费**（当前可选 v6-mini） | **面向免费档优化**：语言锁照写、**Variety 归 0**、Style 精简、不依赖 Exclude。**不要**按 v6 旗舰的写法去承诺更强的控制力 | 无商业授权；下载额度极紧；Max Mode 2× 消耗；50 credits/天 ≈ 10 首，留出重试预算 |
+| **付费**（Pro / Premier） | 可以用 v6 控制力更强的写法（更细的编曲指令、更长的描述）；v6-wild 适合探索 | 商业授权**仅在订阅期间对新建歌曲生效**；降回免费不收回旧作权利，但不能再造新的商业曲 |
+
+**三句不要说错的话：**
+
+- **不要说型号由提示词决定。** 型号在界面右上角的选择器里选；在提示词里写「请用 v6」无效。
+- **不要凭印象说「免费只能用 v4.5」。** v4.5 / v5 / v5.5 已于 2026-09-09 全部退役，
+  免费档现在能选的通常是 **v6-mini**。**以用户界面上的实际选择器为准**，让他看一眼即可。
+  本节记录的档位对应关系**随时可能变** —— 讲之前先看界面，别背结论。
+- **不要因为「用户是免费档」就把提示词写含糊。** 免费档优化是**换动作**
+  （Variety 归 0、别指望 Exclude、留重试预算），**不是**换文风、更不是降低语法质量；
+  段落标签与行内指令的写法**两档完全一致**。
+
+**用户不愿说档位时：** 按**免费档**产出（更保守的那一档），并在文末「假设与待替换」里写明
+「按免费档处理；若你是付费账号，告诉我，我把 Style 的编曲描述再写细一档」。
+**不要卡住不产出。**

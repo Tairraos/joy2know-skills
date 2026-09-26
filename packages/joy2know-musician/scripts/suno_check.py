@@ -16,6 +16,8 @@
   7. 方言模式：特征字密度 / 普通话虚词污染 / 入声风险字
   8. 器乐模式（--instrumental）：方括号外有无会被唱出来的文字、有无残留的人声类行内指令；必留段落放宽为 Intro + End
   9. 循环模式（--loop）：有无 fade out、BPM 是否写死、必留段落是否合规
+ 10. 控件提醒：Style 是「构造过的」时，提示把 Suno 界面上的 Variety 归 0（v6 起该控件
+     会改写 Style 文本，且静默发生）——这一项只出「信息」，不算错误也不算警告
 
 用法：
     python3 suno_check.py <歌词文件> [--dialect cantonese] [--style "Style 文本"]
@@ -167,6 +169,20 @@ def check(text, dialect, style, instrumental=False, loop=False):
         elif re.search(r"\bChinese\b", first, re.I) and not re.search(
                 r"Mandarin|Cantonese|Hokkien|Wu|Hakka", first, re.I):
             errors.append("Style 首字段只写了 Chinese，方言会被打回普通话")
+
+    # 2b. 控件提醒（v6 起）：Style 一旦是「构造过的」，Variety 就必须归 0。
+    #     官方原文（v6 FAQ）：Variety「is designed to introduce variety in your outputs by
+    #     adjusting and updating your style prompts ... If you'd like to retain full control
+    #     of your style tags, reduce the Variety slider to 0.」
+    #     → 非 0 时模型收到的 Style 不是你写的那份：语言锁会被扩写、BPM 与 seamless loop
+    #       可能被改掉，而这一步**不报任何错**（静默失效）。所以在这里主动提醒，不留给运气。
+    if style and re.search(
+            r"enunciation|instrumental|no\s+vocals?|\d{2,3}\s*bpm|seamless\s+loop",
+            style, re.I):
+        info.append(
+            "Style 是「构造过的」（含语言锁 / 器乐声明 / BPM / 无缝循环 任一）—— "
+            "粘贴前请把 Suno 界面上 More Options 里的 Variety 归 0，"
+            "否则它会在提交前改写这段 Style，而这些设置恰恰要靠它保留")
 
     # 3. 段落标签
     secs = parse_sections(text)
