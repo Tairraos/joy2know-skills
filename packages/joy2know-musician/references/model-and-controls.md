@@ -74,6 +74,19 @@ Variety 默认是 `Normal`，它会**在你提交之后改写这段文本** —�
 你写的 `Cantonese, Cantopop, Traditional Cantonese Enunciation` 可能被扩写成别的东西，
 而**全程 0 报错**，你只会看到「这首歌好像不太像我要的」。
 
+**【实测对照 · 2026-09-26｜同一账号、同一免费档、同一天】** 上面这段官方说法，现在有**行为级**证据了，
+不再只是文档背书。同一类「构造过的」Style 分两次提交，读回 Suno 最终写进 `metadata.tags` 的内容：
+
+| 提交时 Variety | Suno 最终记下的 tags | 判定 |
+|---|---|---|
+| **`Balanced`**（≠ 0） | **被改写** —— `instrumental only, no vocals` → `instrumental`；`heartwarming, loopable` → `arranged for a seamless loop` | 你写的文本**没有原样到达模型** |
+| **`0` / `Off`** | **与提交的 Style 逐字一致**（逐词比对，无一丢失） | **逐字生效** |
+
+两组之间**只有一个变量**（Variety），所以这不是巧合。还要注意 `Balanced` 那组被改掉的恰好是**末几位**
+（`no vocals`、`loopable`）—— 也就是最容易被「顺手润色」的短标签，而不是整段消失，
+**肉眼几乎看不出来**；只有把 `metadata.tags` 拉出来逐词比对才会发现。
+本技能的器乐声明、`Seamless loop`、BPM 恰好都属于这类「短标签」，正是重灾区。
+
 **硬性动作：凡是用本技能产出的包，交付时都带上一句「把 Variety 归 0」。**
 
 - 语言锁 / 方言包 → **必须归 0**

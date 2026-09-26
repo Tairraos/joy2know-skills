@@ -126,6 +126,8 @@ author: 晓得乐
 *"is designed to introduce variety in your outputs by adjusting and updating your style prompts"*
 —— 即**它会改写你写的 Style 文本**（官方办法：*"reduce the Variety slider to 0"*）。
 不改，语言锁就等着被扩写成别的东西，**且全程 0 报错**——你只会觉得「这首歌不太像我要的」。
+**（2026-09-26 已做行为级对照：归 0 时 Suno 最终记下的 tags 与提交的 Style 逐字一致；
+留在 `Balanced` 时同一段文本会被改写 —— 见 `@references/model-and-controls.md` 第三节。）**
 
 所以凡是用本技能产出的包，交付时都要带上「**把 Variety 归 0**」这一句；
 方言包、器乐包、循环包（BPM 与 `Seamless loop` 也写在 Style 里）尤其不能漏。
