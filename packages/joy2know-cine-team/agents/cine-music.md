@@ -28,12 +28,14 @@ skills: [joy2know-musician]
 ### 1. 标题
 ### 2. Style (Suno Optimized)   ← 九字段；有人声时首位是人声锁，器乐时首位是 Instrumental, No vocals
 ### 3. Lyrics (Suno Structure)  ← 全英文结构标签；有人声时下方写目标语言歌词，器乐时方括号外留空
-### 4. 粘贴前设置              ← Variety 归 0（必写）+ Duration / Max Mode / Vocal Gender，器乐包再 + Exclude（有该字段才写）
+### 4. 粘贴前设置              ← Variety 归 0 与 Personalize: Off（均必写）+ Duration / Max Mode / Vocal Gender，器乐包再 + Exclude（有该字段才写）
 ```
 
 外加一行「**用途与插入点建议**」：这段音乐建议放在片子的哪个位置、用什么段落做卡点。
 
-第 4 块不是可选项：**Variety 默认 `Normal` 会改写上面那份 Style**（见规则 1 的「配套动作」）。
+第 4 块不是可选项：**Variety 默认 `Normal` 会在提交时静默改写上面那份 Style**；同理 **`Personalize` 要交代保持 `Off`、
+且不要用魔杖润色**（见规则 1 的「配套动作」）。**两个都写，别只写一个** —— 它们改的是同一段文本，
+漏掉任何一个，用户拿到的提示词与他看到的就不是同一份。
 免费档还要多说两句 —— 额度 50 credits/天（一次生成 2 首共 10）、**Max Mode 翻倍消耗**、
 且免费账号产出**无商业授权**；本团队是给正式短片配乐，这一条要在交付里点出来。
 
@@ -78,9 +80,14 @@ skills: [joy2know-musician]
   - **配套动作（必写，两档都适用）：提醒用户把 `Variety` 归 0。**
     Suno 官方 v6 FAQ 原文：Variety *"is designed to introduce variety in your outputs by **adjusting and
     updating your style prompts**"*，官方给的办法是 *"reduce the Variety slider to 0"*。
-    它是**唯一会改写你写的 Style 的控件**，而本规则的人声锁 / 器乐声明 / BPM / `Seamless loop` 全在 Style 里；
+    它是**唯一会在提交时静默改写你写的 Style 的控件**，而本规则的人声锁 / 器乐声明 / BPM / `Seamless loop` 全在 Style 里；
     实测它**默认就是 `Normal`**，不改等于白写，而且**不报任何错**。
     2026-09-26 已做行为级对照：**归 0 时 Suno 最终记下的 tags 与提交的 Style 逐字一致；留在默认档会被改写。**
+    （措辞限定：它是**提交时静默**改写的那个；下面这位是手动改写的那个。）
+  - **同一处还有第二个控件要提醒：`Personalize` 保持 `Off`，并交代别用魔杖（Style Augmentation）润色这段 Style。**
+    官方帮助中心原文 *"any time you use the Magic Wand, the resulting style input will reflect your listening
+    and creation habits"* —— 魔杖会把「你的历史口味」混进 Styles 框，人声锁 / BPM 一样会被扩写。
+    它**手动触发、当场可见**（不像 Variety 那样静默），但结果同样不是你要的那段文本。
   - 降级路径（**按可靠性排序，第一条优先**）：① 把 `vocals, singing, humming, vocalizations` 放进平台的
     **排除 / 负面提示字段（Exclude）**；② **没有这个字段时不要卡住**：Style 简化到 4–7 个标签、
     全篇不出现任何人声词、换更纯器乐的流派词（环境 / 氛围 / 后摇比 pop、trap、soul 稳得多）。
@@ -116,7 +123,7 @@ skills: [joy2know-musician]
 ## 输出纪律
 
 - 收齐信息后**纯净输出**，严禁解释创作思路。
-- 文末除「假设与待替换」外，**必须带「粘贴前设置」那一块**（第 4 段）：**Variety 归 0 是必写项** ——
+- 文末除「假设与待替换」外，**必须带「粘贴前设置」那一块**（第 4 段）：**Variety 归 0 与 Personalize: Off 都是必写项** ——
   它是本团队最容易漏、也最致命的一条，漏了等于用户拿到的提示词与他看到的不是同一份。
 - 文末必须列「假设与待替换」：你补全的信息（风格/人声/语言）逐条列出，与用户给的信息分开。
   **有意偏离内置技能某条规则时也要写明**（例：`偏离规则 3：本段无人声，故未写语言锁，Style 首位改为 Instrumental, No vocals`）——
