@@ -44,7 +44,7 @@
 | **Weirdness** | 滑杆，默认 **50%** | Safe ↔ Chaos，结果的**常规程度** |
 | **Style Influence** | 滑杆，默认 **50%** | Loose ↔ Strong，**贴不贴**你写的 Style |
 | **Variety** | 滑杆，默认 **Normal** | **会改写你的 Style 文本**（第三节，本技能红线） |
-| **Personalize** | `My Taste` / `Off` / `On`，默认 **Off** | 用你的历史口味做个性化 |
+| **Personalize** | `My Taste` / `Off` / `On`，默认 **Off** | 把你的**口味画像（My Taste）**注入本次生成。**它也会动 Style 文本**，但只在你**点魔杖**时发生 —— 见第三节之二 |
 | **Exclude / Exclude Styles** | **本次实测未出现** | 负面提示；见第五节 |
 
 **三个滑杆是三件不同的事** —— 社区常把它们混成一个「创意度」旋钮，于是流传的建议互相矛盾：
@@ -55,7 +55,12 @@
 | **Style Influence** | 对 Style 的**遵从度** | 结果总跑偏 → 往 Strong |
 | **Weirdness** | 结果的**常规程度** | 想要意外 → 往 Chaos；**50% 才是基准，不是「关」** |
 
-## 三、Variety：唯一会改写你 Style 的控件（本技能红线）
+## 三、Variety：唯一会**在提交时静默**改写你 Style 的控件（本技能红线）
+
+> **措辞修正（2026-09-26）**：本节早先写的是「唯一会改写你 Style 的控件」。
+> 核实官方帮助中心后必须加限定词 —— **`Personalize`（My Taste）也会改写 Styles 框里的文本**，
+> 只是它**要你主动点魔杖**才发生、当场可见；而 Variety 是**提交时静默发生**、事后读 `metadata.tags` 才查得出。
+> 两者都要防，见**第三节之二**。
 
 **【官方原文】**（v6 FAQ）：
 
@@ -95,6 +100,41 @@ Variety 默认是 `Normal`，它会**在你提交之后改写这段文本** —�
 
 **另一个坑：不要把滑杆数值写进 Style 文本框。** 那是给模型读的文字，不是控件。
 写 `Weirdness: 20%` 不会移动滑杆，反而可能被当成风格描述的一部分。
+
+## 三之二、Personalize（My Taste）：第二个会动 Style 的控件
+
+**【官方原文 · 帮助中心「My Taste」】**：
+
+> *"With Style Augmentation enabled, any time you use the Magic Wand, the resulting style input will reflect your listening and creation habits."*
+
+**中文翻译**：当 Style Augmentation（风格增强）开启时，你每次使用魔杖，最终生成的风格输入都会反映你的收听与创作习惯。
+
+**中文解读**：这句指的是 **Styles 框右上角那支魔杖** —— 点它之后填进 Styles 框的那段文字，不是你写的，
+也不是模型凭空写的，而是**从你的口味画像里长出来的**。官方发布说明的说法是 My Taste 会学习
+「你反复回到的流派与情绪」（*"Suno learns what you're drawn to: your favorite genres and the moods you keep coming back to"*），
+且**面向所有用户开放，含免费档**。
+
+**【与 Variety 的分工，别混为一谈】**
+
+| | **Variety** | **Personalize（My Taste）** |
+|---|---|---|
+| 触发方式 | **自动** —— 提交时发生，你不点也在发生 | **手动** —— 只在你点魔杖时发生 |
+| 改什么 | 你写的 Style 文本（扩写 / 润色） | **替换 / 扩写** Styles 框里的内容，掺入你的历史口味 |
+| 能不能当场察觉 | **不能**（0 报错，只能事后读 `metadata.tags` 比对） | 能（框里的字当场就变了） |
+| 要 Style 逐字生效 | **归 0** | **保持 Off，且不要点魔杖** |
+
+**硬性动作：交付给别人用的包、以及将来要复现的包 —— `Personalize` 保持 `Off`，并附一句「不要用魔杖润色这段 Style」。**
+风格确实需要扩充时，**由本技能来扩**（可控、可复核、可 diff）；**不要交给魔杖**。
+
+**【未证实，不要当结论讲】** 有第三方资料称 My Taste 还会在「提示词描述不足时」影响默认的流派 / 情绪 /
+结构倾向，甚至在没有提示词时也能生成。官方帮助中心我核到的**只有上面那条「魔杖」路径**，
+**没有核到「不点魔杖也会偏置」的官方表述**，所以本技能**不把它当事实**。
+用户问起时按「官方只说了魔杖那条路」回答。
+
+**两个入口，别只关一个**：`More Options` 里的 `Personalize` 管**本次生成**；账号级总开关在**头像菜单**里
+（官方原文：*"My Taste is enabled by default but you can view, edit, or disable My Taste by clicking on your avatar photo"*
+→ 中文翻译：My Taste 默认开启，但你可以点头像、从下拉菜单里查看、编辑或关闭它）。
+**画像本身是账号级的**，所以「这次关掉」不等于「它不再学习」。
 
 ## 四、免费档怎么优化（本技能的默认姿态）
 

@@ -17,8 +17,10 @@
 - **类型**：技能
 - **对应版本**：1.5.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-26（同日两次补记：① 上传被驳回 → 修 `description_en` → 重建，见 2.7；
-  ② **消掉未覆盖项第 9 条** —— Variety 归 0 的行为级对照已完成，见 §〇 与第六节）
+- **最后检测**：2026-09-26（同日**三次**补记：① 上传被驳回 → 修 `description_en` → 重建，见 2.7；
+  ② **消掉未覆盖项第 9 条** —— Variety 归 0 的行为级对照已完成，见 §〇 与第六节；
+  ③ **措辞修正** —— 核实官方「My Taste」帮助页后确认，原先「Variety 是**唯一**会改写 Style 的控件」
+  **说过头了**（`Personalize` 经魔杖也会改），已加限定词并补一条，见 2.5 的 E9 行）
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证 + 上传预检（19 项自检全绿）
 
 ---
@@ -70,19 +72,23 @@ SKILL 规则 2 的「配套动作」（加一句）、团队包 `cine-music.md`�
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-     34919  SKILL.md                          技能正文（9 必填 frontmatter 齐全，version 1.5.0，438 行）
+     36044  SKILL.md                          技能正文（9 必填 frontmatter 齐全，version 1.5.0，447 行）
      19654  scripts/suno_check.py             唯一脚本：Suno 歌曲包结构/器乐/循环校验 + 控件提醒（395 行）
-     12354  references/model-and-controls.md  型号档位 / More Options 全控件 / Variety（含行为级对照）/ 免费档优化
+     15621  references/model-and-controls.md  型号档位 / More Options 全控件 / Variety（含行为级对照）/ Personalize（My Taste）/ 免费档优化
      10226  references/game-bgm-loop.md       纯器乐 · 游戏 BGM · 无缝循环
       7187  references/suno-syntax.md         复合标签/行内指令/Style 九字段/控制词表
       5031  references/healing-style.md       默认治愈配方（乐器/BPM/文风内核/器乐化改法）
       4912  references/cantonese-lock.md      粤语三方锁、特征字表、风险字、声调补偿
-     51616  joy2know-musician.md              本文件（开发期文档，不进 zip）
+     56338  joy2know-musician.md              本文件（开发期文档，不进 zip）
 ```
 
 **零第三方依赖核对**：`suno_check.py` 仅 `import argparse / json / re / sys`（全标准库），
 无任何外部包 import；SKILL.md 未声明「零第三方依赖」字样，但实现确实零依赖。
-包内文件小计（不含本报告）**94,283 字节 ≈ 92.1 KB**，远低于技能包 3 MB 上限。**结论：零第三方依赖守住。**
+包内文件小计（不含本报告）**98,675 字节 ≈ 96.4 KB**，远低于技能包 3 MB 上限。**结论：零第三方依赖守住。**
+
+> **体积口径（2026-09-26 补记）**：以上数字由 `find … -not -name '.DS_Store' -exec cat {} +` 从磁盘枚举。
+> **`.DS_Store` 不计入** —— 它既不上架也不进 zip（`build.mjs` 里三处显式排除，已实测产物中确认没有它）。
+> 本包源目录里没有这个文件；**姊妹包 `joy2know-cine-team` 里有一个**，曾把它那一行的「源包体」算高 6,148 字节，已改正。
 
 **本轮体积变化（v1.4.0 → v1.5.0）**：技能正文 27.6 KB → 34.9 KB（+7.2 KB），
 `model-and-controls.md` 6.4 KB → 12.1 KB（+5.7 KB），脚本 18.4 KB → 19.7 KB（+1.3 KB）。
@@ -90,6 +96,10 @@ SKILL 规则 2 的「配套动作」（加一句）、团队包 `cine-music.md`�
 **增量全部来自本轮实测到的控件现状与档位门禁**（新增第十一节、规则 2 的 Variety 配套动作、
 输出格式的第 4 块、反模式 12–15 条），无冗余副本、无重复抄写 ——
 控件清单只在 `model-and-controls.md` 里写一份，SKILL.md 只写「怎么用」。
+
+**同日深夜补记再 +1.1 KB 到 SKILL、+3.2 KB 到 `model-and-controls.md`**（措辞修正轮）：把
+「Variety 是唯一会改写 Style 的控件」限定为「唯一会**在提交时静默**改写」，并新增 `Personalize`（My Taste）
+一条 —— 官方原文、与 Variety 的分工对照表、以及「哪条是官方说的、哪条我没核到」的边界。脚本**零改动**。
 
 ---
 
@@ -197,6 +207,7 @@ SKILL 规则 2 的「配套动作」（加一句）、团队包 `cine-music.md`�
 | E6 | **档位门禁**：默认不问，只在三种情形问（点名付费型号 / 提商业用途 / 提下载·Studio·长时长）；给了问法与两档差异；明写「不要说型号由提示词决定」「不要凭印象说免费只能用 v4.5」 | SKILL 第十一节 + §二 路由 F 行 + §八 完成判据 | 用户需求 + 本轮核实结果 |
 | E7 | **校验脚本加一条「不报红」的控件提醒**：Style 是「构造过的」时提示把 Variety 归 0 | `suno_check.py` 2b 段 + docstring 第 10 项 | 承接 E3；本仓库「静默失效一律留痕」的既有原则 |
 | E8 | **Variety 归 0 的行为级对照**（2026-09-26 补记，消掉未覆盖项 9）：`Balanced` 组 `metadata.tags` 被改写、`0` 组逐字一致 → 表述由「官方说…」升级为「官方原文 + 实测对照」 | `model-and-controls.md` §三（新增实测表）+ SKILL 规则 2 + `cine-team/agents/cine-music.md` | 本机 Suno MCP 真跑两组生成，读回 `metadata.tags`（含阴性对照） |
+| E9 | **措辞修正 + 新增 `Personalize`（My Taste）**（2026-09-26 深夜）：原句「Variety 是**唯一**会改写 Style 的控件」**说过头了** → 限定为「唯一会**在提交时静默**改写」；并补上第二个会动 Style 的控件：它**经魔杖（Style Augmentation）**改写 Styles 框文本，**手动触发、当场可见** | `model-and-controls.md` §二 的 Personalize 行 + **新增 §三之二**（官方原文三层 + 与 Variety 的分工表 + 未证实边界） + §三 标题与措辞修正注；SKILL 规则 2 配套动作、工作流第 8 条、输出格式第 4 块、反模式 16、完成判据两处；`cine-team/agents/cine-music.md`（内嵌联动**第 ⑤ 处**） | help.suno.com「My Taste」帮助页 + 官方 v5.5 发布说明（2026-09-26 读）；**非魔杖路径未核到官方原文 → 明确标为未证实** |
 
 **B. 双向验证（解释器 = 受管 venv `/Users/xiaole/.workbuddy/binaries/python/envs/default/bin/python`）**
 
@@ -393,6 +404,12 @@ SKILL 规则 2 的「配套动作」（加一句）、团队包 `cine-music.md`�
 10. **More Options 里 `Exclude` 的缺席原因未查明（v1.5.0 新增）**：只观测到「这台机器的免费账号没有该字段」，
     **无法区分**是「免费档没有」「该版本灰度掉了」还是「需满足某前置条件才出现」。
     所以文档按「可能缺席」写，并要求降级到第二条路径 —— 这是**在信息不足时的保守写法**，不是结论。
+11. **`Personalize`（My Taste）在「不点魔杖」时是否也影响结果，未核到官方原文（v1.5.0 深夜补记新增）**：
+    官方帮助中心只写了**魔杖（Style Augmentation）**那一条路径；另有第三方资料称它还会在「提示词描述不足时」
+    影响默认的流派 / 情绪 / 结构倾向 —— **我没有核到官方出处，因此不写进技能正文，只在本报告登记为未证实**，
+    技能里对这块的表述是「官方只说了魔杖那条路」。
+    **要消掉它得实测**：同一份提示词，`Personalize` = Off 与 = On 各跑一组，读回 `metadata.tags` 比对
+    （与消掉第 9 条用的是同一套方法，成本一次生成）。
 
 **已知缺陷**（**本轮修掉的见下**）：
 
@@ -428,8 +445,9 @@ SKILL 规则 2 的「配套动作」（加一句）、团队包 `cine-music.md`�
 
 > **严重度判定说明**：缺陷 4/5/7 影响的是**用户实际用法**（合规产出被判红、或工具逼人写错东西），
 > 但**均已在本版修复并有对应用例**（缺陷 7 另补了「防误放」对照 V6）；
-> 剩余 **9 项**未覆盖（原列 10 条，第 9 条已于 2026-09-26 消掉）均为**能力边界**（文风、跨生成物一致性、真机试听）
-> 或**已知的既有缺口**（标题、九字段）。
+> 剩余 **10 项**未覆盖（原列 10 条，第 9 条已于 2026-09-26 消掉；同日深夜新增第 11 条）——
+> 多数是**能力边界**（文风、跨生成物一致性、真机试听），第 10 / 11 两条属**信息不足**（官方没写全）。
+> 两条都附了可执行的消掉方法：第 10 条要换档位或版本观察，第 11 条按第 9 条那套对照实验跑一次即可。
 > 按仓库口径（非阻断性 + 有明确未覆盖项）→ **⚠️ 有条件通过**。
 > 若维护者认为「合法路径被判红」属硬缺陷、要求必须有真机试听记录才放行，应改判 **❌** 并优先补第 5 项。
 
@@ -456,3 +474,4 @@ SKILL 规则 2 的「配套动作」（加一句）、团队包 `cine-music.md`�
 | 2026-09-25 | 1.4.0 | ⚠️ 有条件通过 | **知识补齐 + 缺陷 7 修复轮**：① **知识补齐** —— 依 help.suno.com 官方原文新增 reference `model-and-controls.md`（v6 / v6-wild / v6-mini 选型与免费账号边界、Creative Sliders 的 Weirdness（Safe↔Chaos，50% 为正常基准）/ Style Influence（Loose↔Strong）/ Audio Influence、**Exclude 的确切位置 = Custom → Advanced Options 首项**、Voices 已取代 Personas 而 Style Persona 保留在 Voices 内），SKILL 四处联动，并把 `Suno V4.5+` 去写死为 `v4.5–v6 通用`。② **修缺陷 7** —— 1.3.0 只修了「语言锁」那半，**必留段落仍只对 `--loop` 放宽**，致合规的非循环器乐包被判 2 error（而硬塞 Chorus/Outro 反而全绿 = 工具在逼人写错）；改为 `relaxed = loop or instrumental` 并同步 3 处文本。验收：**真跑 8/8**（3 阳性 + 5 反向，含 V6「人声包缺 Chorus/Outro 仍报 2 error」防误放对照）；V2 改前 2 error → 改后 0 error；`selfcheck` 11 项通过（含新增 `@references/model-and-controls.md` 引用有效）。**新增第 8 种假测试形态**：`… \| tail -4; echo $?` 取到的是 `tail` 的退出码、且截断了错误段，导致 V2/V4 一度被误读为「脚本失效」。**另注**：本机已安装版（`~/.workbuddy/skills/joy2know-musician/`）仍是市场版 **1.1.0**，其 `suno_check.py` 与仓库版 hash 不同 —— 需重装才能拿到 1.4.0。 |
 | 2026-09-25 | 1.5.0 | ⚠️ 有条件通过 | **档位与控件知识轮（用户提出）**：① **推翻旧认知** —— 用户认为「免费档 = v4.5」，实测（CDP 读已登录界面 + 截图）模型选择器只有 **v6-mini（免费）** 与 v6 / v6-wild（**均带 `Pro` 角标**）；5 个独立来源一致：**v6 家族 2026-09-09 上线，v4.5 / v5 / v5.5 同日全部退役**。② **写入官方 v6 FAQ 原文命中的一条红线** —— `Variety` 默认 `Normal`，官方明确它 *"adjusting and updating your style prompts"*，即**会改写你写的 Style**；而本技能的语言锁 / 方言语系 / BPM / `Seamless loop` 全在 Style 里，不改等于白写**且 0 报错**。落点：`model-and-controls.md` §三 + SKILL 规则 2「配套动作」+ 输出第 4 块 + 反模式 12/13。③ **More Options 全控件实测**（Vocal Gender / Duration(Auto) / Max Mode(Off) / Weirdness(50%) / Style Influence(50%) / Variety(Normal) / Personalize(Off)），并订正 `Exclude` 位置 **Advanced Options → More Options**，且**免费账号该字段缺席** → 器乐降级路径由一条改为两条。④ **新增档位门禁**（SKILL 第十一节）：默认不问，只在「点名付费型号 / 提商业用途 / 提下载·Studio·长时长」三种情形问，并明写「不要说型号由提示词决定」「不要凭印象说免费只能用 v4.5」「不要因为免费就把提示词写含糊」。⑤ **脚本加非阻断提醒**：Style 属「构造过的」时提示把 Variety 归 0（只出 info，不出 error）。验收：**双向验证 5/5** —— W1 人声+enunciation、W2 器乐+循环+BPM 均出提醒且 0 错 0 警；**W3 阴性对照（Style 未构造）提醒不出现**；W4 `--json` 合法且 info 含提醒；**W5 判据自检 10/10**（7 阳性变体含 `96bpm` 无空格 / 3 阴性对照）。四道门：构建 **45.0 KB**、`selfcheck` **11 项 / 0 问题**、`platformcheck` 按 **Skill** 通过、产物内 `suno_check.py` 与源 **逐字节一致**；并按内嵌联动铁律同轮重建 **`joy2know-cine-team` 1.4.0 → 1.5.0**（其成员正文 `cine-music.md` 的「两层过期第 ② 层」本轮**真的发生过**，已同步）。**本轮新增未覆盖项 2 条，其中第 9 条（Variety 归 0 的实际效果只有文档背书、无行为级对照实验）列为首要待办。** |
 | 2026-09-26 | 1.5.0（补记） | ⚠️ 有条件通过 | **消掉未覆盖项第 9 条（用户提「继续」）**：本机 Suno MCP **真跑两组共 6 首**（同日、同账号、同免费档），判据取 **Suno 最终写入 `metadata.tags` 的内容** —— **`Balanced` 组被改写**（`instrumental only, no vocals` → `instrumental`；`heartwarming, loopable` → `arranged for a seamless loop`），**`0` / `Off` 组与提交的 Style 逐字一致**；两组仅 Variety 一个变量 → **阴性对照成立**，该条**降级为已覆盖**。技能表述由「官方文档说…」升级为「**官方原文 + 实测对照**」，三处同步：`references/model-and-controls.md` §三（新增实测表）、SKILL 规则 2「配套动作」、团队包 `cine-team/agents/cine-music.md`（**内嵌联动，防两层过期第 ② 层**）。包体 90.9 KB → **92.1 KB**；**版本不抬**（1.5.0 上传被驳回 = 从未存在过该版本 → 同名重传）。**边界如实标注**：验证的是「提交的 Style 是否原样到达模型」，**不是**「音频里发音是否漂移」（后者仍属未覆盖项 5）。**未覆盖项由 10 条降为 9 条。** |
+| 2026-09-26 | 1.5.0（第二次补记） | ⚠️ 有条件通过 | **措辞修正轮（用户问「`Variety` / `Personalize` 这两个参数是干什么的」）**：核实 help.suno.com「My Taste」帮助页后确认，1.5.0 轮写下的「Variety 是**唯一**会改写 Style 的控件」**断言范围超过了实测范围** —— `Personalize`（官方名 My Taste）**经魔杖（Style Augmentation）**同样会改 Styles 框里的文本，官方原文 *"any time you use the Magic Wand, the resulting style input will reflect your listening and creation habits"*；区别是它**手动触发、当场可见**，而 Variety 是**提交时静默**发生。改法：① §三 标题加限定为「唯一会**在提交时静默**改写」并**保留原话 + 写明为什么改**（不删旧文）；② **新增 §三之二**（官方原文三层 + 与 Variety 的分工对照表 + 「两个入口：More Options 关门、头像菜单关总开关」+ **非魔杖路径未核到官方原文 → 显式标为未证实**）；③ SKILL 四处联动（规则 2 配套动作由「一件事」改为「两件事」、工作流第 8 条、输出格式第 4 块、反模式新增第 16 条「不要用魔杖润色」）+ 完成判据两处；④ 内嵌联动同步 `cine-team/agents/cine-music.md`（**第 ⑤ 处，又落在「两层过期第 ② 层」**）。**脚本零改动**（本轮无新判据）。包体 92.1 KB → **96.4 KB**；**版本不抬**（同上口径）。**未覆盖项 9 → 10 条**（新增第 11 条：Personalize 的非魔杖路径未核到官方原文；报告里同时给出了与第 9 条同一套方法的消掉方案）。**另改正一处口径错误**：姊妹包报告里的「源包体」曾把 `.DS_Store` 一并算入，本轮订正并在两包报告中写明体积口径。 |

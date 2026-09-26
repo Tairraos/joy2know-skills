@@ -120,7 +120,7 @@ author: 晓得乐
 - 反例：✗ `Chinese, pop, ...`（用户要粤语，结果出普通话）
 - 降级路径：用户没指定语言时，默认 `Mandarin, Standard Mandarin Enunciation`，并在产出里标注可替换。
 
-**配套动作 · 必须提醒把 Variety 归 0（v6 起的控件，2026-09 实测）。**
+**配套动作 · 必须提醒两件事：`Variety` 归 0、`Personalize` 保持 Off（v6 起的控件，2026-09 核实）。**
 
 这一位写在 Style 里。而 Suno 的 **Variety 滑杆默认就是 `Normal`**，官方原文说它
 *"is designed to introduce variety in your outputs by adjusting and updating your style prompts"*
@@ -132,6 +132,13 @@ author: 晓得乐
 所以凡是用本技能产出的包，交付时都要带上「**把 Variety 归 0**」这一句；
 方言包、器乐包、循环包（BPM 与 `Seamless loop` 也写在 Style 里）尤其不能漏。
 详见 `@references/model-and-controls.md` 第三节。
+
+**第二个会动 Style 的控件是 `Personalize`（官方名 My Taste）。** 官方帮助中心原文：
+*"With Style Augmentation enabled, any time you use the Magic Wand, the resulting style input will reflect your listening and creation habits."*
+—— 也就是 **Styles 框右上角那支魔杖**：点一下，填进去的风格描述就带上了「你平时爱听什么」的偏置。
+它不是静默改写（要你主动点才发生），但结果一样：**框里的字不是你写的那段**。
+所以要复现、要交付给别人的包，一律 **`Personalize` 保持 Off，并且不要点魔杖**。
+详见 `@references/model-and-controls.md` 第三节之二。
 
 **例外 · 纯器乐路径（D / E）：第一位改成 `Instrumental, No vocals`，并且不写 `[Language:]` / `[Accent:]`。**
 
@@ -260,6 +267,7 @@ Consistent dynamics, Polished production
 ```text
 ### 4. 粘贴前先做的界面设置
 - Variety 归 0        ← 否则它会改写上面那份 Style，语言锁/方言锁/BPM 都会被扩写
+- Personalize: Off    ← 它（= My Taste）配合「魔杖」会把你的历史口味写进 Style；**别点魔杖**
 - Duration: Auto（想控长度再改 Custom）
 - Max Mode: Off（免费额度紧张时务必关；2× 消耗）
 - Vocal Gender: 与 Style 里的 vocal 描述一致
@@ -291,6 +299,7 @@ Consistent dynamics, Polished production
 | 13 | 把滑杆数值写进 Style 文本框（如 `Weirdness: 20%`） | 那是给模型读的文字，不是控件；写了不移滑杆，还污染风格描述 |
 | 14 | 免费用户要 v6 旗舰特性却直接照写、不提档位 | 型号不在提示词控制范围内；不提，用户拿到的是他选不到的东西 |
 | 15 | 器乐包压不住哼唱就死磕 Exclude | 该字段**可能根本没有**（2026-09 实测免费账号缺失）；无字段时要给替代路径，见规则 2 例外段 |
+| 16 | 让人用**魔杖**（Style Augmentation）去「润色」本技能写好的 Style | 魔杖会把那人的历史口味混进这段文本，语言锁 / BPM 一样被扩写；**要扩就由本技能来扩** —— 可控、可复核、可 diff |
 
 ## 六、防幻觉（硬约束，优先级最高）
 
@@ -320,9 +329,9 @@ Consistent dynamics, Polished production
 
 ## 八、完成判据
 
-**算做完（有人声包）：** 标题 + Style（九字段齐全且人声锁在最前）+ 歌词（含 `[Language:]`/`[Accent:]`、段落标签全部复合、以 `[End]` 结尾）+ 结构校验通过 + 文末两块（「粘贴前先做的界面设置」**含 Variety 归 0** + 「假设与待替换」）。
+**算做完（有人声包）：** 标题 + Style（九字段齐全且人声锁在最前）+ 歌词（含 `[Language:]`/`[Accent:]`、段落标签全部复合、以 `[End]` 结尾）+ 结构校验通过 + 文末两块（「粘贴前先做的界面设置」**含 Variety 归 0 与 Personalize Off** + 「假设与待替换」）。
 
-**算做完（器乐 / 循环包）：** 标题（括注 `(Instrumental)`）+ Style（首位 `Instrumental, No vocals`、**不含** `[Language:]`/`[Accent:]`、Style 里没有任何人声描述词，循环包还要写死 BPM 与 `Seamless loop, No fade in, No fade out`）+ 段落标签（方括号外留空、以 `[End – …]` 收束、**处处无 fade out**）+ 结构校验通过 + 文末两块（界面设置 **含 Variety 归 0 与 Exclude 那一行** + 「假设与待替换」含本次的规则偏离）。
+**算做完（器乐 / 循环包）：** 标题（括注 `(Instrumental)`）+ Style（首位 `Instrumental, No vocals`、**不含** `[Language:]`/`[Accent:]`、Style 里没有任何人声描述词，循环包还要写死 BPM 与 `Seamless loop, No fade in, No fade out`）+ 段落标签（方括号外留空、以 `[End – …]` 收束、**处处无 fade out**）+ 结构校验通过 + 文末两块（界面设置 **含 Variety 归 0、Personalize Off 与 Exclude 那一行** + 「假设与待替换」含本次的规则偏离）。
 
 **档位相关的额外判据：** 本次若用到 v6 旗舰 / v6-wild，或用户提到商业授权、下载、Suno Studio —— **必须先按第十一节问过档位**，并在产出里说明按哪一档写成。免费档产出还要如实交代三条限制（无商业授权、下载极紧、Max Mode 翻倍消耗）。
 
