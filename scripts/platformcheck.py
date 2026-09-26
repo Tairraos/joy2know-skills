@@ -47,6 +47,25 @@
 所以「未找到 SKILL.md」这条报错，**只会出现在用技能入口/类型去传一个专家包的时候**。
 包本身没坏，是**类型选错了**（或点错了入口）。
 
+## 第二类判据：frontmatter 描述字段的字符上限（2026-09-26 实证）
+
+上面四类是**结构**判据（缺文件 / 太大 / 类型不对）。平台还有一类**内容**判据，
+在结构全过之后才触发。已实证的一条：
+
+    joy2know-musician-v1.5.0.zip → 解析失败：
+        Skill 英文描述：当前 1096 字符，上限 1000 字符
+
+- **「Skill 英文描述」= frontmatter 的 `description_en`**，按**字符数**计（不是字节、不是行数）。
+- **上限 1000**，由平台报错原文给出，非推测。
+- 本地用 YAML 解析后 `len()` 得到的值（1096）与报文**逐字吻合**，口径已对齐。
+- 中文侧的字段名与上限**未实证**（本仓库最长的一批也远低于英文侧），
+  因此脚本只**报出长度供参考**，不对中文下判断 —— **宁可少报，不编规则**。
+
+专家包还要多看一眼：包内 `skills/<技能名>/SKILL.md` 是**内嵌技能**，
+它带着自己的 `description_en`。平台是否对专家包里的内嵌技能做同一检查**未实证**，
+所以脚本把这类发现放进 `warnings`（提示），**不影响 pass/fail** ——
+避免「本地红、平台绿」的假警报，同时让风险可见。
+
 ## 用法
 
     python3 scripts/platformcheck.py                     # 检查 dist/ 下全部产物
@@ -67,9 +86,11 @@
 
 import argparse
 import json
+import re
 import shutil
 import sys
 import tempfile
+import textwrap
 import zipfile
 from pathlib import Path
 
@@ -108,6 +129,24 @@ CODE_LABEL = {
     "missing_entry": "缺少必需条目（missing_entry）",
     "missing_any_entry": "缺少必需条目之一（missing_any_entry）",
     "file_too_large": "超出体积上限（file_too_large）",
+    "desc_too_long": "描述字段超出字符上限（desc_too_long）",
+}
+
+# ── frontmatter 描述字段的字符上限（只放**已实证**的）──────────────────────
+# 实证来源：2026-09-26 平台驳回原文「Skill 英文描述：当前 1096 字符，上限 1000 字符」，
+# 与本地 YAML 解析后 len(description_en) 逐字吻合。
+DESC_LIMITS = {
+    "description_en": 1000,
+}
+
+# 中文侧只报长度、不下判断 —— 上限未实证，宁可少报也不编规则。
+DESC_REPORT_ONLY = ("description", "description_zh")
+
+# 字段名 → 平台报错里的中文标签（`description_en` 那条由驳回原文实证）
+DESC_FIELD_LABEL = {
+    "description_en": "Skill 英文描述",
+    "description_zh": "Skill 中文描述",
+    "description": "Skill 描述",
 }
 
 
@@ -160,8 +199,136 @@ def path_matches(entries, required):
     return bool(top) and f"{top}/{required}" in entries
 
 
+# ── ②b frontmatter 读取（零依赖，刻意不引 pyyaml）────────────────────────────
+FRONTMATTER_RE = re.compile(r"^---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|$)", re.S)
+INNER_SKILL_RE = re.compile(r"(?:^|/)skills/[^/]+/SKILL\.md$")
+
+
+def parse_frontmatter(text):
+    """极简 frontmatter 解析：单行标量 + `>` / `>-` / `|` 块标量。
+
+    刻意不追求完整 YAML —— 本脚本零依赖，而**描述字段的长度**只取决于
+    「缩进行怎么拼接」：折叠标量里单个换行 → 空格，空行 → 换行。照这个语义算即够。
+    返回 None 表示没有 frontmatter。
+    """
+    if not text:
+        return None
+    m = FRONTMATTER_RE.match(text)
+    if not m:
+        return None
+
+    out, key, buf, literal = {}, None, [], False
+
+    def flush():
+        nonlocal key, buf
+        if key is None:
+            return
+        if literal:
+            out[key] = "\n".join(buf)
+        else:
+            paras, seg = [], []
+            for ln in buf:
+                if ln.strip() == "":
+                    if seg:
+                        paras.append(" ".join(seg))
+                        seg = []
+                else:
+                    seg.append(ln.strip())
+            if seg:
+                paras.append(" ".join(seg))
+            out[key] = "\n".join(paras)
+        key, buf = None, []
+
+    for raw in m.group(1).split("\n"):
+        if key is not None:
+            if raw.strip() == "" or raw.startswith((" ", "\t")):
+                buf.append(raw)
+                continue
+            flush()
+        if not raw.strip():
+            continue
+        k, sep, v = raw.partition(":")
+        if not sep or raw.startswith((" ", "\t")):
+            continue
+        v = v.strip()
+        if v in (">", ">-", ">+", "|", "|-", "|+"):
+            key, buf, literal = k.strip(), [], v.startswith("|")
+        else:
+            out[k.strip()] = v.strip("\"'")
+    flush()
+    return out
+
+
+def read_member(zpath: Path, name: str):
+    try:
+        with zipfile.ZipFile(zpath) as zf:
+            return zf.read(name).decode("utf-8", errors="replace")
+    except Exception:
+        return None
+
+
+def find_entry(entries, required):
+    """返回满足平台 tA 口径的**实际条目路径**；不存在返回 None。"""
+    if required in entries:
+        return required
+    top = None
+    for e in entries:
+        i = e.find("/")
+        if i == -1:
+            return None
+        seg = e[:i]
+        if top is None:
+            top = seg
+            continue
+        if top != seg:
+            return None
+    if not top:
+        return None
+    cand = f"{top}/{required}"
+    return cand if cand in entries else None
+
+
+def desc_lengths(content):
+    """返回 (issues, lengths)。
+
+    只对 **DESC_LIMITS 里已实证**的字段判红；其余描述字段只回长度供人判断 ——
+    规则没实证就不下判断，宁可少报。
+    """
+    fm = parse_frontmatter(content)
+    if fm is None:
+        return [], {}
+    lengths = {k: len(str(fm[k])) for k in list(DESC_LIMITS) + list(DESC_REPORT_ONLY) if k in fm}
+    issues = []
+    for field, limit in DESC_LIMITS.items():
+        v = fm.get(field)
+        if v is None:
+            continue
+        n = len(str(v))
+        if n > limit:
+            issues.append({"code": "desc_too_long",
+                           "params": {"field": field, "chars": n, "limit": limit}})
+    return issues, lengths
+
+
+def embedded_desc_warnings(zpath: Path, entries):
+    """专家包**内嵌技能**自带的 description_en 超限。
+
+    提示级：平台是否对专家包里的内嵌技能做同一检查**未实证**，
+    因此不参与 pass/fail，只让风险可见（避免「本地红、平台绿」的假警报）。
+    """
+    warns = []
+    for e in sorted(entries):
+        if not INNER_SKILL_RE.search(e):
+            continue
+        issues, _ = desc_lengths(read_member(zpath, e))
+        for it in issues:
+            warns.append({"code": it["code"], "params": {**it["params"], "entry": e}})
+    return warns
+
+
 # ── ③ 单个校验器 ───────────────────────────────────────────────────────────
 def run_validator(zpath: Path, vtype: str, entries, entries_err):
+    """返回 `(issues, desc_lengths)`。desc_lengths 仅对 Skill 填充，供显示参考。"""
     spec = VALIDATORS[vtype]
     size = zpath.stat().st_size
     issues = []
@@ -180,7 +347,16 @@ def run_validator(zpath: Path, vtype: str, entries, entries_err):
         for group in spec["require_any"]:
             if not any(path_matches(entries, r) for r in group):
                 issues.append({"code": "missing_any_entry", "params": {"entry": " / ".join(group)}})
-    return issues
+
+    # ②b 内容判据：frontmatter 描述字段长度。
+    #     只在**结构已经过关**时才查 —— 结构都没过时再报内容问题，只是噪音。
+    desc = {}
+    if not issues and vtype == "Skill":
+        p = find_entry(entries, "SKILL.md")
+        if p:
+            di, desc = desc_lengths(read_member(zpath, p))
+            issues.extend(di)
+    return issues, desc
 
 
 def expected_type(entries) -> str:
@@ -203,11 +379,15 @@ def expected_type(entries) -> str:
 def check_zip(zpath: Path):
     entries, err = entry_paths(zpath)
     exp = expected_type(entries)
-    report = {"zip": zpath.name, "expected": exp, "size_kb": round(zpath.stat().st_size / 1024, 1),
-              "results": {}}
+    report = {"zip": zpath.name, "expected": exp,
+              "size_kb": round(zpath.stat().st_size / 1024, 1),
+              "results": {}, "desc": {}, "warnings": []}
     for vt in VALIDATORS:
-        issues = run_validator(zpath, vt, entries, err)
+        issues, desc = run_validator(zpath, vt, entries, err)
         report["results"][vt] = {"pass": not issues, "issues": issues}
+        if desc and not report["desc"]:
+            report["desc"] = desc
+    report["warnings"] = embedded_desc_warnings(zpath, entries)
     return report
 
 
@@ -227,6 +407,23 @@ def render(report):
                 lines.append(f"          平台会渲染成：「未找到 {it['params']['entry']}，"
                              f"请确保该路径文件存在」" if it["params"].get("entry") == "SKILL.md"
                              else f"          （该码的文案未实证，仅 {it['code']}）")
+            elif it["code"] == "desc_too_long":
+                p = it["params"]
+                label = DESC_FIELD_LABEL.get(p["field"], p["field"])
+                lines.append(f"          平台会渲染成：「{label}：当前 {p['chars']} 字符，"
+                             f"上限 {p['limit']} 字符」")
+    # 描述字段长度（只报数；只有已实证上限的字段才会在上面判红）
+    if report["desc"]:
+        parts = []
+        for k, n in report["desc"].items():
+            lim = DESC_LIMITS.get(k)
+            parts.append(f"{k}={n}" + (f"/{lim}" if lim else ""))
+        lines.append(f"    描述字段长度：{'  '.join(parts)}")
+    for w in report.get("warnings", []):
+        p = w["params"]
+        lines.append(f"    ⚠️ 内嵌技能 {p.get('entry')} 的 {p.get('field')} 为 {p.get('chars')} 字符"
+                     f"（上限 {p.get('limit')}）")
+        lines.append("       —— 平台是否对专家包里的内嵌技能做同一检查**未实证**，不计入结论；建议一并压到限内")
     # 结论：本包用「应有的类型」能否过
     ok = report["results"].get(exp, {}).get("pass", False)
     lines.append(f"    → 按 {exp} 类型上传：{'通过' if ok else '会被驳回'}")
@@ -239,23 +436,47 @@ def render(report):
 
 
 # ── ④ 自检：阳性对照 + 篡改验证 ─────────────────────────────────────────────
-def build_fixture(root: Path, kind: str, nested_extra: bool = False, drop_required: bool = False):
+def _skill_md(name: str, desc_en_text: str = None) -> str:
+    """造 SKILL.md 文本。给了 desc_en_text 就按真实包的 `>-` 折叠写法写下它。
+
+    折行**只在空格处断**（`break_long_words=False`），因此 `" ".join(行)` 能逐字还原 ——
+    这样「样本里写的长度」与「解析后应有的长度」必然相等，边界用例才站得住。
+    """
+    out = ["---", f"name: {name}"]
+    if desc_en_text is not None:
+        lines = textwrap.wrap(desc_en_text, 100, break_long_words=False, break_on_hyphens=False) or [""]
+        out.append("description_en: >-")
+        out.extend("  " + ln for ln in lines)
+    out.append("---")
+    return "\n".join(out) + "\n"
+
+
+def build_fixture(root: Path, kind: str, nested_extra: bool = False, drop_required: bool = False,
+                  desc_en_text: str = None, inner_desc_en_text: str = None):
     """造一个最小可用的技能包 / 专家包 zip，返回路径。
 
-    drop_required：抽掉根级必需文件，但保留其它文件 —— 这样条目列表非空，
-                   触发的是 missing_entry（正是 code-scholar 遇到的那条），
-                   而不是 invalid_archive（空包）。两者是不同判据，不能混。
-    nested_extra ：整体多套一层同名目录，用来复现「多套一层」这类真实事故。
+    drop_required      ：抽掉根级必需文件，但保留其它文件 —— 这样条目列表非空，
+                         触发的是 missing_entry（正是 code-scholar 遇到的那条），
+                         而不是 invalid_archive（空包）。两者是不同判据，不能混。
+    nested_extra       ：整体多套一层同名目录，用来复现「多套一层」这类真实事故。
+    desc_en_text       ：给定则写进 SKILL.md 的 `description_en`（按 `>-` 折叠写法），
+                         用来验证描述长度判据与 1000 字符边界。
+    inner_desc_en_text ：同上，写进**专家包内嵌技能**的 SKILL.md。
     """
     name = "fixture-skill" if kind == "Skill" else "fixture-expert"
     # 每个变体用独立目录 —— 复用同名目录会让上一轮建的文件残留，
     # 造出「以为抽掉了、其实还在」的假样本（本轮就踩过一次）。
+    # 新参数也必须进目录名：描述长度不同的样本绝不能共用目录。
     variant = f"{name}{'-nested' if nested_extra else ''}{'-noreq' if drop_required else ''}"
+    if desc_en_text is not None:
+        variant += f"-d{len(desc_en_text)}"
+    if inner_desc_en_text is not None:
+        variant += f"-i{len(inner_desc_en_text)}"
     d = root / variant
     d.mkdir(parents=True, exist_ok=True)
     if kind == "Skill":
         if not drop_required:
-            (d / "SKILL.md").write_text("---\nname: fixture-skill\n---\n", encoding="utf-8")
+            (d / "SKILL.md").write_text(_skill_md("fixture-skill", desc_en_text), encoding="utf-8")
         (d / "notes.md").write_text("占位，保证条目列表非空\n", encoding="utf-8")
     else:
         (d / ".codebuddy-plugin").mkdir(parents=True, exist_ok=True)
@@ -264,7 +485,7 @@ def build_fixture(root: Path, kind: str, nested_extra: bool = False, drop_requir
             (d / ".codebuddy-plugin" / "plugin.json").write_text('{"name":"fixture-expert"}', encoding="utf-8")
         (d / "agents" / "fixture-expert.md").write_text("---\nname: fixture-expert\n---\n", encoding="utf-8")
         (d / "skills" / "inner").mkdir(parents=True, exist_ok=True)
-        (d / "skills" / "inner" / "SKILL.md").write_text("---\nname: inner\n---\n", encoding="utf-8")
+        (d / "skills" / "inner" / "SKILL.md").write_text(_skill_md("inner", inner_desc_en_text), encoding="utf-8")
 
     if nested_extra:
         wrap = root / f"_wrap_{variant}"
@@ -296,34 +517,55 @@ def build_fixture(root: Path, kind: str, nested_extra: bool = False, drop_requir
     if present != want:
         raise AssertionError(f"样本自检失败：{base.name} 期望必需文件{'在' if want else '不在'}，实际{'在' if present else '不在'}"
                              f"（条目={entries}）")
+
+    # 数值型样本同样要回读 —— 「长度刚好 1000」这种断言，不核就等于没造对。
+    # 顺带这也是对**解析器本身**的验证：`>-` 折行的拼接若算错，这里就会炸。
+    for want_text, member in ((desc_en_text, "SKILL.md"),
+                              (inner_desc_en_text, "skills/inner/SKILL.md")):
+        if want_text is None:
+            continue
+        p = find_entry(entries, member)
+        if not p:
+            raise AssertionError(f"样本自检失败：{base.name} 里找不到 {member}")
+        _, lens = desc_lengths(read_member(base, p))
+        got = lens.get("description_en")
+        if got != len(want_text):
+            raise AssertionError(
+                f"样本自检失败：{base.name} 的 {member} 期望 description_en={len(want_text)} 字符，"
+                f"实际解析出 {got} —— 要么样本没造对，要么解析器拼接错了，两种都要先查清")
     return base
 
 
 def selftest():
-    print("═══ 自检 1：阳性对照（合规包必须全绿，否则判据本身有问题）═══")
+    """项数不写死 —— 自己数，数字永远不会过期。"""
     tmp = Path(tempfile.mkdtemp(prefix="pc-selftest-"))
-    ok = True
+    ok, checks = True, 0
+
+    def check(cond, label):
+        nonlocal ok, checks
+        checks += 1
+        ok &= bool(cond)
+        print("  " + label)
+        return bool(cond)
+
     try:
+        print("═══ 自检 1：阳性对照（合规包必须全绿，否则判据本身有问题）═══")
         for kind in ("Skill", "Expert"):
-            z = build_fixture(tmp, kind)
-            r = check_zip(z)
+            r = check_zip(build_fixture(tmp, kind))
             good = r["results"][kind]["pass"]
-            print(f"  {kind:<7} 合规样本 → 按 {kind} 上传 {'✅ 通过' if good else '❌ 误判为失败'}")
-            ok &= good
+            check(good, f"{kind:<7} 合规样本 → 按 {kind} 上传 {'✅ 通过' if good else '❌ 误判为失败'}")
 
         print("\n═══ 自检 2：专家包用「技能」类型 → 必须复现出那条报错 ═══")
-        z = build_fixture(tmp, "Expert")
-        r = check_zip(z)
+        r = check_zip(build_fixture(tmp, "Expert"))
         iss = r["results"]["Skill"]["issues"]
         repro = any(i["code"] == "missing_entry" and i["params"].get("entry") == "SKILL.md" for i in iss)
-        print(f"  专家包 → 按 Skill 上传：{'✅ 复现「未找到 SKILL.md」' if repro else '❌ 未复现'}")
-        ok &= repro
-        z2 = build_fixture(tmp, "Skill")
-        r2 = check_zip(z2)
+        check(repro, f"专家包 → 按 Skill 上传：{'✅ 复现「未找到 SKILL.md」' if repro else '❌ 未复现'}")
+        r2 = check_zip(build_fixture(tmp, "Skill"))
         iss2 = r2["results"]["Expert"]["issues"]
-        repro2 = any(i["code"] == "missing_entry" and ".codebuddy-plugin/plugin.json" in str(i["params"]) for i in iss2)
-        print(f"  技能包 → 按 Expert 上传：{'✅ 复现「未找到 .codebuddy-plugin/plugin.json」' if repro2 else '❌ 未复现'}")
-        ok &= repro2
+        repro2 = any(i["code"] == "missing_entry" and ".codebuddy-plugin/plugin.json" in str(i["params"])
+                     for i in iss2)
+        check(repro2, "技能包 → 按 Expert 上传："
+                      f"{'✅ 复现「未找到 .codebuddy-plugin/plugin.json」' if repro2 else '❌ 未复现'}")
 
         print("\n═══ 自检 3：篡改验证（把合规包改坏，检查器必须变红）═══")
         flips = [
@@ -334,24 +576,59 @@ def selftest():
         for label, z, vt, should_fail in flips:
             r = check_zip(z)
             failed = not r["results"][vt]["pass"]
-            mark = "✅ 变红" if failed == should_fail else "❌ 没反应"
-            print(f"  {label:<22} → 按 {vt} 上传 {mark}")
+            check(failed == should_fail,
+                  f"{label:<22} → 按 {vt} 上传 "
+                  f"{'✅' if failed == should_fail else '❌'} "
+                  f"实际{'被驳回' if failed else '通过'}（期望{'被驳回' if should_fail else '通过'}）")
             if failed:
-                for i in r["results"][vt]["issues"][:1]:
-                    print(f"        · {CODE_LABEL.get(i['code'], i['code'])}  params={i['params']}")
-            ok &= (failed == should_fail)
+                i = r["results"][vt]["issues"][0]
+                print(f"        · {CODE_LABEL.get(i['code'], i['code'])}  params={i['params']}")
 
         print("\n═══ 自检 4：阴性对照（合规包不该被误伤）═══")
         for kind in ("Skill", "Expert"):
-            z = build_fixture(tmp, kind)
-            r = check_zip(z)
+            r = check_zip(build_fixture(tmp, kind))
             noise = r["results"][kind]["issues"]
-            print(f"  {kind:<7} 合规样本 → 应有类型上 {'✅ 0 条告警' if not noise else '❌ ' + str(noise)}")
-            ok &= not noise
+            check(not noise, f"{kind:<7} 合规样本 → 应有类型上 "
+                             f"{'✅ 0 条告警' if not noise else '❌ ' + str(noise)}")
+
+        print("\n═══ 自检 5：描述字段长度判据（含 1000 字符边界）═══")
+        folded = " ".join(["alpha"] * 400)
+        cases = [
+            ("正好 1000 字符（上限内）", "x" * 1000, False),
+            ("1001 字符（超 1 个也算超）", "x" * 1001, True),
+            ("1096 字符（复现 musician 那次驳回）", "x" * 1096, True),
+            (f"多行折叠 {len(folded)} 字符（真实 `>-` 写法）", folded, True),
+        ]
+        for label, text, should_fail in cases:
+            r = check_zip(build_fixture(tmp, "Skill", desc_en_text=text))
+            failed = not r["results"]["Skill"]["pass"]
+            check(failed == should_fail,
+                  f"description_en={len(text):<5} {label:<36} → 按 Skill 上传 "
+                  f"{'✅' if failed == should_fail else '❌'} "
+                  f"实际{'被驳回' if failed else '通过'}（期望{'被驳回' if should_fail else '通过'}）")
+            chars = r["desc"].get("description_en")
+            check(chars == len(text), f"        长度读数与样本一致（脚本 {chars} / 样本 {len(text)}）"
+                                      f"{' ✅' if chars == len(text) else ' ❌ 解析拼接有误'}")
+            if failed:
+                p = r["results"]["Skill"]["issues"][0]["params"]
+                print(f"        · 平台会渲染成：「Skill 英文描述：当前 {p['chars']} 字符，上限 {p['limit']} 字符」")
+
+        print("\n═══ 自检 6：专家包内嵌技能超限 → 只提示、不改变结论 ═══")
+        r = check_zip(build_fixture(tmp, "Expert", inner_desc_en_text="y" * 1200))
+        warns = [w for w in r["warnings"] if w["params"].get("chars") == 1200]
+        check(bool(warns), f"内嵌技能 description_en=1200 → {'✅ 报出提示' if warns else '❌ 未报出'}")
+        check(r["results"]["Expert"]["pass"],
+              "同一包按 Expert 上传 → "
+              + ("✅ 仍判通过（未实证的规则不参与 pass/fail）" if r["results"]["Expert"]["pass"]
+                 else "❌ 被误判失败"))
+        if warns:
+            p = warns[0]["params"]
+            print(f"        · {p['entry']} 的 {p['field']} = {p['chars']} 字符")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
-    print(f"\n{'✅ 自检全部通过' if ok else '❌ 自检存在失败项 —— 先怀疑判据，再怀疑结论'}")
+    print(f"\n{'✅ 自检全部通过' if ok else '❌ 自检存在失败项 —— 先怀疑判据，再怀疑结论'}"
+          f"（共 {checks} 项）")
     return 0 if ok else 1
 
 
