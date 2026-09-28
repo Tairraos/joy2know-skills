@@ -973,30 +973,55 @@ function writeManifest(pkgs, cfg) {
 }
 
 /**
- * 同步 README「资产总表」两张表的状态列。
+ * 同步 README「资产总表」两张表的**派生列**：状态 / 版本 / zip 体积 / 内嵌技能（版本）。
  *
- * 为什么放在构建里：状态口径**只能有一份**。此前 README 的状态列是手改的，
- * 于是出现「清单已按真源重建、README 还停在上一轮」的静默漂移（2026-09-25 实证）。
- * 这里与发布清单共用 `publishStateOf` + `readmeStatusOf`，不另抄一份判断。
+ * 为什么放在构建里：这四列的取值全部是「从 `packages/` 与 `dist/` 派生出来的」，
+ * 由人维护就必然漂移。状态列 2026-09-25 纳管；2026-09-28 实证**其余三列也会静默变旧** ——
+ * `musician` 升到 1.6.0 后 README 仍写 `1.3.0 / 35.2 KB`、`cine-team` 行仍写内嵌 musician 1.3.0，
+ * 且构建**一个告警都不报**。这里与发布清单共用同一批取值函数（`versionOf` / `builtSizeOf` / `p.embed`），
+ * 不另抄一份判断。
  *
- * **只改每行最后一格**，其余单元格（作用说明等）逐字保留。
+ * **只改这四列的格子**，其余单元格（展示名、作用说明等）逐字保留；
+ * 且每列都有**形状守卫** —— 当前格子长得不像该列该有的样子（例如「作用」列里恰好含一段像版本号的文字）
+ * 就跳过，宁可漏改也不误改。**跳过会点名**（返回 `guarded`，构建输出里逐个列出 `<包名>/<列名>`）——
+ * 形状对不上意味着「有人手工写过非标准格式」或「表结构变了」，两种都需要人看一眼，不能静默。
  * 只认「表头含 `包名` 与 `展示名`」的资产表 —— README 里还有别的表也以
  * ``| `joy2know-xxx` |`` 开头（内嵌技能表），不设限会把它们改坏。
  *
- * 返回 { updated, skipped, missing }，由调用处报出去 ——
+ * 返回 { updated, byCol, skipped, guarded, missing }，由调用处报出去 ——
  * **批改类脚本必须报「处理了几条 / 跳过了哪些」**，否则就是静默漏改。
  */
-function syncReadmeStatus(pkgs, cfg) {
-  const res = { updated: 0, skipped: 0, missing: [] };
+function syncReadmeTables(pkgs, cfg) {
+  const COLS = ['状态', '版本', 'zip', '内嵌技能（版本）'];
+  const byCol = Object.fromEntries(COLS.map((k) => [k, 0]));
+  const res = { updated: 0, byCol, skipped: 0, guarded: [], missing: [] };
   if (!exists(README)) return res;
   const byName = new Map(pkgs.map((p) => [p.name, p]));
   const lines = fs.readFileSync(README, 'utf8').split('\n');
   let inAsset = false;
-  const seen = new Set();          // 只在**资产表内**见过的包名 —— 别处（内嵌技能表）出现不算
+  let cols = null;                  // 表头 → 各派生列在拆分后的下标
+  const seen = new Set();           // 只在**资产表内**见过的包名 —— 别处（内嵌技能表）出现不算
+
+  // 形状守卫：当前格子必须长得像该列该有的样子，否则跳过并点名
+  const SHAPE = {
+    状态: /^.{1,120}$/,
+    版本: /^\d+(?:\.\d+){1,3}$/,
+    zip: /^(?:—|\d+(?:\.\d+)?\s*(?:B|KB|MB))$/,
+    内嵌: /^(?:—|[`A-Za-z0-9.\-、*\s]+)$/,
+  };
 
   const out = lines.map((line) => {
-    if (!line.trim() || /^#{2,3}\s/.test(line)) { inAsset = false; return line; }
-    if (/^\|\s*包名\s*\|/.test(line) && line.includes('展示名')) { inAsset = true; return line; }
+    if (!line.trim() || /^#{2,3}\s/.test(line)) { inAsset = false; cols = null; return line; }
+    if (/^\|\s*包名\s*\|/.test(line) && line.includes('展示名')) {
+      inAsset = true;
+      const head = line.split('|').map((c) => c.trim());
+      cols = {};
+      for (const key of COLS) {
+        const i = head.indexOf(key);
+        if (i > 0) cols[key] = i;
+      }
+      return line;
+    }
     if (!inAsset) return line;
 
     const m = /^\|\s*`([^`]+)`\s*\|/.exec(line);
@@ -1007,11 +1032,33 @@ function syncReadmeStatus(pkgs, cfg) {
 
     const cells = line.split('|');
     if (cells.length < 4) { res.skipped++; return line; }
-    const idx = cells.length - 2;              // 行以 `|` 收尾 → 末位是空串，真实末格在倒数第二
-    const want = readmeStatusOf(pkg, cfg.packages[pkg.name] || {});
-    if (cells[idx].trim() === want) return line;   // 幂等：已经一致就不动
-    cells[idx] = ` ${want} `;
-    res.updated++;
+
+    const syncCell = (key, want, shape) => {
+      const i = cols[key];
+      if (i == null) return;                                   // 这张表本来就没这一列
+      const ok = i < cells.length - 1;                         // 行以 `|` 收尾 → 末位是空串
+      const raw = ok ? cells[i].trim() : '';
+      if (!ok || !shape.test(raw)) { res.guarded.push(`${m[1]}/${key}`); return; }
+      if (raw === want) return;                                // 幂等：已经一致就不动
+      cells[i] = ` ${want} `;
+      res.updated++; byCol[key]++;
+    };
+
+    syncCell('状态', readmeStatusOf(pkg, cfg.packages[pkg.name] || {}), SHAPE.状态);
+    const ver = versionOf(pkg);
+    if (ver !== '—') syncCell('版本', ver, SHAPE.版本);
+    const size = builtSizeOf(zipNameOf(pkg));
+    if (size) syncCell('zip', size, SHAPE.zip);
+    if (pkg.isExpert) {
+      const embed = (pkg.embed || [])
+        .map((s) => {
+          const sp = byName.get(s);
+          return `\`${s}\`${sp ? ' ' + versionOf(sp) : ''}`;
+        })
+        .join('、') || '—';
+      syncCell('内嵌技能（版本）', embed, SHAPE.内嵌);
+    }
+
     return cells.join('|');
   });
 
@@ -1229,13 +1276,18 @@ function main() {
     }
     writeManifest(pkgs, cfg);
     const stale = pruneLegacyManifests();
-    const rd = syncReadmeStatus(pkgs, cfg);
+    const rd = syncReadmeTables(pkgs, cfg);
+    const parts = Object.entries(rd.byCol).filter(([, n]) => n).map(([k, n]) => `${k} ×${n}`);
     console.log('');
     console.log(C.bold('发布清单') + C.dim(`  ${norm(path.relative(ROOT, MANIFEST))} 已按实际版本重写（人工段落保留）`));
-    console.log(C.bold('README') + C.dim(`  README.md 资产总表状态列：同步 ${rd.updated} 行` +
-      (rd.skipped ? `，跳过 ${rd.skipped} 行（不在 packages/ 里）` : '')));
+    console.log(C.bold('README') + C.dim(`  README.md 资产总表派生列：` +
+      (parts.length ? `同步 ${parts.join(' · ')}` : `已一致（0 格需改）`) +
+      (rd.skipped ? `；跳过 ${rd.skipped} 行（不在 packages/ 里）` : '')));
     if (rd.missing.length) {
       console.log('  ' + C.yellow('! ') + C.dim(`有 ${rd.missing.length} 个包没出现在 README 资产总表里：${rd.missing.join('、')}`));
+    }
+    if (rd.guarded.length) {
+      console.log('  ' + C.yellow('! ') + C.dim(`有 ${rd.guarded.length} 格形状对不上、已跳过未改（手工写过非标准格式？表结构变了？）：${rd.guarded.join('、')}`));
     }
     for (const f of stale) console.log('  ' + C.dim(`已清理旧位置 dist/${f}（清单已迁到仓库根，两处并存会看错）`));
   }
