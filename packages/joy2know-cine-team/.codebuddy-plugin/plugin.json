@@ -1,7 +1,7 @@
 {
   "name": "joy2know-cine-team",
-  "version": "1.5.0",
-  "description": "A six-role AI video production team that turns one creative idea into an executable shot list, per-shot prompts, a consistency anchor sheet and a ready-to-paste Suno theme song",
+  "version": "1.6.0",
+  "description": "A six-role AI video production team that turns one creative idea into an executable shot list, per-shot prompts, a consistency anchor sheet and a music prompt pack written to Suno's composition guide",
   "author": {
     "name": "晓得乐"
   },
@@ -41,8 +41,8 @@
     "zh": "晓得·AI 视频生产团队"
   },
   "displayDescription": {
-    "en": "Six roles turn one idea into a shootable package: story structure, shot list, model-ready prompts, consistency anchors, post-production notes and a ready-to-paste theme song — so you stop burning credits on trial and error",
-    "zh": "编导、分镜、提示词、一致性、音乐、后期六角色协作，把创意变成能开拍的分镜表、逐镜提示词、角色锚点与主题曲，省试错费。"
+    "en": "Six roles turn one idea into a shootable package: story structure, shot list, model-ready prompts, consistency anchors, post-production notes and a music prompt pack written to Suno's composition guide",
+    "zh": "编导、分镜、提示词、一致性、音乐、后期六角色协作，把创意变成能开拍的分镜表、逐镜提示词、角色锚点与配乐提示词包。"
   },
   "avatar": "avatars/team.png",
   "categoryId": "06-ContentCreative",

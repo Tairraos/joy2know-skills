@@ -29,11 +29,17 @@
 
 - **包名**：joy2know-cine-team
 - **类型**：专家团（`expertType: "team"`，1 主理人 + 6 成员）
-- **对应版本**：1.5.0
+- **对应版本**：1.6.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-26（同日**三次**随内嵌技能 `joy2know-musician` **同轮重建**：
-  ① 描述修正轮，包内文本一字未动；② **Variety 行为级对照轮**，`agents/cine-music.md` 加一句实测结论；
-  ③ **措辞修正轮**，补 `Personalize` 一条并限定「唯一」的范围）
+- **最后检测**：2026-09-28（**说明层解绑轮 · 见 2.4**：按小乐的要求 —— **内嵌依赖与 `skills` 绑定一字不动**
+  （`plugin.json` 的 `skills[]`、`skills.json`、`agents/cine-music.md` 的 `skills:` 均保持引用 `joy2know-musician`
+  = 源文件一致、便于维护），**只改对外说明层**：`plugin.json` 的 description / displayDescription 去掉
+  「theme song」「burning credits / 省试错费」与对具体技能名的引用；`agents/cine-music.md` 删掉额度段、
+  把「按内置技能 … 的三段格式」改为自带格式说明、模型版本改为「默认 `v6-mini`、不问」；
+  README「内置技能」节更名「能力来源」。**版本随内嵌技能联动 1.5.0 → 1.6.0**。
+  此前 2026-09-26 的三次同轮重建见第七节履历）
+  > **读旧章节的注意**：第二节 1.5.0 轮的同步表与第七节 09-25/09-26 各行**保留当时的原始口径**
+  > （含「档位 / 免费档 / 额度」等词），那是**历史记录，不是现行口径**。报告本身**不进 zip**。
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证 + 上传预检
 
 ---
@@ -41,8 +47,8 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-    4482  .codebuddy-plugin/plugin.json   配置（expertType: team，7 agents / 3 内嵌技能 / 7 members）
-    2976  README.md                        包说明（团队构成、工作流程、内置技能、适用边界）
+    4476  .codebuddy-plugin/plugin.json   配置（expertType: team，7 agents / 3 内嵌技能 / 7 members）
+    3078  README.md                        包说明（团队构成、工作流程、能力来源、适用边界）
       36  settings.json                    主理人声明 {"agent": "joy2know-cine-lead"}（平台校验器实查这个名）
       36  setting.json                     同上（沿用官方模板名，兼容保留）
      245  skills.json                       内嵌技能声明（构建时从 packages/<名>/ 复制真源）
@@ -52,12 +58,19 @@
     4522  agents/cine-prompt.md             提示词工程师·珀西
     5306  agents/cine-consistency.md        一致性管理员·柯拉
     3885  agents/cine-post.md               后期顾问·奥托
-    11055  agents/cine-music.md              音乐人·小音（1.5.0 轮：同步「More Options + Variety 归 0 + 第 4 段设置块」；同日两次补记：加一句 Variety 行为级实测结论；补 `Personalize`/魔杖一条并限定「唯一」的范围）
+   11078  agents/cine-music.md              音乐人·小音（1.6.0 轮：删额度段、去「按内置技能…」措辞、模型版本改默认值）
     55696  joy2know-cine-team.md             本文件（开发期文档，不进 zip）
 ```
 
 **零第三方依赖核对**：本包无 `scripts/`、无任何可执行代码与网络调用。
-源包体（不含本报告）**48,418 字节 ≈ 47.3 KB**；发布后 zip 另含构建注入的 8 张头像与 3 个内嵌技能。
+源包体（不含本报告）**48,537 字节 ≈ 47.4 KB**；发布后 zip 另含构建注入的 8 张头像与 3 个内嵌技能。
+
+**1.6.0 轮体积变化（2026-09-28）**：`plugin.json` 4,482 → **4,476 字节**（description 与 displayDescription 改写，
+长度基本持平 —— `displayDescription.zh` 由 48 → **47 汉字**，仍在 40–50 区间内）；
+`README.md` 2,976 → **3,078 字节**（「内置技能」节更名「能力来源」+ 补一句溯源说明）；
+`agents/cine-music.md` 11,055 → **11,078 字节**（删 3 行额度段、加 2 行版本默认值说明）。
+源包体 47.3 KB → **47.4 KB**；产物 zip 4287.3 KB → **4288.1 KB**（4,391,052 字节）。
+**内嵌的 3 个技能、`scripts/`、其余 6 个 agent 文件零改动。**
 
 > **⚠️ 本行数字是改正后的（2026-09-26）**：上一版写的是 **53,629 字节 ≈ 52.4 KB**，那个数**把 `.DS_Store` 也算进去了** ——
 > 它既没被列在上面，也不进 zip。差值恰好 **6,148 字节**（该文件的实际大小）。
@@ -69,6 +82,12 @@
 第一层为 `joy2know-cine-team/`，内嵌 `joy2know-musician` 读到 **1.5.0**，
 且内嵌的 `references/model-and-controls.md` 与 `scripts/suno_check.py` **与源包逐字节一致**（见第 2.4 节），
 `agents/cine-music.md` 同样**逐字节一致**（2026-09-26 两轮补记均实测）。
+
+**1.6.0 轮已实测产物**（2026-09-28）：`dist/joy2know-cine-team-v1.6.0.zip` = **4,391,052 字节 ≈ 4288.1 KB**
+（专家团上限 20 MB），第一层为 `joy2know-cine-team/`；内嵌 `joy2know-musician` 读到 **1.6.0**；
+内嵌的 `SKILL.md` / `references/model-and-controls.md` / `scripts/suno_check.py` 与源包**逐字节一致**。
+**注意本轮不可复用旧判据**：内嵌技能这一轮**内容变了**（reference 被重写），
+所以「内嵌版本号 = 本包版本号」这条**不再自动成立**，必须重新实测（见 2.4 的 T1–T5）。
 
 **头像规格（8 张，已逐一实测）**：团队图标 + 7 名成员头像全部 **512×512、377–410 KB**，
 均 ≤500 KB 且 ≈512² 方图，**8/8 合规**。
