@@ -3,33 +3,31 @@ name: joy2know-musician
 display_name: 晓得·音乐人
 display_name_en: joy2know Musician
 description: >-
-  用 Suno 的高阶语法（**v4.5–v6 全代通用**）写可直接粘贴的歌曲包：复合段落标签、行内指令、声场控制、Style 语言锁，
-  默认输出治愈、有画面感、带人生哲理的作品；用户指定任何风格、语言或方言（含粤语）时按同一套技巧适配，
-  并用「词汇锁 + 协音字 + 声调补偿」解决方言发音撕裂、破音、跑偏；
-  纯器乐与循环路径另有一套写法，用于压制人声幻觉、锁死 BPM、让首尾同源，服务游戏 BGM 与背景垫乐。
-  默认按免费档优化（当前免费可选 v6-mini），并把「把 Variety 归 0」这类界面控件动作一并交代；
-  需要 v6 旗舰 / v6-wild 等付费专有型号的能力时，会先问用户是否有付费账号，没有就产出免费档优化版。
+  写可直接粘贴到音乐平台的结构化**文本**包：标题、Style、带段落标签的歌词与纯器乐结构。
+  **纯文本写作工具**：不生成、不合成、不导出任何音频，不接入也不调用任何生成式 AI 接口，不带账号密钥，
+  不做语音合成、声音克隆、换声换脸等深度合成能力。
+  默认治愈、有画面感、带人生哲理；用户指定任何风格、语言或方言（含粤语）时按同一套技巧适配，
+  用「词汇锁 + 协音字 + 声调补偿」解决方言发音撕裂、破音、跑偏；
+  纯器乐与循环结构另有写法（压制人声幻觉、锁死 BPM、首尾同源）。
   触发词：写首歌、做音乐、Suno、写歌词、配乐、主题曲、BGM、写一段旋律、治愈系歌曲、粤语歌、
-  方言歌、suno prompt、write a song、song lyrics、music prompt、Suno style、
-  纯音乐、不要人声、无人声、不做人声、器乐、instrumental、游戏 BGM、游戏背景音乐、无缝循环、
-  循环素材、背景音乐、垫乐、氛围音乐、白噪音、专注音乐、冥想音乐、片头音乐、stinger。
+  方言歌、纯器乐、不要人声、instrumental、循环结构、suno prompt、write a song、song lyrics、
+  music prompt、Suno style。
   不适用于：实际调用音乐生成接口（本技能只产出可粘贴的提示词包）；需要真实乐谱或 MIDI；
-  要求保证生成结果与你想象完全一致（AI 音乐有随机性，本技能提高命中率而非消除随机）；
-  要求交付已剪好、开箱即无缝的音频文件（本技能给循环友好的写法与后期处理清单，裁切与交叉淡化仍要在你自己的编辑器里做）。
+  要求保证生成结果与想象完全一致（AI 音乐有随机性，本技能提高命中率而非消除随机）；
+  要求交付剪好的无缝音频文件（本技能给循环写法与后期清单，裁切与交叉淡化在用户自己的编辑器里做）。
 description_zh: >-
-  用 Suno 高阶语法产出可直接粘贴的歌曲包，覆盖 v4.5–v6 全代语法，默认治愈风格，
-  支持指定风格与方言并做防跑偏处理；纯器乐与循环素材另有压制人声幻觉、锁死 BPM、首尾同源的写法；
-  默认按免费档（当前为 v6-mini）优化，需要付费专有型号特性时会先确认账号档位。
+  把一段想法写成可直接粘贴的歌曲包文本（标题、Style、带段落标签的歌词）——**纯文本写作，不生成音频、
+  不调用任何生成接口**。默认治愈风格，支持指定风格与方言并做防跑偏处理；纯器乐与循环结构另有写法。
 description_en: >-
-  Write ready-to-paste Suno song packs (v4.5–v6 syntax): compound section tags, inline cues, stereo-field control
-  and a Style language lock. Defaults to healing, imagery-rich, philosophical songs; adapts to any genre, language
-  or dialect you name (Cantonese included) via word-locks and tonal compensation, which stop the AI drifting,
-  cracking or breaking on pronunciation. Also covers instrumental and loop-ready paths for game BGM and background
-  beds: suppress phantom humming and wordless vocals, lock the BPM, match a loop's tail back to its head. Tuned
-  for the free tier by default (currently v6-mini); asks about your plan before using paid-only models, and passes
-  on the interface settings that matter (e.g. Variety = 0, so style tags are not rewritten). Prompts only — no
-  generation API call, no guarantee of identical results, no pre-spliced seamless audio file (trimming and
-  crossfading stay in your editor).
+  Write a ready-to-paste structured text pack for music platforms: title, Style lock, section-tagged lyrics and
+  instrumental structures. A text-only writing tool: it generates, synthesises or exports no audio, calls or
+  integrates no generative AI API, carries no account, key or credits, and involves no voice synthesis, voice
+  cloning, voice conversion or face swapping. Defaults to healing, imagery-rich, philosophical songs; adapts to
+  any genre, language or dialect you name (Cantonese included) via word-locks and tonal compensation, which stop
+  the AI drifting, cracking or breaking on pronunciation. Also covers instrumental and loop-ready structures:
+  suppress phantom humming and wordless vocals, lock the BPM, match a loop's tail back to its head. Prompts only
+  — no generation call, no guarantee of identical results, no pre-spliced audio file (trimming and crossfading
+  stay in your editor).
 category: writing
 version: 1.5.0
 author: 晓得乐
@@ -38,7 +36,25 @@ author: 晓得乐
 # 晓得 · 音乐人
 
 > 把「一段想法」变成「一份能直接粘进 Suno 的歌曲包」——标题 + Style + 带完整结构标签的歌词。
-> 你不是在写歌词，你是在做**声音设计**：每一段标签都是给 AI 的编曲指令。
+> 你不是在写歌词，你是在写**编曲说明**：每一段标签都是写给生成器的文字指令。
+
+## 〇、定位与边界（先读这条）
+
+**本技能是「文本写作工具」，不是 AI 内容生成服务。** 对外说明、上线审核与用户沟通都按这张表的口径讲：
+
+| 会被问到的问题 | 本技能的实际情况 |
+|---|---|
+| 产出物是什么 | **纯文本**：标题、Style 段落、带段落标签的歌词 / 段落结构。**不产出、不合成、不导出任何音频、图像或视频文件。** |
+| 会不会调用生成接口 | **不会。** 不接 Suno，不接任何模型 API；唯一脚本 `scripts/suno_check.py` 只读本地文本文件（仅用 Python 标准库，无网络、无账号、无密钥、无额度）。 |
+| 有没有深度合成类能力 | **没有。** 不做语音合成、声音克隆、换声、换脸、虚拟人生成，也不做音视频的生成或篡改。 |
+| 音频最后由谁生成 | **用户自己**在第三方平台粘贴生成。那一步与本技能无关，受该平台条款与用户自身账号约束。 |
+| 在链条里的位置 | 只负责**把创作意图写成结构化的文本描述**，再做一次结构自检 —— 交出去的是给人「粘贴」用的文本，不是可播放的成品。 |
+
+**由此派生的两条写作纪律**（本文件与一切对外说明都遵守）：
+
+1. **先讲「写文本」，把音频说成别人的产出** —— 不说「本技能帮你生成一首歌」，只说「本技能帮你写好你要粘贴的那段文本」。
+2. **说明字段里不写账号档位、型号名与额度** —— 那是第三方平台的服务能力，写进说明会让本技能读起来像一个 AI 生成服务。
+   型号与控件的**操作方法**只在第十一节与 `@references/model-and-controls.md` 里按需讲，不进说明字段。
 
 ## 一、先分清（这四层混在一起，生成必崩）
 
