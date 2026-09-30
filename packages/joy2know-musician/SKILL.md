@@ -29,7 +29,7 @@ description_en: >-
   — no generation call, no guarantee of identical results, no pre-spliced audio file (trimming and crossfading
   stay in your editor).
 category: writing
-version: 1.6.0
+version: 1.6.1
 author: 晓得乐
 ---
 
