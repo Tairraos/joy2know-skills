@@ -97,6 +97,7 @@ python3 scripts/selfcheck.py packages/joy2know-mr   # 单独跑字段自检（�
 | `joy2know-code-scholar` | `joy2know-codebase` |
 | `joy2know-cine-team` | `joy2know-storyboard`、`joy2know-character`、`joy2know-musician` |
 | `joy2know-polish-team` | `joy2know-clarify`、`joy2know-humanize`、`joy2know-deck`、`joy2know-dashboard` |
+| `joy2know-promo-team` | `joy2know-clarify`、`joy2know-humanize`、`joy2know-dashboard` |
 
 > 同一个技能可以被多个包内嵌（如 `joy2know-clarify` 同时在 `mr` 与 `polish-team` 里）—— 构建时各自从唯一真源复制，不产生副本。
 
@@ -166,7 +167,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 
 ## 资产总表
 
-### 技能（15）
+### 技能（16）
 
 | 包名 | 展示名 | 版本 | 作用 | zip | 状态 |
 |---|---|---|---|---|---|
@@ -181,10 +182,11 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-cmdforge` | 晓得·命令制造局 | 1.2.0 | 把自然语言需求变成可用的正则、命令行或 SQL，附逐段解释、测试用例与危险等级 | 9.5 KB | ③ 审核完成 · 已上架 |
 | `joy2know-dashboard` | 晓得·一页看懂 | 1.2.0 | 把 Excel 表格数据变成一个能直接发的可交互单文件 HTML 看板 | 8.7 KB | ③ 审核完成 · 已上架 |
 | `joy2know-deck` | 晓得·讲得清 | 1.2.0 | 把长报告提炼成 15 页能讲的 PPT 结构，每页附口播稿 | 7.6 KB | ③ 审核完成 · 已上架 |
-| `joy2know-musician` | 晓得·音乐人 | 1.6.0 | 按 Suno 编曲手册规范产出可直接粘贴的音乐提示词包（标题、Style、带段落标签的歌词 / 纯器乐结构）：默认治愈风格、支持方言防跑偏，含纯器乐与循环 BGM 路径（压制人声幻觉、锁死 BPM、首尾同源） | 46.0 KB | ② 待审核（在架 1.1.0） |
+| `joy2know-musician` | 晓得·音乐人 | 1.6.1 | 按 Suno 编曲手册规范产出可直接粘贴的音乐提示词包（标题、Style、带段落标签的歌词 / 纯器乐结构）：默认治愈风格、支持方言防跑偏，含纯器乐与循环 BGM 路径（压制人声幻觉、锁死 BPM、首尾同源） | 46.0 KB | ③ 审核完成 · 已上架 |
 | `joy2know-conversation-digest` | 晓得·对话归纳 | 1.2.0 | 只归纳 WorkBuddy 里的对话，还原成「我问了什么 / 怎么答的 / 产出了哪些文件」的学习流水 | 20.6 KB | ③ 审核完成 · 已上架 |
 | `joy2know-humanize` | 晓得·凡人腔调 | 1.1.0 | 只改中文论述文里规则清单明确命中的机器腔调，其余逐字保留；带规则表自检 + 改写门禁四道检查 | 52.3 KB | ③ 审核完成 · 已上架 |
 | `joy2know-wordplay` | 晓得·别解 | 1.0.0 | 给汉语词写一句辛辣的另类释义（返源式 / 附会式），再排成一张带拼音、英文、繁體与语义图解的 SVG 卡片；8 套马卡龙配色按词条哈希固定，check 十项合规自检 | 24.5 KB | ① 开发完待提交 |
+| `joy2know-viral-topic` | 晓得·选题炼法 | 1.0.0 | 12 条心法筛 + 四大传播基因 + 8 维打分卡（**⑥卖点承载 / ⑧转化承接 是推广选题与流量选题的分界线**）+ 六大内容形态；附只读打分器与判据自检 —— 阈值硬编码，**打分不靠口算、判定不随心情漂移** | 21.0 KB | ① 开发完待提交 |
 
 > **状态列的口径（2026-09-25 与小乐对齐「三态」，同日按开发者页截图逐包校准）**：一个资产只有三种状态 ——
 > **① 开发完待提交** → **② 提交完待审核**（**只有开发者账号的发布管理页能看到，用户端看不到**）
@@ -212,16 +214,33 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 > 以**仓库根 `发布清单.md`** 为准（那份是构建时按实际状态生成的）。
 > 图标不在此表逐行标注 —— 规格与状态统一见「图标统一管理」一节，缺图不影响打包，但上传前必须补齐。
 
-### 专家与专家团（4）
+### 专家与专家团（10）
 
 | 包名 | 展示名（`profession`） | 类型 | 版本 | 内嵌技能（版本） | 成员 | zip | 状态 |
 |---|---|---|---|---|---|---|---|
 | `joy2know-mr` | 晓得·表达条理与可视化专家 | 专家 | 1.2.0 | `joy2know-clarify` 1.2.0 | — | 740.1 KB | ② 待审核（在架 1.0.0） |
 | `joy2know-code-scholar` | 晓得·代码考古学家 | 专家 | 1.2.0 | `joy2know-codebase` 1.2.0 | — | 737.7 KB | ② 待审核（在架 1.1.0） |
-| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.0 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` 1.6.0 | 7 角色 | 4288.1 KB | ② 待审核（首次上架） |
+| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.0 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` 1.6.1 | 7 角色 | 4288.1 KB | ② 待审核（首次上架） |
 | `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.2.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-deck` 1.2.0、`joy2know-dashboard` 1.2.0 | 5 角色（1 主理 + 4 成员） | 3920.5 KB | ② 待审核（首次上架） |
+| `joy2know-promo-team` | 晓得·项目推广专家团 | 专家团 | 1.0.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-dashboard` 1.2.0 | 7 角色（1 主理 + 6 成员） | 1293.2 KB | ① 开发完待提交 |
+| `joy2know-topic-planner` | 晓得·爆款选题策划专家 | 专家 | 1.0.0 | `joy2know-viral-topic` 1.0.0 | — | 51.4 KB | ① 开发完待提交 |
+| `joy2know-market-scout` | 晓得·竞品与受众情报专家 | 专家 | 1.0.0 | — | — | 18.8 KB | ① 开发完待提交 |
+| `joy2know-positioning` | 晓得·产品定位与卖点专家 | 专家 | 1.0.0 | — | — | 17.8 KB | ① 开发完待提交 |
+| `joy2know-copywriter` | 晓得·推广文案编导 | 专家 | 1.0.0 | `joy2know-humanize` 1.1.0 | — | 430.3 KB | ① 开发完待提交 |
+| `joy2know-reviewer` | 晓得·投放效果复盘专家 | 专家 | 1.0.0 | `joy2know-dashboard` 1.2.0 | — | 407.1 KB | ① 开发完待提交 |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
+
+> ✅ **2026-09-30：`promo-team` 的 7 个角色里拆出 5 个单飞专家包**（表中最后 5 行）。
+> **拆的判据是三条同时成立**：① **输入自足** —— 用户手上直接就有它要的东西，不必等别的一棒产出；
+> ② **有独立检索需求** —— 用户会单独搜这个能力（选题 / 竞品 / 定位 / 文案 / 复盘），而不是搜「推广方案」；
+> ③ **交付物独立可用** —— 产出脱离团队上下文仍是一件完整的东西。
+>
+> **留在团内的两个，与判据的对应关系**：主理人 `joy2know-promo-lead` 是**调度者**，
+> 它存在的意义就是编排六棒，单飞后没有可交付物；投放排期官（时叙）的排期表**每一行都必须对应一份已产出的成品**，
+> 脱离产出链就是一张空表，且它的「发布前检查清单」已被文案包的自检覆盖 —— 留在团内更合适。
+> **同一个人格在两处文件里同名**（霍燃 / 司南 / 叶衡 / 言川 / 秦度）—— 团里是成员、单飞是独立专家，
+> 提示词按「独立交付版」重写（去掉回传主理人、补输入自给降级路径、加交付前自检），**不是复制**。
 
 > ✅ **`joy2know-cine-team` 的内嵌同步已于 2026-09-25 完成**：该团内嵌 `joy2know-musician`，
 > 技能升到 **1.3.0** 后团包**同步升到 1.3.0 并重建**，`dist/joy2know-cine-team-v1.3.0.zip` 内嵌的 musician
