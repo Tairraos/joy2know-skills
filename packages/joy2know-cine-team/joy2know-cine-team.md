@@ -84,7 +84,7 @@
 `agents/cine-music.md` 同样**逐字节一致**（2026-09-26 两轮补记均实测）。
 
 **1.6.0 轮已实测产物**（2026-09-28）：`dist/joy2know-cine-team-v1.6.0.zip` = **4,391,052 字节 ≈ 4288.1 KB**
-（专家团上限 20 MB），第一层为 `joy2know-cine-team/`；内嵌 `joy2know-musician` 读到 **1.6.0**；
+（专家团上限 20 MB），第一层为 `joy2know-cine-team/`；内嵌 `joy2know-musician` 读到 **1.6.0**（⚠️ **2026-10-02 重建后已是 1.6.1** —— 该技能在 2026-10-01 过审 1.6.1；重建后本包字节数恰好仍是 4,391,052）；
 内嵌的 `SKILL.md` / `references/model-and-controls.md` / `scripts/suno_check.py` 与源包**逐字节一致**。
 **注意本轮不可复用旧判据**：内嵌技能这一轮**内容变了**（reference 被重写），
 所以「内嵌版本号 = 本包版本号」这条**不再自动成立**，必须重新实测（见 2.4 的 T1–T5）。
@@ -110,7 +110,7 @@
 | `teamInfo.memberAgents` 与 `members[]`（除主理人）是否一致 | 人工逐条比对 + `agents[]` 文件名去 `.md` | ✅ 通过 | `memberAgents` 6 条 == `members[]` 中 6 个非 lead 项的 `id` == `agents/` 6 个成员文件名，三者同序同集合 |
 | 主理人文件名带团前缀 | 文件枚举 | ✅ 通过 | `joy2know-cine-lead.md`（非 `cine-lead.md`），与规则一致 |
 | 头像路径与规格 | `sips -g pixelWidth -g pixelHeight` + `wc -c`，8 张 | ✅ 通过 | 512×512 / 377–410 KB，8/8 合规；`avatar` 字段为 `avatars/team.png`（`avatars/` 前缀 ✓） |
-| 图标台账（全仓 30 张） | `python3 scripts/placeholders.py --check` | ✅ 通过 | 「缺 0 · 仍是占位图 0 · 已换成真图 30」 |
+| 图标台账（全仓 30 张） | `python3 scripts/placeholders.py --check` | ✅ 通过 | 「缺 0 · 仍是占位图 0 · 已换成真图 30」—— 这是**该轮读数**（当时全仓 30 张）；**2026-10-02 全仓已是 47 张、占位 0** |
 | 包内无硬编码凭证 | selfcheck `[sec]` 项 | ✅ 通过 | 未发现疑似凭证 |
 | 反向验证：10 组「应该被抓」的错样本 | 见第五节 | ✅ 通过 | **10/10 全部被抓**，且每组只亮**对应那一条**（未误伤其它检查项） |
 | 团队成员的实际协作行为（建团队 / 调度 / 中转 / 不代写） | — | 未覆盖 | 需真实运行团队，见第六节 |
