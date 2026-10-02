@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-reviewer",
+  "version": "1.0.0",
+  "description": "joy2know Performance Reviewer: lines published posts up against their real numbers to find which funnel layer actually broke — not pushed, not clicked, not read, or read but not acted on. Falsifies its own conclusion before delivering it, refuses to call a pattern on fewer than five data points, routes every fix back to the owner it belongs to, and can turn the numbers into a one-page dashboard",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-reviewer.md"
+  ],
+  "skills": [
+    "./skills/joy2know-dashboard"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-reviewer",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Performance Reviewer",
+    "zh": "晓得·投放效果复盘专家"
+  },
+  "displayDescription": {
+    "en": "Lines published posts up against their real numbers, finds which funnel layer broke — not pushed, not clicked, not read, or read but not acted on — falsifies its own conclusion before delivering it, refuses to call a pattern on fewer than five data points, and routes each fix to the owner it belongs to.",
+    "zh": "把发出去的内容与真实数据对齐，定位卡在漏斗哪一层，先自我证伪再归因，给出下一轮该改什么，并可出一页看板。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "05-MarketingGrowth",
+  "defaultInitPrompt": {
+    "zh": "这批内容数据在这，帮我看看问题出在哪",
+    "en": "Here's the data on these posts — where does it break?"
+  },
+  "plugin": "joy2know-reviewer",
+  "tags": [
+    {
+      "en": "Post Review",
+      "zh": "投放复盘"
+    },
+    {
+      "en": "Funnel Diagnosis",
+      "zh": "分层归因"
+    },
+    {
+      "en": "One-Page Dashboard",
+      "zh": "一页看板"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Here's the data on these posts — where does it break?",
+      "zh": "这批内容数据在这，帮我看看问题出在哪"
+    },
+    {
+      "en": "Nothing is converting — is it the headline or the timing?",
+      "zh": "有曝光没人动，是标题的问题还是时间的问题"
+    },
+    {
+      "en": "Turn these numbers into a one-pager for my boss",
+      "zh": "把这些数据做成一页能发给领导看的看板"
+    }
+  ]
+}
