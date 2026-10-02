@@ -90,20 +90,27 @@
 | 前四节的表格（版本 / 体积 / 包名 / 状态 / 建议类目） | **不要手改** —— 由 `pnpm build` 按实际版本 + `release.config.json` 重写 |
 | 某个包的建议发布类目、是否已实证 | `release.config.json` 的 `suggestedCategory` / `categoryConfirmed` |
 | **③ 审核完成**（在架版本与备注） | `release.config.json` 的 `platform.version` / `platform.note` / `platform.skillId`（稳定主键） |
+| **④ 待发布**（审核已过、尚未上架） | `release.config.json` 的 `approved.version`（2026-10-03 新增） |
 | **② 提交完待审核** | `release.config.json` 的 `submitted.version`（没有则该包不显示 ②） |
 | 审核中批次的整体说明 | `release.config.json` 顶层的 `submittedBatches` 数组（清单头部渲染一次） |
 | 「五、发布时要注意」 | 直接编辑 `发布清单.md`（构建不会动） |
 | 「六、发布历史」 | 直接编辑 `发布清单.md`（构建不会动） |
 
-**★ 一个资产只有三种状态（2026-09-25 与小乐对齐 —— 本仓库最容易搞错的一处）**：
+**★ 一个资产有四种状态（2026-09-25 立三态；2026-10-03 补第四档 —— 本仓库最容易搞错的一处）**：
 
 | 状态 | 记在字段 | 谁能看到 | 怎么读 |
 |---|---|---|---|
 | **① 开发完待提交** | 不记（本地 `dist/` 就是） | 只有你自己 | 看 `dist/` |
 | **② 提交完待审核** | `submitted` | 用户端看不到 | **开发者接口直读**（`status=under_review`） |
+| **④ 待发布**（审核已过、尚未上架） | `approved` | 发布管理页显示「待发布」 | **开发者接口直读**（`status=approved`） |
 | **③ 审核完成（已上架）** | `platform` | 所有用户 | **开发者接口直读**（`status=published`） |
 
-⭐ **2026-10-02 起，② 与 ③ 都能机器读，且技能 / 专家 / 专家团一视同仁** ——
+⭐⭐ **④ 是 2026-10-03 新增、也最容易被漏掉的一档：「审核通过」不等于「上架」。**
+审核通过后资产停在 `status=approved`（界面文案就叫「**待发布**」，旁边有一个「**发布**」按钮），
+**不点那一下就不会上架**。所以「② 清零」不代表「全部上架」—— 每次同步都要单独数一遍停在 `approved` 的。
+（实例：`joy2know-market-scout` 1.0.0，2026-10-03 提交后过审、卡在待发布。）
+
+⭐ **2026-10-02 起，② / ④ / ③ 都能机器读，且技能 / 专家 / 专家团一视同仁** ——
 登录态 POST `/api/v2/open-platform/capabilities/list` 一次读全（做法见 2c）。
 ⛔ 旧表里的「**② 不能自动读、只能靠用户截图**」「**③ 靠推荐市场检索（只覆盖技能）**」**均已作废**。
 
@@ -127,13 +134,19 @@
    - 在 `发布清单.md`「六、发布历史」**追加一行**，结果写「⏳ 已提交、审核中」；
    - **不要动 `platform`** —— 那仍是上一个过审版本，把新版写进去会让「在架版本」失真。
    - 若一批一起提交的，写进顶层 `submittedBatches`，清单头部只渲染一次，**别在 17 个包里各抄一遍**。
-2b. **审核通过、已上架（③）** → 把 `submitted` 的值**移到** `platform`（补 `date` 与 `skillId`）、清掉 `submitted`，
-   并在发布历史那一行补上结果。**②③ 同时存在是常态**（在审新版 + 在架旧版），
+2b. **审核通过** → 先分清它落在哪一档（看顶层 `status` 是 `approved` 还是 `published`）：
+   - **`status=approved`（④ 待发布）** → 写 `approved`（补 `assetId`），**并提醒用户去发布管理页点一次「发布」**；
+     点完（`status=published`）之后再按下面这条移到 `platform`。
+   - **`status=published`（③ 已上架）** → 把 `submitted` / `approved` 的值**移到** `platform`（补 `date` 与 `skillId`）、
+     清掉旧字段，并在发布历史那一行补上结果。
+   **②③④ 同时存在是常态**（在审 / 待发的新版 + 在架的旧版），
    别把 ② 的记录当成「已过时」删掉 —— 删了就等于没提交过。
 2c. **想确认平台侧状态（不必等人）** → 登录态 POST `/api/v2/open-platform/capabilities/list` 读一批，
    请求头带 `X-Party-Id`，body 用 `filters:[{name:'capability_type',values:['skill'|'expert']}]`。
    逐条返回 `status` + `currentVersion{version,status}` + `assetId` + `updatedAt`，**三类资产一视同仁**：
    - `status=published` → 是 ③，写 `platform`（补 `assetId`）；`currentVersion.status=approved`。
+   - ⭐ **`status=approved` → 是 ④ 待发布**（审核已过、**尚未上架**）→ 写 `approved`。
+     ⚠️ **别读成 ③** —— `currentVersion.status` 同样是 `approved`，两者的区别只在**顶层 `status`**（`published` vs `approved`）。
    - `status=under_review` → 是 ②，写 `submitted`（`currentVersion.version` 即在审版本）。
    - `status=draft` → 写 `draft`（后台存了草稿但**没提交成功**，**与 ② 不是一回事**，别混）。
    ⚠️ **接口完全不认识的包 = 从未提交** —— 这条能干净地区分「① 待提交」与「提交失败了」。
