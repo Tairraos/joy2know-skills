@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-copywriter",
+  "version": "1.0.0",
+  "description": "joy2know Promotion Copywriter: writes the finished piece — headline, body, spoken script, storyboard, poster line — as something you can copy and post without editing it further. Each platform gets a rewrite rather than a paste, every topic ships with A/B variants that differ in angle, and nothing is called finished until it clears a compliance scan and a machine-tone gate",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-copywriter.md"
+  ],
+  "skills": [
+    "./skills/joy2know-humanize"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-copywriter",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Promotion Copywriter",
+    "zh": "晓得·推广文案编导"
+  },
+  "displayDescription": {
+    "en": "Writes finished promotion copy you can post as-is: headline, body, spoken script, poster line. Each platform gets a genuine rewrite rather than a paste, every topic ships with A/B variants that differ in angle, and nothing counts as finished until it clears a compliance scan and a machine-tone gate.",
+    "zh": "把选题写成可直接发布的成品：标题、正文、口播稿与海报文案，按平台逐一改写，附 A/B 变体，定稿前过合规与腔调两道门禁。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "05-MarketingGrowth",
+  "defaultInitPrompt": {
+    "zh": "把这条选题写成能直接发的成品",
+    "en": "Turn this topic into copy I can post as-is"
+  },
+  "plugin": "joy2know-copywriter",
+  "tags": [
+    {
+      "en": "Finished Copy",
+      "zh": "可直接发布"
+    },
+    {
+      "en": "Per-Platform Rewrite",
+      "zh": "按平台改写"
+    },
+    {
+      "en": "A/B Variants",
+      "zh": "A/B 变体"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Turn this topic into copy I can post as-is",
+      "zh": "把这条选题写成能直接发的成品"
+    },
+    {
+      "en": "Rewrite this for the platform I'm actually posting on",
+      "zh": "这篇帮我改成要发的那个平台的版本"
+    },
+    {
+      "en": "This reads like AI wrote it — make it sound human",
+      "zh": "这段一眼看出是 AI 写的，改得像人写的"
+    }
+  ]
+}
