@@ -5,6 +5,9 @@ dist/
 .workbuddy/
 private
 
+# ---- 临时工作目录（浏览器抓取脚本、中间产物等，不入库） ----
+temp/
+
 # ---- 图标工具的本地副产物（预览副本 / 原图备份，不入库） ----
 avatars/.shrunk/
 avatars/.originals/
