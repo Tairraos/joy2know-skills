@@ -294,13 +294,32 @@ def check_expert(base, name, skill_names):
         if os.path.exists(p):
             ok(f"[expert] skills 路径 存在: {s}")
         elif src_tree:
-            notes.append(f"[expert] 内嵌技能 {s} 尚未生成（源目录里本就不该有，"
-                         f"构建时才从 packages/ 复制；请以构建暂存目录的自检结果为准）")
+            # 2026-09-30 补：源目录里内嵌技能不存在属正常（构建时才注入），但
+            # 「还没构建」与「plugin.json 里把技能名写错了」在这里长得一模一样 ——
+            # 一律记提示的话，技能名拼错要等到构建才暴露。回真源看一眼即可区分：
+            # 唯一真源在 <仓库根>/packages/<技能名>/SKILL.md。
+            # ⚠️ 这里与下面头像回退用的是**同一个假设：base 的父目录就是仓库根**
+            #    （对 `packages/<包名>` 与构建暂存目录都成立）。拿副本目录当 base 做
+            #    反向验证时，副本根下要同时备好 `avatars/` 与 `packages/` 两个软链，
+            #    否则会造出「基线也红」的假红灯。
+            src_skill = os.path.join(os.path.dirname(base), "packages",
+                                     os.path.basename(s.rstrip("/")), "SKILL.md")
+            if os.path.exists(src_skill):
+                notes.append(f"[expert] 内嵌技能 {s} 尚未生成（源目录里本就不该有，"
+                             f"构建时才从 packages/ 复制；请以构建暂存目录的自检结果为准）")
+            else:
+                bad(f"[expert] skills 声明了 {s}，但真源 packages/"
+                    f"{os.path.basename(s.rstrip('/'))}/SKILL.md 不存在 —— "
+                    f"技能名拼错，或该技能还没建")
         else:
             bad(f"[expert] skills 路径 缺失: {s}")
 
-    av = os.path.join(root, pj.get("avatar", ""))
-    if os.path.exists(av):
+    # 2026-09-30 修：avatar 字段缺失/为空时，旧逻辑 os.path.join(root, "") 得到**目录**，
+    # 下一行 open(av,"rb") 直接抛 IsADirectoryError —— 整份自检**中断且报告全丢**，
+    # 使用者看到的是 traceback 而不是「缺字段 avatar」。必填检查要拦得住，不能崩。
+    av_field = pj.get("avatar", "")
+    av = os.path.join(root, av_field) if av_field else ""
+    if av and os.path.isfile(av):
         b = open(av, "rb").read()
         if b[:8] == b"\x89PNG\r\n\x1a\n":
             w, h = struct.unpack(">II", b[16:24])
@@ -310,6 +329,8 @@ def check_expert(base, name, skill_names):
                 bad(f"[expert] 头像规格不合规: {w}x{h}, {len(b)/1024:.1f}KB（应 512x512 / ≤500KB）")
         else:
             bad("[expert] 头像不是 PNG（未做尺寸校验）")
+    elif not av_field:
+        bad("[expert] avatar 字段缺失或为空（官方必填，须指向 avatars/ 下的相对路径）")
     else:
         # 源目录里没有包内头像，真源在仓库根 avatars/<包名>.png（构建时注入）
         src_icon = os.path.join(os.path.dirname(base), "avatars", name + ".png")
@@ -317,7 +338,7 @@ def check_expert(base, name, skill_names):
             notes.append(f"[expert] 头像由构建时从 avatars/{name}.png 注入（源目录里没有是正常的），"
                          f"规格已由构建工具校验")
         else:
-            bad(f"[expert] avatar 缺失: {pj.get('avatar')}")
+            bad(f"[expert] avatar 缺失: {av_field}")
 
     # agent frontmatter 与 agentName 一致
     # 专家团：只有主理人的 name 等于 agentName，其余成员各自的 name 应等于 members[].id
