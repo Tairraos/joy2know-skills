@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-topic-planner",
+  "version": "1.0.0",
+  "description": "joy2know Viral Topic Planner: turns one promotion goal into a postable topic pool — 12 principles screen out the unusable first, four spread genes decide what actually travels, every pick is scored on 8 dimensions out of 40, and the top three ship with the content format that suits each best. A topic that cannot naturally carry an offer is cut, however viral it looks",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-topic-planner.md"
+  ],
+  "skills": [
+    "./skills/joy2know-viral-topic"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-topic-planner",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Viral Topic Planner",
+    "zh": "晓得·爆款选题策划专家"
+  },
+  "displayDescription": {
+    "en": "Turns a promotion goal into a postable topic pool: 12 principles screen out the unusable directions, four spread genes decide what travels, eight scored dimensions pick the winners out of 40, and every top pick ships with the format that suits it best. A topic that cannot naturally carry an offer is cut, however viral it looks.",
+    "zh": "把推广目标炼成一批能直接排期的选题：先过 12 条心法筛掉不合格方向，再逐条打 8 维分（总分 40），最后给出 Top 3 与最佳内容形态。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "05-MarketingGrowth",
+  "defaultInitPrompt": {
+    "zh": "给我出一批能推广的选题",
+    "en": "Give me a batch of promotion topics"
+  },
+  "plugin": "joy2know-topic-planner",
+  "tags": [
+    {
+      "en": "Viral Topic",
+      "zh": "爆款选题"
+    },
+    {
+      "en": "Content Planning",
+      "zh": "内容策划"
+    },
+    {
+      "en": "Scored Picks",
+      "zh": "选题打分"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Give me a batch of promotion topics",
+      "zh": "给我出一批能推广的选题"
+    },
+    {
+      "en": "Score these topic ideas — which one goes first?",
+      "zh": "这几条选题帮我打个分，该先做哪个"
+    },
+    {
+      "en": "This post went viral but sold nothing — where did it break?",
+      "zh": "这条内容很火但没带出货，问题出在哪"
+    }
+  ]
+}
