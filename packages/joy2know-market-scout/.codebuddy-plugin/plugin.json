@@ -1,0 +1,61 @@
+{
+  "name": "joy2know-market-scout",
+  "version": "1.0.0",
+  "description": "joy2know Market Scout: maps what competitors actually publish and which of it actually worked, draws an audience specific enough to picture, and judges which angles are still unclaimed. Every observation is traceable to a dated piece of content, every inference is labelled as an inference, and a number that cannot be sourced is written as \"no public data\" instead of being estimated into a fact",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-market-scout.md"
+  ],
+  "skills": [],
+  "expertType": "agent",
+  "agentName": "joy2know-market-scout",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Market Intelligence Scout",
+    "zh": "晓得·竞品与受众情报专家"
+  },
+  "displayDescription": {
+    "en": "Maps what competitors are actually publishing, which of it really took off, where the audience gathers, and which angle nobody has taken yet — delivered as a competitor content map plus an audience card, with every observation traceable to a dated piece and every guess explicitly marked as a guess.",
+    "zh": "把同类在推什么、哪些真跑出来了、人群聚在哪、还有哪个角度没人占，查成一张可复核的竞品地图与受众卡。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "05-MarketingGrowth",
+  "defaultInitPrompt": {
+    "zh": "帮我看看这个品类别人是怎么推的",
+    "en": "Show me how others promote in this category"
+  },
+  "plugin": "joy2know-market-scout",
+  "tags": [
+    {
+      "en": "Competitor Map",
+      "zh": "竞品摸排"
+    },
+    {
+      "en": "Audience Insight",
+      "zh": "受众洞察"
+    },
+    {
+      "en": "Unclaimed Angle",
+      "zh": "空位判断"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Show me how others promote in this category",
+      "zh": "帮我看看这个品类别人是怎么推的"
+    },
+    {
+      "en": "Who exactly is my audience, and where do they gather?",
+      "zh": "我的目标人群到底是谁，他们聚在哪"
+    },
+    {
+      "en": "Is there still an angle nobody has taken?",
+      "zh": "还有哪个角度没人认真占过"
+    }
+  ]
+}
