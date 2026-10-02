@@ -1,0 +1,61 @@
+{
+  "name": "joy2know-positioning",
+  "version": "1.0.0",
+  "description": "joy2know Positioning Expert: translates product features into benefits a user can actually feel, writes a one-sentence positioning that has to survive the \"different from whom\" test, pairs every selling point with the objection it will meet, and ranks promotion channels by audience density, format fit, cold-start cost and whether you can sustain it — including which channels to give up on",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-positioning.md"
+  ],
+  "skills": [],
+  "expertType": "agent",
+  "agentName": "joy2know-positioning",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Positioning Strategist",
+    "zh": "晓得·产品定位与卖点专家"
+  },
+  "displayDescription": {
+    "en": "Turns product features into benefits a user can feel, writes a one-sentence positioning that has to survive the \"different from whom\" test, pairs every selling point with the objection it will meet, and ranks channels by audience density, format fit, cold-start cost and whether you can keep it up — then says which ones to give up on.",
+    "zh": "把产品参数翻译成用户能感知的好处，写出一句话定位与三条卖点，列出用户不用的理由，并给渠道优先级排序。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "05-MarketingGrowth",
+  "defaultInitPrompt": {
+    "zh": "帮我定一句话定位，再把卖点提炼出来",
+    "en": "Position this product and pull out the selling points"
+  },
+  "plugin": "joy2know-positioning",
+  "tags": [
+    {
+      "en": "Positioning",
+      "zh": "一句话定位"
+    },
+    {
+      "en": "Selling Points",
+      "zh": "卖点提炼"
+    },
+    {
+      "en": "Channel Priority",
+      "zh": "渠道优先级"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Position this product and pull out the selling points",
+      "zh": "帮我定一句话定位，再把卖点提炼出来"
+    },
+    {
+      "en": "What do I say to people who don't think they need it?",
+      "zh": "用户觉得没必要，我该怎么讲"
+    },
+    {
+      "en": "Which platform should we start with — and which to drop?",
+      "zh": "先打哪个平台，先放弃哪几个"
+    }
+  ]
+}
