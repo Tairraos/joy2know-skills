@@ -1,0 +1,175 @@
+{
+  "name": "joy2know-promo-team",
+  "version": "1.0.0",
+  "description": "A six-role promotion team that turns one product or project into a runnable promotion plan: competitor and audience mapping, differentiation and channel priority, scored viral topic picks, ready-to-post copy, a dated publishing schedule and a review loop that feeds the next round of topics",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-promo-lead.md",
+    "./agents/promo-intel.md",
+    "./agents/promo-positioning.md",
+    "./agents/promo-topic.md",
+    "./agents/promo-copy.md",
+    "./agents/promo-schedule.md",
+    "./agents/promo-review.md"
+  ],
+  "skills": [
+    "./skills/joy2know-clarify",
+    "./skills/joy2know-humanize",
+    "./skills/joy2know-dashboard"
+  ],
+  "expertType": "team",
+  "agentName": "joy2know-promo-lead",
+  "teamInfo": {
+    "leadAgent": "joy2know-promo-lead",
+    "memberAgents": [
+      "promo-intel",
+      "promo-positioning",
+      "promo-topic",
+      "promo-copy",
+      "promo-schedule",
+      "promo-review"
+    ]
+  },
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Promotion Team",
+    "zh": "晓得·项目推广专家团"
+  },
+  "displayDescription": {
+    "en": "Six roles — intel, positioning, topics, copy, scheduling and review — turn one product into a promotion plan with scored topic picks, ready-to-post copy, a dated schedule and a review loop",
+    "zh": "情报、定位、选题、文案、投放、复盘六棒接力，把推广拆成可发布排期与可复盘台账，用数据反哺下一轮选题。"
+  },
+  "avatar": "avatars/team.png",
+  "categoryId": "05-MarketingGrowth",
+  "defaultInitPrompt": {
+    "zh": "帮我把这个产品做一份完整推广方案",
+    "en": "Build a full promotion plan for this product"
+  },
+  "plugin": "joy2know-promo-team",
+  "tags": [
+    {
+      "en": "Promotion Plan",
+      "zh": "推广方案"
+    },
+    {
+      "en": "Viral Topic",
+      "zh": "爆款选题"
+    },
+    {
+      "en": "Review Loop",
+      "zh": "复盘调优"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Build a full promotion plan for this product",
+      "zh": "帮我把这个产品做一份完整推广方案"
+    },
+    {
+      "en": "Map the competitors and find the angle nobody has taken",
+      "zh": "摸排竞品，找出还没人占的角度"
+    },
+    {
+      "en": "These posts went out and did nothing — find where it broke",
+      "zh": "这批内容发出去没效果，帮我看看卡在哪"
+    }
+  ],
+  "members": [
+    {
+      "id": "joy2know-promo-lead",
+      "name": {
+        "en": "Xuce",
+        "zh": "徐策"
+      },
+      "profession": {
+        "en": "Team Lead & Promotion Strategist",
+        "zh": "主理人·推广总策划"
+      },
+      "avatar": "avatars/promo-lead.png",
+      "role": "lead"
+    },
+    {
+      "id": "promo-intel",
+      "name": {
+        "en": "Sinan",
+        "zh": "司南"
+      },
+      "profession": {
+        "en": "Market Intelligence Analyst",
+        "zh": "市场情报官"
+      },
+      "avatar": "avatars/promo-intel.png",
+      "role": "member"
+    },
+    {
+      "id": "promo-positioning",
+      "name": {
+        "en": "Yeheng",
+        "zh": "叶衡"
+      },
+      "profession": {
+        "en": "Positioning Strategist",
+        "zh": "定位策略师"
+      },
+      "avatar": "avatars/promo-positioning.png",
+      "role": "member"
+    },
+    {
+      "id": "promo-topic",
+      "name": {
+        "en": "Huoran",
+        "zh": "霍燃"
+      },
+      "profession": {
+        "en": "Viral Topic Planner",
+        "zh": "选题策划师"
+      },
+      "avatar": "avatars/promo-topic.png",
+      "role": "member"
+    },
+    {
+      "id": "promo-copy",
+      "name": {
+        "en": "Yanchuan",
+        "zh": "言川"
+      },
+      "profession": {
+        "en": "Content Writer & Scriptwriter",
+        "zh": "内容编导"
+      },
+      "avatar": "avatars/promo-copy.png",
+      "role": "member"
+    },
+    {
+      "id": "promo-schedule",
+      "name": {
+        "en": "Shixu",
+        "zh": "时叙"
+      },
+      "profession": {
+        "en": "Launch Scheduler",
+        "zh": "投放排期官"
+      },
+      "avatar": "avatars/promo-schedule.png",
+      "role": "member"
+    },
+    {
+      "id": "promo-review",
+      "name": {
+        "en": "Qindu",
+        "zh": "秦度"
+      },
+      "profession": {
+        "en": "Performance Reviewer",
+        "zh": "效果复盘师"
+      },
+      "avatar": "avatars/promo-review.png",
+      "role": "member"
+    }
+  ]
+}
