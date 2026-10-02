@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-harness",
+  "version": "1.0.0",
+  "description": "joy2know Harness Engineer: turns any repository into an agent-first workspace — decides the starting point first (greenfield build or legacy retrofit), then works in phases, converting constraints into machine-checkable gates and writing every decision into the repo instead of leaving it in chat. Never guesses the tech stack, never touches business code before the plan is approved, and retires its own rule document once the work is done",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-harness.md"
+  ],
+  "skills": [
+    "./skills/joy2know-harness-rules"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-harness",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Harness Engineer",
+    "zh": "晓得·harness 工程专家"
+  },
+  "displayDescription": {
+    "en": "Turns a project into an agent-first engineering shape: decides the starting point first, builds from empty or retrofits what exists, lands structure, norms and gates phase by phase, and writes every decision into the repo.",
+    "zh": "把项目做成智能体优先的工程形态：先判起点，空仓库新建或存量改造，逐阶段落地结构、规范与门禁，决策当场落盘。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "02-Engineering",
+  "defaultInitPrompt": {
+    "zh": "帮我把这个项目做成 harness 工程化",
+    "en": "Harness-engineer this project for me"
+  },
+  "plugin": "joy2know-harness",
+  "tags": [
+    {
+      "en": "Harness",
+      "zh": "工程化"
+    },
+    {
+      "en": "Agent-First",
+      "zh": "智能体优先"
+    },
+    {
+      "en": "Gates",
+      "zh": "门禁与约束"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Harness-engineer this project for me",
+      "zh": "帮我把这个项目做成 harness 工程化"
+    },
+    {
+      "en": "I have a codebase — what would it take to make it agent-first?",
+      "zh": "我这有个老项目，怎么让它变得智能体能放心改"
+    },
+    {
+      "en": "I'm starting from nothing — lay out Day 0 for me",
+      "zh": "我要从零起一个新项目，Day 0 该交付什么"
+    }
+  ]
+}
