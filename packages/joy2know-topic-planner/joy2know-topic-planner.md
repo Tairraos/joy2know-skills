@@ -9,9 +9,9 @@
 
 - **包名**：joy2know-topic-planner
 - **类型**：单专家（`expertType: "agent"`）
-- **对应版本**：1.0.0
+- **对应版本**：1.0.1
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-30
+- **最后检测**：2026-10-03
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -19,17 +19,22 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-   2307  .codebuddy-plugin/plugin.json              配置（expertType: agent，1 agent / 1 内嵌技能）
-   3421  README.md                                   包说明（他解决什么问题 / 三条底线 / 包内容 / 用法）
-   7728  agents/joy2know-topic-planner.md            角色定义（开场引导 / 流程 / 7 条硬规则 / 产出格式 / 10 条自检 / 边界）
+   2312  .codebuddy-plugin/plugin.json              配置（expertType: agent，1 agent / 1 内嵌技能）
+   3405  README.md                                   包说明（他解决什么问题 / 三条底线 / 包内容 / 用法）
+   7717  agents/joy2know-topic-planner.md            角色定义（开场引导 / 流程 / 7 条硬规则 / 产出格式 / 10 条自检 / 边界）
     195  skills.json                                 内嵌技能声明（构建时从 packages/<名>/ 复制真源）
 ```
 
 **零第三方依赖核对**：专家本体无 `scripts/`、无 import、无网络调用；内嵌技能的 `score.py` / `selftest.py`
 只用 Python 标准库（`argparse` / `json` / `sys` / `os` / `re`），结构性零依赖成立。
 
-源包体（不含本报告）**5,912 字节 ≈ 5.8 KB**；构建产物 `dist/joy2know-topic-planner-v1.0.0.zip` 实测 **898.3 KB**
+源包体（四个源文件，**不含本报告**）**13,629 字节 ≈ 13.3 KB**；构建产物 `dist/joy2know-topic-planner-v1.0.1.zip` 实测 **898.3 KB**
 （含构建注入的头像与内嵌技能 `joy2know-viral-topic`）。专家包上限 **20 MB**，余量约 23 倍。
+
+> ⚠️ **口径修正（2026-10-03）**：此前本报告写的「5,912 字节」实为 `plugin.json + README.md + skills.json`
+> 三者之和，**漏算了占大头的 `agents/` 角色定义（7,717 字节）**，措辞却写「源包体（不含本报告）」——
+> 是**假断言**。本轮改为实测全量并与措辞对齐。⚠️ 该口径是本仓 8 份单飞专家报告的共同写法，
+> **其余 7 份仍用旧口径**（数字可用但含义被低估），是否统一改口径待定。
 
 **头像规格（已实测）**：`avatars/joy2know-topic-planner.png` = 512×512 / **443.7 KB**，**已是真图、尺寸与格式合规**。
 
@@ -48,15 +53,15 @@
 | `agents/*.md` 的 `name` == `agentName` == 目录名 | 同上 + 构造错样本反向验证 | ✅ 通过 | 三者一致（错样本 s3 已确认这条会亮红灯） |
 | **内嵌技能主源存在** | `ls packages/joy2know-viral-topic` | ✅ 通过 | 源技能包存在（SKILL.md + 2 references + 2 scripts） |
 | **内嵌副本与主源逐字节一致（未漂移）** | `diff -r -x icon.png -x joy2know-viral-topic.md <zip内副本> packages/joy2know-viral-topic` | ✅ 通过 | **逐字节一致**；唯一差异是主源里的检测报告与构建注入的 `icon.png`（均正确排除） |
-| **交付形态（解压 zip 后）完整自检** | `unzip -qq dist/…zip && $V/bin/python scripts/selfcheck.py /tmp/j2k-solo/joy2know-topic-planner` | ✅ 通过 | **通过 14 项 / 0 问题** —— 比源目录多 3 项（内嵌技能路径、头像注入生效） |
+| **交付形态（解压 zip 后）完整自检** | `unzip -qq dist/…zip && $V/bin/python scripts/selfcheck.py /tmp/j2k-solo-tp/joy2know-topic-planner` | ✅ 通过 | **通过 13 项 / 0 问题 / 1 提示** —— 比源目录多 2 项（`skills` 路径存在、头像注入并验规格 512×512 / 443.8 KB） |
 | zip 第一层目录名正确（无多套一层） | `unzip -Z1 dist/…zip \| head -1` | ✅ 通过 | 第一层唯一为 `joy2know-topic-planner/` |
-| 平台入口判据：按 Expert 类型可通过 | `$V/bin/python scripts/platformcheck.py --zip dist/joy2know-topic-planner-v1.0.0.zip` | ✅ 通过 | `Expert ✅ 通过`；`Skill ❌`（缺根级 `SKILL.md`，预期 —— 本包不该走技能入口） |
+| 平台入口判据：按 Expert 类型可通过 | `$V/bin/python scripts/platformcheck.py --zip dist/joy2know-topic-planner-v1.0.1.zip` | ✅ 通过 | `Expert ✅ 通过`；`Skill ❌`（缺根级 `SKILL.md`，预期 —— 本包不该走技能入口） |
 | 包内无硬编码凭证 | selfcheck `[sec]` 项 | ✅ 通过 | 未发现疑似凭证 |
 | **内嵌打分器判据自检**（阈值边界 / 阻断 / 告警 / 文档锚点） | `$V/bin/python skills/joy2know-viral-topic/scripts/selftest.py`（构建后路径） | ✅ 通过 | **32 项通过 / 0 失败**；含 9 条阈值边界两侧、4 条阻断正例、5 条阻断反例、3 条告警反例、4 条输入校验、3 条文档锚点 |
 | **打分器把坏阈值抓出来**（防橡皮章） | 把 `score.py` 的 `(35, "重点做")` 改成 `(30, …)` 后重跑 selftest | ✅ 抓到 | **立刻 3 项红灯**：`边界 34 分 判成 重点做，应为 合格`、`边界 30 分 …应为 合格`、`例三 31 分…文档写「合格」，脚本判「重点做」`；恢复后回到 32 通过 |
 | 反向验证：9 组「应该被抓」的错样本 + 2 组阴性对照 | 见第五节 | ✅ 9/9 抓到 + 对照全绿 | 每组只亮对应红灯，未误伤其他检查项 |
 | 选题实际质量（分数是否给对了、Top 3 选得对不对） | — | 未覆盖 | 需真实跑一轮选题，见第六节 |
-| 平台侧真实上传 / 审核 | 1.0.0 | 已提交（② 审核中） | 2026-10-03 首次提交，见第六节 |
+| 平台侧真实上传 / 审核 | 1.0.0 → 1.0.1 | **⑤ 已驳回 → 待重提** | 1.0.0 于 2026-10-03 13:38 被平台驳回（**首次上架失败**）；1.0.1 内容零改动、仅抬版本，待重提。🚫 **驳回理由待查**，见第六节 |
 
 **复现命令**
 
@@ -65,7 +70,7 @@ V=~/.workbuddy/binaries/python/envs/default
 $V/bin/python scripts/selfcheck.py packages/joy2know-topic-planner       # 源目录：11 通过 / 0 问题 / 3 提示
 $V/bin/python packages/joy2know-viral-topic/scripts/selftest.py          # 判据自检：32 通过 / 0 失败
 node scripts/build.mjs joy2know-topic-planner                            # 构建
-$V/bin/python scripts/platformcheck.py --zip dist/joy2know-topic-planner-v1.0.0.zip
+$V/bin/python scripts/platformcheck.py --zip dist/joy2know-topic-planner-v1.0.1.zip
 zsh /tmp/solo-revcheck.sh                                                # 反向验证 9 组 + 2 对照
 ```
 
@@ -101,7 +106,7 @@ zsh /tmp/solo-revcheck.sh                                                # 反�
   只有一条候选 → 写「无横向比较」而不给排名）。
 - **边界是否优雅**：✅ §六 覆盖五类边界（不做定位 / 不写文案 / 不预测播放量 / 不承诺爆款 / 不代人转交）。
 - **零依赖是否守住**：✅ 结构性成立。内嵌脚本只用标准库，且**只读**（不写任何文件）。
-- **值来源是否可追溯**：✅ 版本号 1.0.0 三处一致（plugin.json / README / 本报告）；头像真源在仓库根 `avatars/`；
+- **值来源是否可追溯**：✅ 版本号 1.0.1 三处一致（plugin.json / README / 本报告）；头像真源在仓库根 `avatars/`；
   内嵌技能真源在 `packages/joy2know-viral-topic/`（已实测副本逐字节一致）。
 - **⚠️ 阈值 35/30/24 的来源**：来自选题方法论（对标公开的爆款选题方法后做的**推广化改造**），
   **不是**平台规则或行业实测值。它已硬编码进 `score.py` 并在 `SKILL.md` 写明「改阈值 = 改判据，要连 selftest 一起改」，
@@ -172,7 +177,9 @@ zsh /tmp/solo-revcheck.sh                                                # 反�
 1. **选题实际质量未评估**：本轮只验了结构与判据（表格齐备、脚本可跑、边界正确），
    不验**内容质量**（8 维分数给得对不对、Top 3 是否真是最优、12 条心法判定是否贴合真实场景）。
    需真实跑一轮完整选题才能评估。
-2. **平台侧真实上传 / 解析 / 审核未实测**：`categoryId` 白名单、专家入口判据是历史实测结论，本包未再实测。
+2. **平台侧真实上传已实测（2026-10-03），但审核结论未解释**：✅ 走**专家入口**提交成功（`assetId oe_b08b1b0e7d5fa14a`），
+   13:38 被平台**驳回**（⑤）。⚠️ **驳回理由目前拿不到** —— 只暴露在发布管理页，开发者接口只给 `status=rejected`。
+   因此**无法判断**是 `categoryId` 的推断值不被认（见下条）、还是内容 / 类目 / 资质问题。**这是本包当前最关键的未知项。**
 3. **`categoryId` 取 `05-MarketingGrowth` 是推断值**：按「解决推广选题问题」的实质选定，平台是否认可**未经实证**。
 4. **专家包内嵌技能是否被平台解析未核实**：`skills: ["./skills/joy2know-viral-topic"]` 与 agent frontmatter 的
    `skills: [joy2know-viral-topic]` 口径合理，但**官方文档未列 `skills:` 字段**，无法确认平台是否解析它。
@@ -189,6 +196,7 @@ zsh /tmp/solo-revcheck.sh                                                # 反�
 
 **待办**：
 
+- **查 1.0.0 的驳回理由**（发布管理页），据此决定 1.0.1 重提时是「原样再交」还是「连带改类目 / 内容」。
 - 真跑一轮完整选题（含淘汰区与 Top 3），评估未覆盖项 1。
 
 ---
@@ -201,3 +209,4 @@ zsh /tmp/solo-revcheck.sh                                                # 反�
 | 2026-09-30 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·爆款选题策划专家」，内嵌同步新建的技能包 `joy2know-viral-topic`（12 心法 / 4 基因 / 8 维打分卡 / 6 形态 + 打分器 + 判据自检）。**源目录自检 11 通过 / 0 问题 / 3 提示**；**解压后交付形态自检 14 通过 / 0 问题**；`platformcheck --zip` 判 **Expert ✅ 通过**（Skill ❌ 属预期）；内嵌副本与主源 **diff 逐字节一致**；`displayDescription.zh` 实测 **48 汉字**；头像 512×512 / 16 KB（占位图）。**判据自检 32 项全过**，并实测「把阈值 35 改成 30 → 立刻 3 项红灯」确认它不是橡皮章。**反向验证 9 组错样本 + 2 组阴性对照全部符合预期**；其中 2 组最初未被抓到，**暴露并修掉了 `selfcheck.py` 的两个真缺陷**（avatar 字段缺失导致崩溃、skills 技能名拼错被静默放过），修后对全仓 26 个包跑回归 **0 红灯**。发现 6 项未覆盖 + 3 项弱项。 |
 | 2026-10-02 | 1.0.0 | ⚠️ 有条件通过 | **卡面署名修正（不抬版本）**：`displayName` 由花名「霍燃」改为品牌署名「晓得乐」（`en: joy2know`），与在架专家（`code-scholar` / `mr`）的既定口径对齐；agent 前置描述、正文标题、README、本报告内的花名一并去除，**花名仅保留在 `joy2know-promo-team` 的成员位**。本包平台侧从未提交，故版本号不动。 |
 | 2026-10-03 | 1.0.0 | ⚠️ 有条件通过 | **首次提交平台（不抬版本，包内零改动）**。开发者接口直读：`status=under_review` / `assetId oe_b08b1b0e7d5fa14a` / 01:40 提交 —— **此前「从未提交」的记录作废**。**走专家入口上传**（包根无 SKILL.md）。真源回填 `submitted`（1.0.0），`发布清单.md` 与 README 状态列同步更新。 |
+| 2026-10-03 | 1.0.1 | ⚠️ 有条件通过 | **抬版本重提（内容零改动）**。动因：1.0.0 于当日 13:38 被平台**驳回（⑤）** —— 首次上架失败；按「审核驳回必须抬版本」的口径重提，**包内一个字符未改**，只动 `version`（`plugin.json` + `README` 版本行 + 本报告）。重建产物 `dist/joy2know-topic-planner-v1.0.1.zip` **898.3 KB**（旧 zip 由构建自动清理）。门禁复跑：源目录 `selfcheck` **11 通过 / 0 问题 / 3 提示**（预期提示）；解压后交付形态 **13 通过 / 0 问题**；`platformcheck --zip` 判 **Expert ✅ 通过**（Skill ❌ 属预期）；内嵌副本与主源 `diff` **逐字节一致**。⚠️ 本轮**修正了本报告的体积口径**（旧「5,912 字节」实为漏算 `agents/` 正文，现按全量实测 **13,629 字节**），并把未覆盖项 2 由「平台上传未实测」改为「**已实测，但驳回理由未取到**」。 |

@@ -6,15 +6,19 @@
     "来自平台的判定/驳回原文（目前只有 joy2know-asset-ledger 一项是实证的），其余均为按能力方向的推断，",
     "发布时以平台给出的判定提示为准。",
     "",
-    "★ 每个资产的发布状态有**四种**，本文件用**三个字段**分别记录（2026-09-25 立三态；2026-10-03 补第四档）：",
-    "  ① 开发完待提交 —— 三个字段都没有，只在本地。",
+    "★ 每个资产的发布状态有**五种**，本文件用**四个字段**分别记录（2026-09-25 立三态；2026-10-03 同日补 ④ 与 ⑤）：",
+    "  ① 开发完待提交 —— 四个字段都没有，只在本地。",
     "  ② 提交完待审核 —— 记在 packages.<名>.submitted。**用户端看不到**。",
     "     2026-10-02 起可由开发者接口直读（`status=under_review`），此前只能人工记录。",
     "  ⭐ ④ 待发布（2026-10-03 新增）—— 记在 packages.<名>.approved。**审核已通过、但还没上架**。",
     "     ⚠️ 这是最容易漏的一档：**「审核通过」不等于「上架」** —— 要在发布管理页手动点一次「发布」才进 ③。",
     "     接口特征是 `status=approved`（已上架是 `status=published`）；界面文案就叫「待发布」，旁边有一个「发布」按钮。",
     "  ③ 审核完成     —— 记在 packages.<名>.platform。这时普通用户已在推荐市场里看得到。",
-    "  ② / ③ / ④ 同时存在是常态：在新版本过审、上架之前，③ 仍是上一个已上架的老版本。",
+    "  ⭐ ⑤ 已驳回（2026-10-03 新增）—— 记在 packages.<名>.rejected。**审核没过**；",
+    "     在架版本**不受影响**，platform 仍是上一个过审版本。⚠️ 与 ② 在清单里长得很像，但**下一步完全不同**：",
+    "     ② 是等，⑤ 是改包重提（平台可能带提交冷却）。接口特征是 `status=rejected`。",
+    "     驳回理由只有发布管理页能看到 —— **请用户去看，别替他猜**。",
+    "  ② / ③ / ④ / ⑤ 同时存在是常态：在新版本过审、上架之前，③ 仍是上一个已上架的老版本。",
     "  platform.version / submitted.version 任一低于包内版本时，构建会标【本地升级】= 还得再交一次。",
     "",
     "★ platform.version（= ③ 审核完成）的来源与边界（2026-09-24 首读，2026-09-25 复核并由用户实证）：",
@@ -111,7 +115,11 @@
     "  流水：提交 → （审核）→ `status=approved`（界面显示「**待发布**」+ 一个「**发布**」按钮）→ **手动点发布** → `status=published`（已上架）。",
     "  实例：`joy2know-market-scout` 1.0.0 于 2026-10-03 01:37 提交、随即过审，但停在 `approved`；",
     "  同批更早过审的 `joy2know-promo-team` 已是 `published`。",
-    "  ⚠️ 因此「② 清零」不等于「全部上架」—— 每次同步还要单独数一遍停在 `approved` 的资产。"
+    "  ⚠️ 因此「② 清零」不等于「全部上架」—— 每次同步还要单独数一遍停在 `approved` 的资产。",
+    "",
+    "★ 2026-10-03 同日再遇第五档「已驳回」（status=rejected）：**驳回与「在架版本」是两回事。**",
+    "  实例：`joy2know-cine-team` 1.6.0（在架仍 1.3.0）、`joy2know-topic-planner` 1.0.0（首次上架失败，platform 仍为空）。",
+    "  ⚠️ 「② 清零」既不代表「全部上架」，也不代表「全部过审」—— 每次同步要**分别数** ② 与 ⑤。"
   ],
   "packages": {
     "joy2know-asset-ledger": {
@@ -291,11 +299,11 @@
         "note": "2026-10-02 22:42 开发者接口直读：**在架 v1.3.0**（这一版 2026-09-30 之前上架）。**1.6.0 已于同日 22:42 提交成功、进入审核**（接口 `status=under_review`、`currentVersion 1.6.0`、`submitCountToday=1`），记录见本包 `submitted`。⚠️ 更正两处更早的错记：① 该卡并非「从未上线」—— 1.3.0 一直在架（09-30 截图上那个「在审 1.3.0」实为在架版本）；② 09-28 那轮 1.6.0 **确未提交成功**（当时接口读到的 `currentVersion` 仍是 1.3.0、`submitCountToday=0`），本轮已重传。"
       },
       "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。",
-      "submitted": {
+      "rejected": {
         "version": "1.6.0",
         "assetId": "oe_c044234d33471929",
-        "date": "2026-10-02",
-        "note": "2026-10-02 22:42 提交、审核中（接口 `status=under_review` / `currentVersion 1.6.0` / `status=not_started`）。**在架仍是 1.3.0** —— 过审后把本值移进 `platform`。⚠️ 本包内嵌 `joy2know-musician`；本轮 zip 内已读到 **1.6.1**（该技能 2026-10-01 过审）—— 提交若用的是更早一版的 zip，内嵌版本会偏低，需复核。"
+        "date": "2026-10-03",
+        "note": "2026-10-03 13:26 **被平台驳回（⑤）** —— 1.6.0（2026-10-02 22:42 提交）审核没过，**在架版本不受影响，仍是 1.3.0**。⚠️ 驳回原文待小乐去发布管理页确认：本仓历史里该团曾因「深度合成 / AI 创作」类目连驳两轮、最终由客服指定「工具 > 办公」才过审，**但那是技能侧口径 —— 专家 / 团的类目只有官方 15 类、写死在包内 `categoryId`，不能照搬**。类目类驳回改类目、结构类驳回改包，**是否抬版本号也不同**（见 `AGENT.md` 铁律第 7 条）。"
       }
     },
     "joy2know-polish-team": {
@@ -324,56 +332,56 @@
     "joy2know-topic-planner": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
-      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **05-MarketingGrowth**。本包从 `joy2know-promo-team` 拆出（团内角色 = 选题策划师·霍燃），单飞判据是三条同时成立：**输入自足**（用户手上直接就有推广对象与受众，不必等别的一棒）+ **有独立检索需求**（「选题 / 爆款选题」是独立搜索词）+ **交付物独立可用**（选题池 + 打分 + Top 3 脱离团队上下文仍完整）。提示词按「独立交付版」重写（去 SendMessage 回传、补输入自给降级路径、加交付前自检），**不是复制团内成员卡**。2026-09-30 建包，**2026-10-03 首次提交、审核中**；2026-10-02 卡面署名（`displayName`）由花名「霍燃」改为品牌名「晓得乐」，与本仓在架专家的既定口径对齐，**花名只保留在 `joy2know-promo-team` 的成员位**。",
-      "submitted": {
+      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **05-MarketingGrowth**。本包从 `joy2know-promo-team` 拆出（团内角色 = 选题策划师·霍燃），单飞判据是三条同时成立：**输入自足**（用户手上直接就有推广对象与受众，不必等别的一棒）+ **有独立检索需求**（「选题 / 爆款选题」是独立搜索词）+ **交付物独立可用**（选题池 + 打分 + Top 3 脱离团队上下文仍完整）。提示词按「独立交付版」重写（去 SendMessage 回传、补输入自给降级路径、加交付前自检），**不是复制团内成员卡**。2026-09-30 建包，**2026-10-03 首次提交即被驳回（⑤）**，同日抬版本至 1.0.1 待重提；2026-10-02 卡面署名（`displayName`）由花名「霍燃」改为品牌名「晓得乐」，与本仓在架专家的既定口径对齐，**花名只保留在 `joy2know-promo-team` 的成员位**。",
+      "rejected": {
         "version": "1.0.0",
         "assetId": "oe_b08b1b0e7d5fa14a",
         "date": "2026-10-03",
-        "note": "2026-10-03 首次提交、审核中（开发者接口直读：`status=under_review` / `currentVersion 1.0.0` `not_started` / `submitCountToday=1`）。**此前「从未提交」的记录作废** —— 小乐已提交。**走专家入口上传**（包根无 SKILL.md，用技能入口会报「未找到 SKILL.md」）。"
+        "note": "2026-10-03 01:44 首次提交（专家入口）、13:38 **被平台驳回（⑤）** —— **首次上架失败，`platform` 仍为空**。13:48 起可再提交（平台有提交冷却）。⚠️ 驳回原文待小乐去发布管理页确认。**连带**：本包内嵌 `joy2know-viral-topic`（1.0.0 同期在审、尚未过审）—— 若驳回与内嵌技能有关，两者要同轮处置。**2026-10-03 本轮处置：内容零改动、仅抬版本至 1.0.1（`plugin.json` + README + 检测报告），产物 `dist/joy2know-topic-planner-v1.0.1.zip` 898.3 KB 已就绪待重提。**"
       }
     },
     "joy2know-market-scout": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **05-MarketingGrowth**。从 `joy2know-promo-team` 拆出（团内角色 = 市场情报官·司南）；单飞判据同上三条，其中「有独立检索需求」最强（竞品分析 / 市场调研 / 用户画像均为独立搜索词）。**不内嵌技能**（`skills: []`）—— 方法论是「观察格式 + 事实与推断的纪律」，没有可复用的独立计算逻辑，硬拆成技能反而是负担。2026-09-30 建包，**2026-10-03 首次提交、当日过审、待发布**；2026-10-02 卡面署名（`displayName`）由花名「司南」改为品牌名「晓得乐」，与本仓在架专家的既定口径对齐，**花名只保留在 `joy2know-promo-team` 的成员位**。",
-      "approved": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "oe_e93181cd84fc0742",
         "date": "2026-10-03",
-        "note": "2026-10-03 01:37 首次提交、当日过审，**但停在 `status=approved`** —— 发布管理页显示「**待发布**」+ 一个「发布」按钮，`visibleScope=ALL`。⚠️ **审核已过、尚未上架**：需在发布管理页手动点一次「发布」才进 ③。这是本仓第一次遇到该档（见 `$comment` 末尾 2026-10-03 条）。"
+        "note": "2026-10-03 上架 1.0.0（小乐在发布管理页手动点「发布」）。⚠️ 它曾是**本仓第一个「④ 待发布」实例** —— 01:37 提交、当日过审，但停在 `status=approved` 不自动上架；这条实证直接催生了「④ 待发布」这一档（见 `$comment` 末尾）。"
       }
     },
     "joy2know-positioning": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **05-MarketingGrowth**。从 `joy2know-promo-team` 拆出（团内角色 = 定位策略师·叶衡）；**不内嵌技能**。单飞版相对团内版的关键改造 = **输入自给**：团内版要求「先有情报官的竞品地图」才开工，单飞后改为「没有同类信息也行 —— 先做轻量品类判断，把差异化标 `【假设-需验证】` 并列出待确认问题」，避免变成「拍脑袋定位」。2026-09-30 建包，**2026-10-03 首次提交、审核中**；2026-10-02 卡面署名（`displayName`）由花名「叶衡」改为品牌名「晓得乐」，与本仓在架专家的既定口径对齐，**花名只保留在 `joy2know-promo-team` 的成员位**。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "oe_9dbcdace03168058",
         "date": "2026-10-03",
-        "note": "2026-10-03 首次提交、审核中（开发者接口直读：`status=under_review` / `currentVersion 1.0.0` `not_started` / `submitCountToday=1`）。**此前「从未提交」的记录作废** —— 小乐已提交。**走专家入口上传**（包根无 SKILL.md，用技能入口会报「未找到 SKILL.md」）。"
+        "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；不内嵌技能（定位靠判据与访谈提纲）。"
       }
     },
     "joy2know-copywriter": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **05-MarketingGrowth**。从 `joy2know-promo-team` 拆出（团内角色 = 内容编导·言川），内嵌**已在架的**技能 `joy2know-humanize` 1.1.0 作腔调门禁（该技能已过审，本包只是引用其真源）。2026-09-30 建包，**2026-10-03 首次提交、审核中**；2026-10-02 卡面署名（`displayName`）由花名「言川」改为品牌名「晓得乐」，与本仓在架专家的既定口径对齐，**花名只保留在 `joy2know-promo-team` 的成员位**。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "oe_02a241e98a06a0fc",
         "date": "2026-10-03",
-        "note": "2026-10-03 首次提交、审核中（开发者接口直读：`status=under_review` / `currentVersion 1.0.0` `not_started` / `submitCountToday=1`）。**此前「从未提交」的记录作废** —— 小乐已提交。**走专家入口上传**（包根无 SKILL.md，用技能入口会报「未找到 SKILL.md」）。"
+        "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；内嵌已过审的 `joy2know-humanize` 1.1.0。"
       }
     },
     "joy2know-reviewer": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **05-MarketingGrowth**。从 `joy2know-promo-team` 拆出（团内角色 = 效果复盘师·秦度），内嵌**已在架的**技能 `joy2know-dashboard` 1.2.0 出单页看板。⚠️ **独立化的唯一结构性改写**：五层漏斗表与建议表的「交给谁改」由团队角色名（时叙/言川/叶衡）改为**动作归属**（排期/文案/定位/选题/你自己）—— 单飞后角色名不存在，不改就会指向空气。2026-09-30 建包，**2026-10-03 首次提交、审核中**；2026-10-02 卡面署名（`displayName`）由花名「秦度」改为品牌名「晓得乐」，与本仓在架专家的既定口径对齐，**花名只保留在 `joy2know-promo-team` 的成员位**。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "oe_bd86598a504db810",
         "date": "2026-10-03",
-        "note": "2026-10-03 首次提交、审核中（开发者接口直读：`status=under_review` / `currentVersion 1.0.0` `not_started` / `submitCountToday=1`）。**此前「从未提交」的记录作废** —— 小乐已提交。**走专家入口上传**（包根无 SKILL.md，用技能入口会报「未找到 SKILL.md」）。"
+        "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；内嵌已过审的 `joy2know-dashboard` 1.2.0。"
       }
     },
     "joy2know-viral-topic": {
@@ -402,11 +410,11 @@
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目写在包内 plugin.json 的 categoryId = **02-Engineering**（技术工程），清单直接读该字段，此处留空。内嵌技能 `joy2know-harness-rules` 1.0.0（承载两份 harness 施工图母本）。2026-10-02 建包，**当日首次提交，审核中**（开发者接口直读）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "oe_cb1b02c722f7df42",
-        "date": "2026-10-02",
-        "note": "2026-10-02 提交（接口 updatedAt 22:35）—— 开发者接口读 status=under_review。**走专家入口上传**（包内 SKILL.md 内嵌在 skills/ 下，用技能入口会报「未找到 SKILL.md」）。"
+        "date": "2026-10-03",
+        "note": "2026-10-03 上架 1.0.0（13:21 过审 → 13:24 手动发布）。**走专家入口上传**（包内 SKILL.md 内嵌在 skills/ 下，用技能入口会报「未找到 SKILL.md」）。"
       }
     },
     "joy2know-harness-rules": {
@@ -422,6 +430,7 @@
     }
   },
   "submittedBatches": [
+    "**2026-10-03 13:5x 手工同步（小乐提交后；开发者接口直读 + 发布管理页交叉核对）：5 个资产上架、2 个被驳回（⑤，本仓首次遇到该档）。** 实况 —— **③ 已上架 24 · ② 审核中 2 · ⑤ 已驳回 2**（= 28 ✓，① 为零）。① **新上架 5 个**：`market-scout` 1.0.0（13:14 —— 它曾是本仓第一个 **④ 待发布**，小乐当天点了「发布」才进 ③）、`harness` 1.0.0（13:24）、`positioning` / `copywriter` / `reviewer` 各 1.0.0（13:41 三连过审）。② **被驳回 2 个**：`cine-team` 1.6.0（13:26，**在架仍是 1.3.0**）、`topic-planner` 1.0.0（13:38，**首次上架失败**，13:48 起可再提交）—— **驳回原文待小乐去发布管理页看**。③ **仍在审**：技能 `harness-rules` 1.0.0、`viral-topic` 1.0.0。",
     "**2026-10-03 01:5x 手工同步（小乐提交后；开发者接口直读 + 发布管理页交叉核对）：① 清零，并首次发现第四档「待发布」。** 实况 —— **技能 17 全部在平台**（15 已上架 + 2 在审，本轮无变化）；**专家 / 团 11**：③ 已上架 4（`code-scholar` 1.2.0、`mr` 1.2.0、`polish-team` 1.2.0、**`promo-team` 1.0.0 —— 本轮由在审转为已上架**）、② 审核中 6（`cine-team` 1.6.0、`harness` 1.0.0、**`topic-planner` / `positioning` / `copywriter` / `reviewer` 各 1.0.0**）、⭐ **④ 待发布 1（`market-scout` 1.0.0 —— 审核已过、界面显示「待发布」+「发布」按钮）**、① 未提交 **0**。**19 + 8 + 1 = 28** ✓。★ **本轮关键发现：「审核通过」不等于「上架」** —— 平台在 ② 与 ③ 之间有 **`status=approved`（界面叫「待发布」）** 一档，**要手动点一次「发布」才上架**；`market-scout` 正卡在这一档，需要小乐去点一下。",
     "**2026-10-02 22:5x 二次同步（小乐提交完毕后，开发者接口直读）：** 本轮有 **4 处状态推进** —— ① 技能 `viral-topic` 1.0.0、`harness-rules` 1.0.0 均在审；② 专家团 `promo-team` 1.0.0 **由草稿转为正式提交、审核中**（更早一轮读到 `status=draft` / `submitCountToday=0`，是没提交成功）；③ 专家团 `cine-team` **1.6.0 已提交在审**（在架仍是 1.3.0）—— 上一轮记的「09-28 那轮未提交成功」属实，本轮已重传；④ 专家 `harness` 1.0.0 在审。**当前实况：③ 在架 18（技能 15 + 专家/团 3）· ② 在审 5（技能 2 + 专家/团 3）· ① 未提交 5（五个单飞专家）。18 + 5 + 5 = 28** ✓。",
     "**2026-10-02 手工同步（小乐指定时机；开发者接口直读，非照抄）：平台状态全面刷新。** 实况 —— **技能 17**：15 在架（`wordplay` 1.0.0 于今日 11:33 过审上架，人工记的「从未提交」有误）+ 2 审核中（`viral-topic` 1.0.0、`harness-rules` 1.0.0）；**专家 6**：4 在架（`code-scholar` 1.2.0、`mr` 1.2.0、`polish-team` 1.2.0、`cine-team` 1.3.0）+ 1 审核中（`harness` 1.0.0）+ 1 草稿（`promo-team` —— 后台存了草稿但**没提交成功**）；**未上平台 5**（`copywriter` / `market-scout` / `positioning` / `reviewer` / `topic-planner`，均 1.0.0）。★ 这几条把 09-30 截图那份人工记录**全部追平**：`code-scholar` / `mr` / `polish-team` 的在审 1.2.0 已过审，**② 清零**。",

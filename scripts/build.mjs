@@ -743,16 +743,20 @@ function fmtStamp(d) {
  * 把两者混为一谈，就会把「已经交上去在等审核」误记成「还没传」。
  */
 /**
- * 发布状态**四态**（2026-09-25 立三态；**2026-10-03 补第四档**）：
- *   ① 开发完待提交   —— 三个字段都没有，只在本地
+ * 发布状态**五态**（2026-09-25 立三态；**2026-10-03 补 ④ / ⑤**）：
+ *   ① 开发完待提交   —— 四个字段都没有，只在本地
  *   ② 提交完待审核   —— entry.submitted，**用户端看不到**（只有开发者账号的发布管理页可见）；
  *                        2026-10-02 起可由开发者接口直读（此前只能人工记录）
  *   ④ 待发布         —— entry.approved，**审核已通过、但还没上架**（2026-10-03 新增）。
  *                        ⚠️ **「审核通过」不等于「上架」** —— 要在发布管理页手动点一次「发布」才进 ③。
  *                        开发者接口特征：status=approved（已上架是 status=published）；界面文案就叫「待发布」。
+ *   ⑤ 已驳回         —— entry.rejected，**审核没过**（2026-10-03 新增）。
+ *                        ⚠️ 与 ② 长得很像但**下一步完全不同**：② 是等，⑤ 是改包重提（可能带冷却）。
+ *                        在架版本**不受影响**（platform 仍是上一个过审版本）。
+ *                        开发者接口特征：status=rejected。
  *   ③ 审核完成（已上架）—— entry.platform，普通用户在推荐市场里已能看到
  *   另：draft = 后台存过草稿但**没提交成功**（status=draft），别与 submitted 混。
- * ②③④ 可同时存在：在新版本过审、上架之前，③ 仍是上一个已上架的老版本。
+ * ②③④⑤ 可同时存在：在新版本过审、上架之前，③ 仍是上一个已上架的老版本。
  */
 /**
  * 发布状态 —— **规则只在这里算一次**，发布清单与 README 共用，只是渲染不同
@@ -763,13 +767,19 @@ function publishStateOf(pkg, entry) {
   const onShelf = entry?.platform?.version || null;   // ③
   const pending = entry?.submitted?.version || null;  // ②
   const ready = entry?.approved?.version || null;     // ④ 待发布
+  const rejected = entry?.rejected?.version || null;  // ⑤ 已驳回
   const shelfTxt = onShelf ? `在架 ${onShelf}` : '首次上架';
 
+  // ★ 顺序即优先级：② 优先于 ⑤ —— 若「旧的被驳回、新的又交上去了」，在审的那个才是当前事实，
+  //   按 ⑤ 渲染会把「正在审核」谎报成「已驳回」。
   if (pending === local) return { num: '②', label: '待审核', emph: '待审核', detail: shelfTxt, upgrade: false };
   if (pending) return { num: '②', label: '待审核', emph: '待审核', detail: `交 ${pending}，${shelfTxt}`, upgrade: true };
   // ★ ④ 必须排在 ③ 之前 —— approved 的资产**尚未上架**，按 ③ 渲染会谎报「已上架」
   if (ready === local) return { num: '④', label: '待发布', emph: '待发布', detail: '审核已过，待手动点「发布」', upgrade: false };
   if (ready) return { num: '④', label: '待发布', emph: '待发布', detail: `待发 ${ready}，${shelfTxt}`, upgrade: true };
+  // ★ ⑤ 同样排在 ③ 之前 —— 被驳回的版本没上架，而 platform 只是更早的那个过审版本
+  if (rejected === local) return { num: '⑤', label: '已驳回', emph: '已驳回', detail: `${shelfTxt}，待改后重提`, upgrade: false };
+  if (rejected) return { num: '⑤', label: '已驳回', emph: '已驳回', detail: `驳 ${rejected}，${shelfTxt}`, upgrade: true };
   if (onShelf === local) return { num: '③', label: '审核完成 · 已上架', emph: null, detail: null, upgrade: false };
   if (onShelf) return { num: '③', label: '已上架', emph: '已上架', detail: `在架 ${onShelf}`, upgrade: true };
   return { num: '①', label: '开发完待提交', emph: null, detail: null, upgrade: false };
@@ -793,16 +803,19 @@ function readmeStatusOf(pkg, entry) {
 }
 
 /**
- * 平台侧单元格：在架版本；若有在审 / 待发布的提交则追加箭头。
- * `⏳` = ② 审核中 · `📮` = ④ 待发布（审核已过、等手动发布）。
+ * 平台侧单元格：在架版本；若有在审 / 待发布 / 被驳回的提交则追加箭头。
+ * `⏳` = ② 审核中 · `📮` = ④ 待发布（审核已过、等手动发布）· `🚫` = ⑤ 已驳回（审核没过、要改包重提）。
+ * 优先级与 `publishStateOf` 一致：② → ④ → ⑤（在审的新版比旧的驳回更近）。
  */
 function platformCellOf(entry) {
   const onShelf = entry?.platform?.version;
   const pending = entry?.submitted?.version;
   const ready = entry?.approved?.version;
+  const rejected = entry?.rejected?.version;
   const base = onShelf || '—';
   if (pending) return `${base} → ${pending} ⏳`;
   if (ready) return `${base} → ${ready} 📮`;
+  if (rejected) return `${base} → ${rejected} 🚫`;
   return base;
 }
 
@@ -838,6 +851,7 @@ function renderSkillSection(skills, cfg) {
     if (e.categoryNote) notes.push(`- \`${p.name}\`：${e.categoryNote}`);
     if (e.platform?.note) notes.push(`- \`${p.name}\`（平台侧）：${e.platform.note}`);
     if (e.approved?.note) notes.push(`- \`${p.name}\`（待发布）：${e.approved.note}`);
+    if (e.rejected?.note) notes.push(`- \`${p.name}\`（已驳回）：${e.rejected.note}`);
     if (e.submitted?.note) notes.push(`- \`${p.name}\`（审核中）：${e.submitted.note}`);
   }
   if (notes.length) {
@@ -881,6 +895,7 @@ function renderExpertSection(pkgs, cfg, team) {
     const e = cfg.packages[p.name] || {};
     if (e.platform?.note) notes.push(`- \`${p.name}\`（平台侧）：${e.platform.note}`);
     if (e.approved?.note) notes.push(`- \`${p.name}\`（待发布）：${e.approved.note}`);
+    if (e.rejected?.note) notes.push(`- \`${p.name}\`（已驳回）：${e.rejected.note}`);
     if (e.submitted?.note) notes.push(`- \`${p.name}\`（审核中）：${e.submitted.note}`);
   }
   if (notes.length) {
@@ -918,13 +933,14 @@ function renderManifest(pkgs, cfg, stamp) {
   L.push('');
   L.push(`**本地版本**：${verLine}`);
   L.push('');
-  L.push('**发布状态四种**：① `开发完待提交`（只在本地）→ ② `提交完待审核`（用户端看不到）→ ④ `待发布`（**审核已过、还没上架**，需在发布管理页手动点一次「发布」）→ ③ `审核完成`（已上架，用户端可见）。');
+  L.push('**发布状态五种**：① `开发完待提交`（只在本地）→ ② `提交完待审核`（用户端看不到）→ ④ `待发布`（**审核已过、还没上架**，需在发布管理页手动点一次「发布」）→ ③ `审核完成`（已上架，用户端可见）；**⑤ `已驳回`**（审核没过，**在架版本不变**，改包后可重提）。');
   L.push('');
-  L.push('> 「平台侧版本（在架 → 审核中）」一列：前者是 **③**；箭头后 `⏳` = **② 审核中**、`📮` = **④ 待发布**。自 2026-10-02 起三者均由开发者接口直读，口径见 `release.config.json` 的 `$comment` 末尾。');
-  L.push('> 标 `+【本地升级】` 的 = 提交之后本地又抬了版本，**过审后还得再交一次**。②③④ 同时存在是常态。');
+  L.push('> 「平台侧版本（在架 → 审核中）」一列：前者是 **③**；箭头后 `⏳` = **② 审核中**、`📮` = **④ 待发布**、`🚫` = **⑤ 已驳回**。自 2026-10-02 起均由开发者接口直读，口径见 `release.config.json` 的 `$comment` 末尾。');
+  L.push('> 标 `+【本地升级】` 的 = 提交之后本地又抬了版本，**过审后还得再交一次**。②③④⑤ 同时存在是常态。');
   L.push('');
   L.push('> ⚠️ 2026-10-02 之前，该列对**专家与专家团**只是人工记录（推荐市场检索不收录它们）；**现在开发者接口能一并读到，三类型均可信。**');
-  L.push('> ⚠️ **④ 是最容易漏的一档**（2026-10-03 首次遇到）：审核通过后资产停在「待发布」，**不点发布就不会上架**。');
+  L.push('> ⚠️ **④ 与 ⑤ 是最容易漏的两档**（2026-10-03 同日首次遇到）：④ 审核通过后停在「待发布」，**不点发布就不会上架**；');
+  L.push('> ⑤ 被驳回与 ② 在表里长得很像，但**② 是等、⑤ 是改包重提**（还可能带提交冷却），别混。');
   if (cfg.submittedBatches?.length) {
     L.push('');
     L.push('### 平台状态同步记录（② / ④）');
