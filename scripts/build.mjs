@@ -1294,6 +1294,37 @@ function main() {
   }
   console.log(C.green(`全部完成：${results.length} 个包已写入 dist/`));
 
+  // ---- 合规用词门禁（跨包，R6「同系列全扫」）----
+  // 为什么放在这里、而不是像 selfcheck 那样逐包跑：
+  //   ① 它要对照**全系列**的措辞一致性，单包视角看不出「换个说法又踩了」；
+  //   ② 它查的是**源目录**里的对外文案（build 已把源目录改完、产物已定）；
+  //   ③ 它**只警告不 fail** —— 文案是否「像生成服务」最终由平台审核判，
+  //      机器判据只是提前示警，拦死构建会挡住真实改动。硬拦请单独跑本脚本看退出码。
+  {
+    const gate = path.join(ROOT, 'scripts/compliance_wording.py');
+    const py = PY_CANDIDATES.find((p) => p === 'python3' || exists(p));
+    if (py && exists(gate)) {
+      const r = spawnSync(py, [gate, path.join(ROOT, 'packages')], { encoding: 'utf8' });
+      const out = (r.stdout || '') + (r.stderr || '');
+      const line = (out.match(/通过\s*\d+\s*·\s*提示\s*\d+\s*·\s*失败\s*\d+/) || [])[0];
+      const fails = (out.match(/^ {2}\[XX\]/gm) || []).length;
+      const warns = (out.match(/^ {2}\[!!\]/gm) || []).length;
+      if (fails) {
+        console.log('');
+        console.log(C.yellow('合规用词') + C.dim('（对外文案被判可能触发「AI 生成服务」表象）'));
+        for (const l of out.split('\n').filter((l) => /^ {2}\[XX\]/.test(l))) console.log(C.yellow(l));
+        console.log(C.dim('  口径与改法：docs/平台资产规范.md 第八节末小节；'
+          + '先找客服人工复审，别为迎合机器补资质或硬加类目。'));
+      } else if (warns) {
+        console.log('');
+        console.log(C.yellow('合规用词') + C.dim(`：通过，${warns} 处提示（已有否定式声明兜住）`));
+      } else if (line) {
+        console.log('');
+        console.log(C.dim(`  合规用词  ${line}`));
+      }
+    }
+  }
+
   // ---- 旧产物清理明细 ----
   const prunedAll = results.flatMap((x) => (x.r.pruned || []).map((f) => ({ pkg: x.pkg.name, f })));
   if (prunedAll.length) {

@@ -3,18 +3,20 @@ name: joy2know-character
 display_name: 晓得·角色档案
 display_name_en: joy2know Character File
 description: >-
-  把角色、场景、画风设定存成结构化「角色卡」，每次生成时自动注入提示词，解决 AI 图像/视频里「同一个人物每张图都不一样」的角色漂移。
+  把角色、场景、画风设定存成结构化「角色卡」，每次写提示词时自动注入，解决 AI 图像/视频里「同一个人物每张图都不一样」的角色漂移。**本技能只产出提示词文本，不生成任何图片或视频、不接入任何生成接口。**
   用「连续性锁 + 锚点短语」机制把外观锁死，让跨镜头、跨对话的一致性可复现、可比较。
   触发词：角色卡、人物设定、一致性、锚点短语、连续性锁、角色漂移、固定长相、角色档案、IP 人设、人物描述词、
   多角色拼装、character card、anchor phrase、consistent character、lock appearance。
   不适用于：一次性随意出图、不打算复用的临时角色；纯文字小说的人物小传（本技能只服务「要被画出来」的角色）；
   只需要一句风格词而不需要跨图一致性的场景。
-description_zh: 把角色设定存成结构化角色卡，用锚点短语锁定跨图一致性。
+description_zh: 把角色设定存成结构化角色卡，用锚点短语锁定跨图一致性；只产出提示词文本，不生成图像或视频。
 description_en: >-
   Store a character's look, outfit, and art style as a structured character card that is auto-injected into
-  every prompt, solving the "same person looks different every image" drift in AI image/video generation. It
+  every prompt you write, solving the "same person looks different every image" drift in AI image/video work. It
   uses a continuity-lock + anchor-phrase mechanism so cross-shot, cross-chat consistency is reproducible and
   comparable. For characters meant to be drawn repeatedly, not one-off throwaway prompts.
+  **Prompt text only: this skill does not generate any image or video, calls no generation API, and carries
+  no account or key.**
 category: writing
 version: 1.2.0
 author: 晓得乐

@@ -3,24 +3,26 @@ name: joy2know-asset-ledger
 display_name: 晓得·素材台账
 display_name_en: joy2know Asset Ledger
 description: >-
-  给生成过的图片/视频/提示词建一份可检索的台账，解决「生成完就找不到了」——攒了几千个文件后不知道哪张用什么提示词生成、
-  哪张是废片、改了八版哪版最好，于是反复重生成、白白烧钱。提示词可以直接从 ComfyUI / Stable Diffusion 生成的图里读出来
+  给你之前做过的图片/视频/提示词建一份可检索的台账，解决「做完就找不到了」——攒了几千个文件后不知道哪张当时用什么提示词写的、
+  哪张是废片、改了八版哪版最好，于是反复重做、白白烧钱。提示词可以直接从 ComfyUI / Stable Diffusion 出的图里读出来
   （含被压缩过的元数据块），不用回头手工补；按创作意图（角色/场景/用途/是否废片/版本/是否可商用）检索，不是按文件属性；
-  文件名与生成时间相近的素材会被推断成「同一批」，一键分版；还能渲染成单文件 HTML 看板，带缩略图与筛选。
+  文件名与产出时间相近的素材会被推断成「同一批」，一键分版；还能汇总成单文件 HTML 看板，带缩略图与筛选。
+  **本技能只做检索与整理：不生成任何图片或视频，不接入任何生成接口，不带账号与密钥。**
   另外与同系列联动：接上「晓得·角色档案」的角色卡，能查出哪几张图的提示词漏了角色锚点短语（生成后的一致性校验）；
   接上「晓得·分镜工」的产出，首帧图与片段自动带上对应镜头的提示词和时长。
   触发词：素材台账、建索引、归档生成记录、找某角色的图、可商用素材、分辨够的图、废片标记、第几版最好、素材检索、
   提示词丢了、从图里读提示词、同一批素材、生成记录归档、角色一致吗、锚点漏了没、分镜首帧对不上、
   asset ledger、index my generations、find by character、list scrap。
   不适用于：单纯按文件名/大小/修改时间整理文件（那是文件管理器，本技能不干）；找重复文件；删空白/模糊的批量清理。
-description_zh: 给生成素材建可检索台账，能从图里直挖提示词，按创作意图找图而非文件属性，推断批次并出 HTML 看板。
+description_zh: 给你攒下的图片/视频/提示词建一份可检索台账，能从图里直挖提示词，按创作意图找素材而非文件属性，推断批次并出一份 HTML 看板。**本技能只做检索与整理，不生成任何图片或视频、不调用任何生成接口。**
 description_en: >-
-  Build a searchable ledger for generated images/videos/prompts so creators can find assets by creative intent
-  (character, scene, purpose, scrap flag, version, commercial license) instead of by file properties. Prompts can be
-  recovered straight from ComfyUI / Stable Diffusion PNG metadata, including compressed chunks, so nothing has to be
-  re-typed. Files sharing a name family and close timestamps are inferred as one batch, and the ledger renders into a
-  single-file HTML board with thumbnails and filters. Not a file manager: it does not organize by name/size/mtime or
-  dedupe files.
+  Build a searchable ledger for images/videos/prompts you already made, so creators can find assets by creative
+  intent (character, scene, purpose, scrap flag, version, commercial license) instead of by file properties. Prompts can
+  be recovered straight from ComfyUI / Stable Diffusion PNG metadata, including compressed chunks, so nothing has to be
+  re-typed. Files sharing a name family and close timestamps are inferred as one batch, and the ledger rolls up into a
+  single-file HTML board with thumbnails and filters. **Indexing and organising only: this skill does not generate any
+  image or video, calls no generation API, and carries no account or key.** Not a file manager: it does not organize by
+  name/size/mtime or dedupe files.
 category: capability
 version: 1.2.0
 author: 晓得乐

@@ -17,6 +17,7 @@
 | 建议发布类目、平台侧最后版本 | `release.config.json` ——**唯一真源** |
 | 待上传的产物、发布清单、发布历史 | 产物在 `dist/`；**清单与发布历史在仓库根的 `发布清单.md`**（前四节自动生成，末两节人工维护） |
 | 字段级自检的规则实现 | `scripts/selfcheck.py`（**本仓库这一份是权威版本**） |
+| **文案会不会被判成「AI 生成服务」** | 规则 = 铁律 11 + `docs/平台资产规范.md` 第八节末小节；判据 = `scripts/compliance_wording.py` |
 | 某个包上次检测到哪一步 | `packages/<包名>/<包名>.md` |
 
 **本仓库自给自足**：自检脚本、字段规范、打包工具都在仓库里，不依赖任何本机技能目录
@@ -64,6 +65,20 @@
    一轮里混了多类改动就**按单一职责分批提交**。**AI 的边界是本地提交，`git push` 由人来做**（第 7 节）。
    ⚠️ **图标类改动必须先 `pnpm build` 再提交** —— 专家 / 团自身的图标在 zip 内，不重打还是旧图。
    做法与提交前检查见第 7 节「什么时候提交」。
+11. **★ 技能 / 专家 / 专家团的名字与描述，不得让机器审核看成「我们提供了 AI 生成服务」。**
+   平台**机器审核**判的是「产物是不是媒体文件」，不是「有没有『生成』这个词」（2026-10-08 客服问明）。
+   **主语必须是文本、宾语不能是媒体**：
+   - ❌「帮你生成视频 / 出图 / 合成音频 / 成片导出」 → ✅「把创意写成可直接粘贴的提示词文本」
+   -❌「AI 视频生产团队」这类**名字**里的「生产 / 生成 / 合成」 → ✅「视频提示词」「音乐提示词」
+   - ❌ 把音 / 图 / 视频说成自己的产物 → ✅ 说成「交给用户去别处粘贴使用的文本」
+   - ❌ 提账号档位 / 额度 / 订阅 / 商业授权 → ✅ 全部不提
+   **必带一句否定式声明**（写之前先全包检索 `http / urllib / requests / socket / api_key / fetch(`，
+   核不过就不许写这句）：「只产出文本，不生成任何图片或视频，不接入任何生成接口，不带账号与密钥。」
+   ⚠️ **被机器误判时先找客服人工复审，别改包** —— 实例：`cine-team` 1.6.1 与被驳的 1.6.0
+   **包内字节数完全相同（4,391,052）**，内容零改动即过审，**反证「改内容」在此类驳回里完全无效**；
+   客服放行后**资质与类目都不必动**。⛔ 旧口径「类目没写对 → 改类目」**作废** —— 改类目只是绕过机器判据的手段。
+   完整用词对照表与判据边界见 `docs/平台资产规范.md` 第八节末小节；
+   **可执行门禁**：`python3 scripts/compliance_wording.py`（构建时也会自动跑，只警告不拦）。
 
 ---
 
@@ -367,6 +382,12 @@ V=~/.workbuddy/binaries/python/envs/default
 python3 scripts/selfcheck.py packages/joy2know-asset-ledger
 #   ↑ 若报「PyYAML 不可用」说明静默降级成正则了，用 $V/bin/python 跑：
 $V/bin/python scripts/selfcheck.py packages/joy2know-asset-ledger
+
+# —— 合规用词门禁（对外文案会不会被判成「AI 生成服务」；见铁律 11）——
+python3 scripts/compliance_wording.py                 # 查全部包（构建时也会自动跑，只警告不拦）
+python3 scripts/compliance_wording.py packages/joy2know-cine-team   # 只查一个包
+python3 scripts/compliance_wording.py --selftest      # 反向验证：违规样本必红、合规样本必绿
+python3 scripts/compliance_wording.py --baseline-check  # 关掉判据跑一遍，确认结果确由判据产生
 
 # —— 生成缺失的检测报告骨架 ——
 node scripts/init-checkdocs.mjs

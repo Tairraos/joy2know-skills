@@ -179,8 +179,8 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-clarify` | 晓得·讲明白 | 1.2.0 | 让任何回答更有条理更好懂：结论先行、分层展开、该画图时主动配图，守住不编造的底线 | 14.3 KB | ③ 审核完成 · 已上架 |
 | `joy2know-design-tokens` | 晓得·设计解剖 | 1.2.0 | 把设计参考解剖成可复用的 Design Token 文件，再按 token 生成风格一致的页面代码 | 17.5 KB | ③ 审核完成 · 已上架 |
 | `joy2know-storyboard` | 晓得·分镜工 | 1.2.0 | 把白模视频切成镜头、抽首帧，按目标模型语法产出分镜提示词包 | 13.5 KB | ③ 审核完成 · 已上架 |
-| `joy2know-character` | 晓得·角色档案 | 1.2.0 | 把角色设定存成结构化角色卡，用锚点短语锁定跨图一致性，解决「同一个人每张图都不一样」 | 9.6 KB | ③ 审核完成 · 已上架 |
-| `joy2know-asset-ledger` | 晓得·素材台账 | 1.2.0 | 给生成素材建可检索台账：提示词能从 ComfyUI / Stable Diffusion 生成的图里直接挖出来（含压缩块），按创作意图检索而非文件属性，推断「同一批」，可与角色档案 / 分镜工联动，并出单文件 HTML 看板 | 36.2 KB | ③ 审核完成 · 已上架 |
+| `joy2know-character` | 晓得·角色档案 | 1.2.0 | 把角色设定存成结构化角色卡，用锚点短语锁定跨图一致性，解决「同一个人每张图都不一样」 | 9.7 KB | ③ 审核完成 · 已上架 |
+| `joy2know-asset-ledger` | 晓得·素材台账 | 1.2.0 | 给生成素材建可检索台账：提示词能从 ComfyUI / Stable Diffusion 生成的图里直接挖出来（含压缩块），按创作意图检索而非文件属性，推断「同一批」，可与角色档案 / 分镜工联动，并出单文件 HTML 看板 | 36.4 KB | ③ 审核完成 · 已上架 |
 | `joy2know-codebase` | 晓得·代码考古 | 1.2.0 | 给陌生仓库半小时产出架构说明、入口链路、数据流和改造风险点 | 12.7 KB | ③ 审核完成 · 已上架 |
 | `joy2know-logdetective` | 晓得·日志侦探 | 1.2.0 | 把海量日志聚成错误模式、时间线和根因假设，而不是又一份海量文本 | 13.4 KB | ③ 审核完成 · 已上架 |
 | `joy2know-errorfix` | 晓得·报错翻译官 | 1.2.0 | 把报错和堆栈翻译成人话，并给出可直接复制的修复步骤 | 8.5 KB | ③ 审核完成 · 已上架 |
@@ -233,7 +233,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 |---|---|---|---|---|---|---|---|
 | `joy2know-mr` | 晓得·表达条理与可视化专家 | 专家 | 1.2.0 | `joy2know-clarify` 1.2.0 | — | 740.1 KB | ③ 审核完成 · 已上架 |
 | `joy2know-code-scholar` | 晓得·代码考古学家 | 专家 | 1.2.0 | `joy2know-codebase` 1.2.0 | — | 737.7 KB | ③ 审核完成 · 已上架 |
-| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.1 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` 1.6.1 | 7 角色 | 4288.1 KB | ③ 审核完成 · 已上架 |
+| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.1 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` 1.6.1 | 7 角色 | 4288.3 KB | ③ 审核完成 · 已上架 |
 | `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.2.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-deck` 1.2.0、`joy2know-dashboard` 1.2.0 | 5 角色（1 主理 + 4 成员） | 3920.5 KB | ③ 审核完成 · 已上架 |
 | `joy2know-promo-team` | 晓得·项目推广专家团 | 专家团 | 1.0.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-dashboard` 1.2.0 | 7 角色（1 主理 + 6 成员） | 4523.3 KB | ③ 审核完成 · 已上架 |
 | `joy2know-topic-planner` | 晓得·爆款选题策划专家 | 专家 | 1.0.1 | `joy2know-viral-topic` 1.0.0 | — | 898.3 KB | ③ 审核完成 · 已上架 |
