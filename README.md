@@ -228,7 +228,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 |---|---|---|---|---|---|---|---|
 | `joy2know-mr` | 晓得·表达条理与可视化专家 | 专家 | 1.2.0 | `joy2know-clarify` 1.2.0 | — | 740.1 KB | ③ 审核完成 · 已上架 |
 | `joy2know-code-scholar` | 晓得·代码考古学家 | 专家 | 1.2.0 | `joy2know-codebase` 1.2.0 | — | 737.7 KB | ③ 审核完成 · 已上架 |
-| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.0 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` 1.6.1 | 7 角色 | 4288.1 KB | ⑤ 已驳回（在架 1.3.0，待改后重提） |
+| `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.1 | `joy2know-storyboard` 1.2.0、`joy2know-character` 1.2.0、`joy2know-musician` 1.6.1 | 7 角色 | 4288.1 KB | ⑤ 已驳回（驳 1.6.0，在架 1.3.0）+【本地升级】 |
 | `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.2.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-deck` 1.2.0、`joy2know-dashboard` 1.2.0 | 5 角色（1 主理 + 4 成员） | 3920.5 KB | ③ 审核完成 · 已上架 |
 | `joy2know-promo-team` | 晓得·项目推广专家团 | 专家团 | 1.0.0 | `joy2know-clarify` 1.2.0、`joy2know-humanize` 1.1.0、`joy2know-dashboard` 1.2.0 | 7 角色（1 主理 + 6 成员） | 4523.3 KB | ③ 审核完成 · 已上架 |
 | `joy2know-topic-planner` | 晓得·爆款选题策划专家 | 专家 | 1.0.1 | `joy2know-viral-topic` 1.0.0 | — | 898.3 KB | ⑤ 已驳回（驳 1.0.0，首次上架）+【本地升级】 |

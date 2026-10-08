@@ -1,6 +1,6 @@
 {
   "name": "joy2know-cine-team",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "A six-role AI video production team that turns one creative idea into an executable shot list, per-shot prompts, a consistency anchor sheet and a music prompt pack written to Suno's composition guide",
   "author": {
     "name": "晓得乐"
