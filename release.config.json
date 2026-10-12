@@ -427,6 +427,11 @@
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
       "categoryNote": "技能包，产出**只有字段校验报告文本**（跑 fieldcheck.py 的退出码与报告），不生成音频/图像/视频、不接入任何生成接口、不带账号与密钥 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包（grep 确认引用方）。2026-10-12 建包，**尚未提交平台**（① 待提交）。"
+    },
+    "joy2know-asset-gate": {
+      "suggestedCategory": "工具 > 开发工具",
+      "categoryConfirmed": false,
+      "categoryNote": "技能包，产出**只有门禁判定文本与退出码**（跑 gatecheck.py），不生成音频/图像/视频、不接入任何生成接口、不带账号与密钥 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。"
     }
   },
   "submittedBatches": [
