@@ -1,6 +1,6 @@
 ---
 name: joy2know-character
-display_name: 晓得·角色档案
+display_name: 晓得·角色一致性
 display_name_en: joy2know Character File
 description: >-
   把角色、场景、画风设定存成结构化「角色卡」，每次写提示词时自动注入，解决 AI 图像/视频里「同一个人物每张图都不一样」的角色漂移。**本技能只产出提示词文本，不生成任何图片或视频、不接入任何生成接口。**
@@ -18,7 +18,7 @@ description_en: >-
   **Prompt text only: this skill does not generate any image or video, calls no generation API, and carries
   no account or key.**
 category: writing
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 

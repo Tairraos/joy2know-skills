@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""晓得·凡人腔调 —— 规则表自检（只读，不碰稿件）。
+"""晓得·去AI味改写 —— 规则表自检（只读，不碰稿件）。
 
     python3 selftest.py           全量自检
     python3 selftest.py -v        连每条通过项一起打印

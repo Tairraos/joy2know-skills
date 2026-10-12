@@ -1,6 +1,6 @@
 ---
 name: joy2know-dashboard
-display_name: 晓得·一页看懂
+display_name: 晓得·数据看板
 display_name_en: joy2know One-Page Dashboard
 description: >-
   把一份 Excel 或表格数据，变成一个能直接发给领导的可交互单文件 HTML 看板，含趋势、筛选与维度切换，
@@ -17,7 +17,7 @@ description_en: >-
   single file (no external CDN); does not connect to databases. Read the source table with the platform's
   existing table tooling or pandas/openpyxl — this skill focuses on data-to-dashboard conversion rules.
 category: capability
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 

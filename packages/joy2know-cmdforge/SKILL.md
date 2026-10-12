@@ -1,6 +1,6 @@
 ---
 name: joy2know-cmdforge
-display_name: 晓得·命令制造局
+display_name: 晓得·正则与SQL构造
 display_name_en: joy2know Command Forge
 description: >-
   把自然语言需求变成精确的正则、命令行或 SQL，附逐段解释、至少 5 条测试用例（含反例）与危险等级提示，
@@ -17,7 +17,7 @@ description_en: >-
   touch regex/CLI/SQL and need something copy-paste safe. Produces the command only; does not connect to
   databases or run destructive operations without explicit confirmation.
 category: writing
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 

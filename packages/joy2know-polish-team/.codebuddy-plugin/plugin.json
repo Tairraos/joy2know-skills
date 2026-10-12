@@ -1,6 +1,6 @@
 {
   "name": "joy2know-polish-team",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A four-editor polishing team that diagnoses your draft first, then routes it — untangle, cut into talkable pages, build a one-page dashboard, or strip machine tone last. Every edit traceable to a rule.",
   "author": {
     "name": "晓得乐"
@@ -39,7 +39,7 @@
   },
   "displayDescription": {
     "en": "The draft is ready — only delivery is left. Four editors each own one leg: untangle, distill into talkable pages, build a one-page dashboard, and strip machine tone last. A diagnosis decides who steps in, not all four.",
-    "zh": "稿子写完了只差交付：理清条理、压成能讲的、做成能发的看板，最后改掉机器腔调。上哪几棒由体检决定，不是全上。"
+    "zh": "稿子只差交付：理条理、压成能讲的、做成看板、去掉机器腔，内置图解表达、去AI味改写、PPT优雅讲稿、数据看板。"
   },
   "avatar": "avatars/team.png",
   "categoryId": "06-ContentCreative",

@@ -1,6 +1,6 @@
 ---
 name: joy2know-design-tokens
-display_name: 晓得·设计解剖
+display_name: 晓得·设计规范提取
 display_name_en: joy2know Design Anatomy
 description: >-
   把一个设计参考（网页链接或截图）先解剖成一份可复用的 Design Token 文件，再按这份 token 生成页面代码，
@@ -18,7 +18,7 @@ description_en: >-
   consistent. Requires an actual reference to work from; not for designing a visual identity from scratch,
   print posters, or editing copy in pages that already exist.
 category: capability
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 
@@ -124,7 +124,7 @@ author: 晓得乐
 **token 文件（必须落盘）** 骨架：
 
 ```css
-/* design-tokens.css —— 由「晓得·设计解剖」生成 */
+/* design-tokens.css —— 由「晓得·设计规范提取」生成 */
 /* 来源：<参考物 URL 或截图路径>   生成日期：<YYYY-MM-DD> */
 /* 标注说明：[推断] 表示参考物中未明确出现、由默认值补齐 */
 

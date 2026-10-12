@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ledger.py —— 晓得·素材台账 配套脚本 v1.2.0
+ledger.py —— 晓得·素材检索台账 配套脚本 v1.2.0
 
 纯标准库，零第三方依赖，不需要 Pillow。视频分辨率/时长走可选的系统 ffprobe，缺了就降级。
 
@@ -766,7 +766,7 @@ def _extract_anchors(text):
 
 
 def load_character_cards(directory):
-    """读「晓得·角色档案」产出的角色卡目录，返回 {角色名: [锚点短语]}。
+    """读「晓得·角色一致性」产出的角色卡目录，返回 {角色名: [锚点短语]}。
 
     角色卡落在 `characters/char_<name>.yaml` 或 `.md`。这里只取 `name` 与
     `locked_anchors` 两个字段，**不引入 YAML 依赖**。
@@ -1539,7 +1539,7 @@ def main():
     p_scan.add_argument("--no-embed", action="store_true", help="不从图内元数据挖提示词与参数")
     p_scan.add_argument("--no-batch", action="store_true", help="不做批次推断")
     p_scan.add_argument("--characters", metavar="DIR",
-                        help="角色卡目录（晓得·角色档案的产出 char_*.yaml）：校验 role 是否已知，并比对锚点短语是否进了提示词")
+                        help="角色卡目录（晓得·角色一致性的产出 char_*.yaml）：校验 role 是否已知，并比对锚点短语是否进了提示词")
     p_scan.add_argument("--storyboard", metavar="PATH",
                         help="分镜产出目录或其 manifest.json（晓得·分镜工）：shot_* 素材自动带上对应镜头的提示词与时长")
     p_scan.add_argument("--batch-window", type=int, default=DEFAULT_BATCH_WINDOW,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""晓得·凡人腔调 —— 命中定位（只读，不改稿）。
+"""晓得·去AI味改写 —— 命中定位（只读，不改稿）。
 
     python3 scan.py <稿件.md>                扫描并输出命中清单
     python3 scan.py <稿件.md> --triage       只输出豁免区地图
@@ -577,7 +577,7 @@ def cmd_render():
 
 def main(argv=None):
     ap = argparse.ArgumentParser(
-        description="晓得·凡人腔调 —— 命中定位（只读）", add_help=True)
+        description="晓得·去AI味改写 —— 命中定位（只读）", add_help=True)
     ap.add_argument("path", nargs="?", help="稿件路径（.md 或纯文本）")
     ap.add_argument("--triage", action="store_true", help="只输出豁免区地图")
     ap.add_argument("--audit", type=int, metavar="N", help="随机抽 N 条命中连上下文打印")

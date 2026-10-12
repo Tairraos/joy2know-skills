@@ -17,7 +17,7 @@ description_en: >-
   first frames, and over-limit durations. Requires a rendered blockout video as input; not for editing finished
   footage or writing prompts with no visual reference.
 category: capability
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 
@@ -58,7 +58,7 @@ author: 晓得乐
    为 `inferred` 时说明 ffprobe 没取到时长，`duration` 为 `null`、`duration_used` 是按切换点推断的切分依据 ——
    此时**不得把该时长当实测值写进提示词**，须标 `[推断]`（详见规则 6）。
 4. **选目标模型语法。** 用户指定模型后，读 `@references/model-syntax.md` 取对应模板与**时长上限**；未指定时默认追问一次，给 Seedance 作默认。
-5. **确认连续锚点。** 跨镜头时，角色外观、服装、场景用上一镜已锁定的锚点描述（连续性锁机制见同品牌的「晓得·角色档案」技能，本技能只负责把它接进分镜提示词）。
+5. **确认连续锚点。** 跨镜头时，角色外观、服装、场景用上一镜已锁定的锚点描述（连续性锁机制见同品牌的「晓得·角色一致性」技能，本技能只负责把它接进分镜提示词）。
 6. **写提示词包。** 每个镜头按模板填语义内容 + 运镜（术语见 `@references/shot-language.md`）+ 时长（≤ 上限），输出 `shots/prompts.md`。
 7. **回报。** 列镜头数、各镜时长是否越限、哪些首帧需要人工核对，**以及哪些片段 `clip` 为 `null`**
    （`clip_error` 里写了失败原因）—— 片段缺失属于必须告知用户的事实，不得因为「首帧抽到了」就略过。

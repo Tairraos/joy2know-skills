@@ -1,6 +1,6 @@
 {
   "name": "joy2know-mr",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "joy2know Clarify Expert: makes every answer clearer and better structured — conclusion first, layered detail, diagrams when a picture beats prose, with a hard no-fabrication rule inside every chart",
   "author": {
     "name": "晓得乐"
@@ -19,7 +19,7 @@
   },
   "profession": {
     "en": "joy2know Clarity & Visualization Specialist",
-    "zh": "晓得·表达条理与可视化专家"
+    "zh": "晓得·图解表达专家"
   },
   "displayDescription": {
     "en": "Makes any answer clear and well-organized: leads with the conclusion, layers the detail, and draws a diagram only when a picture genuinely beats prose. Writes nothing into a chart that cannot be traced back to a source.",

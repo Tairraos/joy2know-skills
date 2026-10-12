@@ -1,6 +1,6 @@
 ---
 name: joy2know-humanize
-display_name: 晓得·凡人腔调
+display_name: 晓得·去AI味改写
 display_name_en: joy2know Humanize
 description: >-
   去掉中文论述文里的机器腔调——翻案腔、空转的冒号、序数词小标题、「说白了」起手、拟人化喻体、译文句式，
@@ -19,11 +19,11 @@ description_en: >-
   rewrite, then pass a gate that checks conservation and out-of-scope edits. Not for ghostwriting from scratch,
   non-Chinese styles, fiction rewriting, code changes, or requests that also want polishing or restructuring.
 category: writing
-version: 1.1.0
+version: 1.1.1
 author: 晓得乐
 ---
 
-# 晓得·凡人腔调
+# 晓得·去AI味改写
 
 把中文论述文里的机器腔调改掉：只动规则清单里明确命中的地方，其余逐字保留。
 

@@ -1,6 +1,6 @@
 ---
 name: joy2know-clarify
-display_name: 晓得·讲明白
+display_name: 晓得·图解表达
 display_name_en: joy2know Clarify
 description: >-
   让任何回答更有条理、更好懂——结论先行、分层展开、该画图时主动配图，并守住"不编造"的底线。
@@ -14,7 +14,7 @@ description_en: >-
   messy information, comparing options, and documenting flows. Never fabricates data, relationships
   or hierarchy inside a diagram. Not for raw data lookups, poster or UI deliverables, or code itself.
 category: writing
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 

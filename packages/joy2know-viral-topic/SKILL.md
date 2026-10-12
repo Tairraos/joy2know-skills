@@ -1,6 +1,6 @@
 ---
 name: joy2know-viral-topic
-display_name: 晓得·选题炼法
+display_name: 晓得·选题打分筛选
 display_name_en: joy2know Topic Forge
 description: >-
   把「下周做什么内容」从凭感觉变成按判据筛、按维度打分：先对原料逐条亮 12 条心法（红线命中一条即淘汰该方向），
@@ -22,7 +22,7 @@ description_en: >-
   verdict does not drift with mood. Not for ghostwriting the copy, generating finished headlines, or reviewing how a
   published post actually performed.
 category: writing
-version: 1.0.0
+version: 1.0.1
 author: 晓得乐
 ---
 

@@ -5,7 +5,7 @@
 
 - **包名**：joy2know-code-scholar
 - **类型**：专家（expertType: agent）
-- **对应版本**：1.2.0
+- **对应版本**：1.2.1
 - **检测状态**：⚠️ 有条件通过
 - **最后检测**：2026-09-23
 - **检测方式**：四道门（AGENT.md §3）
@@ -43,7 +43,7 @@
 | 包内无硬编码凭证 | 同上 | ✅ 通过 | `[sec] 未发现` |
 | 内嵌技能声明存在 | 同上（`[!!]` 提示） | ⚠️ 提示 | `./skills/joy2know-codebase 尚未生成`——源目录本就不该有，构建时从 packages/ 复制；以构建暂存目录自检为准 |
 | avatar 存在 | 同上（`[XX]` 问题） | ⚠️ 待确认 | `avatar 缺失: avatars/expert.png` —— 见门3：构建从仓库根 `avatars/joy2know-code-scholar.png` 注入，已确认该源文件存在（370761B），故上传不会因缺图失败 |
-| 卡面标题/副标题口径（别放反） | 核对取值 | ✅ 通过 | `profession.zh=晓得·代码考古学家`（主标题）、`displayName.zh=晓得乐`（副标题），符合系列约定 |
+| 卡面标题/副标题口径（别放反） | 核对取值 | ✅ 通过 | `profession.zh=晓得·代码库梳理专家`（主标题）、`displayName.zh=晓得乐`（副标题），符合系列约定 |
 | 反向验证（防放水） | 6 错样本 + 阴性对照 | ✅ 通过 | 见门4，全部被抓、合规样本不乱报 |
 
 selfcheck 汇总：**通过 11 项 / 提示 2 条 / 问题 1 项**（avatar，已判定为非阻断）。
@@ -63,7 +63,7 @@ README.md + plugin.json 的每条承诺，到 `agents/joy2know-code-scholar.md` 
 | README「使用示例：帮我搞清楚这个仓库是怎么回事」 | README:22；plugin.json defaultInitPrompt；agents.md:22-27 | 有 | 与默认开场白逐字一致 |
 | README「内置技能 joy2know-codebase：仓库扫描脚本（零第三方依赖）+考古方法论，自动跳过 node_modules/dist/vendor」 | agents.md:11（`skills:[joy2know-codebase]`）、:26（先跑扫描脚本）；plugin.json `skills` + skills.json | 部分 | 技能实体构建期注入（源包无 `skills/` 目录），其扫描脚本行为由 joy2know-codebase 自身检测覆盖；本包只校验「声明与定位一致」 |
 | README「目录结构」列出 `avatars/expert.png` 与 `skills/joy2know-codebase/` | 源包实际无此两目录 | 部分 | 文档描述的是「构建产物」形态；两处均由构建注入。源包形态描述偏差（非阻断，见六·未覆盖 3） |
-| plugin.json profession/displayName 口径 | plugin.json；系列约定 | 有 | profession=`晓得·代码考古学家` / `joy2know Codebase Archaeologist`；displayName=`晓得乐` / `joy2know`，完全符合 |
+| plugin.json profession/displayName 口径 | plugin.json；系列约定 | 有 | profession=`晓得·代码库梳理专家` / `joy2know Codebase Archaeologist`；displayName=`晓得乐` / `joy2know`，完全符合 |
 | plugin.json categoryId=02-Engineering、tags3、quickPrompts3、defaultInitPrompt=quickPrompts[0] | selfcheck 全绿 | 有 | 见第二节 |
 | skills.json 声明 joy2know-codebase 与包定位匹配 | skills.json；plugin.json | 有 | 声明一致；技能即本包核心扫描能力 |
 

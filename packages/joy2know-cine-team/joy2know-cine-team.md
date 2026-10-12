@@ -29,7 +29,7 @@
 
 - **包名**：joy2know-cine-team
 - **类型**：专家团（`expertType: "team"`，1 主理人 + 6 成员）
-- **对应版本**：1.6.0
+- **对应版本**：1.6.2
 - **检测状态**：⚠️ 有条件通过
 - **最后检测**：2026-09-28（**说明层解绑轮 · 见 2.4**：按小乐的要求 —— **内嵌依赖与 `skills` 绑定一字不动**
   （`plugin.json` 的 `skills[]`、`skills.json`、`agents/cine-music.md` 的 `skills:` 均保持引用 `joy2know-musician`

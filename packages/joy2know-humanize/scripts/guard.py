@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""晓得·凡人腔调 —— 改写门禁（只读，只比较，不改稿）。
+"""晓得·去AI味改写 —— 改写门禁（只读，只比较，不改稿）。
 
     python3 guard.py --before 原稿.md --after 改后.md
     python3 guard.py --before 原稿.md --after 改后.md --json
@@ -171,7 +171,7 @@ def residual(after, before_ids):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="晓得·凡人腔调 —— 改写门禁（只读）")
+    ap = argparse.ArgumentParser(description="晓得·去AI味改写 —— 改写门禁（只读）")
     ap.add_argument("--before", required=True, help="原稿")
     ap.add_argument("--after", required=True, help="改后稿")
     ap.add_argument("--json", action="store_true")

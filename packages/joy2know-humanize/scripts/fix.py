@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""晓得·凡人腔调 —— 机械替换（唯一会写盘的脚本）。
+"""晓得·去AI味改写 —— 机械替换（唯一会写盘的脚本）。
 
     python3 fix.py 原稿.md --out 改后.md           干跑，只打印会改什么
     python3 fix.py 原稿.md --out 改后.md --write   真的写出改后稿
@@ -67,7 +67,7 @@ def apply_fixes(text, only=None):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="晓得·凡人腔调 —— 机械替换")
+    ap = argparse.ArgumentParser(description="晓得·去AI味改写 —— 机械替换")
     ap.add_argument("path", help="原稿路径")
     ap.add_argument("--out", help="改后稿路径（--write 时必填）")
     ap.add_argument("--write", action="store_true", help="真的写盘（默认只干跑）")

@@ -1,6 +1,6 @@
 ---
 name: joy2know-codebase
-display_name: 晓得·代码考古
+display_name: 晓得·代码库梳理
 display_name_en: joy2know Codebase Archaeology
 description: >-
   给一个没见过的代码仓库，半小时内产出架构说明、入口链路、数据流和改造风险点，让人敢动手改。
@@ -20,7 +20,7 @@ description_en: >-
   explanations and risks only; it does not auto-refactor. Not for one-line bug
   fixes or for binary/encrypted repositories with no source to read.
 category: capability
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 

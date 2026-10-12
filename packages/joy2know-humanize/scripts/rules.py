@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""晓得·凡人腔调 —— 规则表单源（唯一真源）。
+"""晓得·去AI味改写 —— 规则表单源（唯一真源）。
 
 本文件是全技能唯一的规则真源。scan / guard / fix / selftest 全部 import 它，
 references/rules.md 与 references/not-rules.md 由 `scan.py --render` 从本文件生成。

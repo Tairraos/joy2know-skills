@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""晓得·选题炼法 —— 打分器自检（只读，不改任何稿件或数据）
+"""晓得·选题打分筛选 —— 打分器自检（只读，不改任何稿件或数据）
 
     python3 scripts/selftest.py           全量自检
     python3 scripts/selftest.py -v        连每条通过项一起打印

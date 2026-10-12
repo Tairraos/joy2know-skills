@@ -1,6 +1,6 @@
 ---
 name: joy2know-asset-ledger
-display_name: 晓得·素材台账
+display_name: 晓得·素材检索台账
 display_name_en: joy2know Asset Ledger
 description: >-
   给你之前做过的图片/视频/提示词建一份可检索的台账，解决「做完就找不到了」——攒了几千个文件后不知道哪张当时用什么提示词写的、
@@ -8,7 +8,7 @@ description: >-
   （含被压缩过的元数据块），不用回头手工补；按创作意图（角色/场景/用途/是否废片/版本/是否可商用）检索，不是按文件属性；
   文件名与产出时间相近的素材会被推断成「同一批」，一键分版；还能汇总成单文件 HTML 看板，带缩略图与筛选。
   **本技能只做检索与整理：不生成任何图片或视频，不接入任何生成接口，不带账号与密钥。**
-  另外与同系列联动：接上「晓得·角色档案」的角色卡，能查出哪几张图的提示词漏了角色锚点短语（生成后的一致性校验）；
+  另外与同系列联动：接上「晓得·角色一致性」的角色卡，能查出哪几张图的提示词漏了角色锚点短语（生成后的一致性校验）；
   接上「晓得·分镜工」的产出，首帧图与片段自动带上对应镜头的提示词和时长。
   触发词：素材台账、建索引、归档生成记录、找某角色的图、可商用素材、分辨够的图、废片标记、第几版最好、素材检索、
   提示词丢了、从图里读提示词、同一批素材、生成记录归档、角色一致吗、锚点漏了没、分镜首帧对不上、
@@ -24,7 +24,7 @@ description_en: >-
   image or video, calls no generation API, and carries no account or key.** Not a file manager: it does not organize by
   name/size/mtime or dedupe files.
 category: capability
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 
@@ -76,7 +76,7 @@ author: 晓得乐
    `ledger.py query --index ledger.jsonl --batch lina#1`（捞某一批）
    `ledger.py query --index ledger.jsonl --shot shot_001`（捞某一镜的全部素材：片段 + 首帧）
 8. **联动（可选，两个都能单独用）。**
-   - 有「晓得·角色档案」产出的角色卡目录 → `--characters <characters目录>`：校验 `role` 是否在卡里，并逐条比对**锚点短语**是否进了提示词。
+   - 有「晓得·角色一致性」产出的角色卡目录 → `--characters <characters目录>`：校验 `role` 是否在卡里，并逐条比对**锚点短语**是否进了提示词。
    - 有「晓得·分镜工」的产出 → `--storyboard <shots目录>`：`shot_*` 素材自动带上对应镜头的提示词与时长。
 9. **体检 / 出图。** `ledger.py stats --index ledger.jsonl`；`ledger.py render --index ledger.jsonl --out ledger.html`。
 10. **回报。** 列命中条数、命中文件路径、哪些因缺字段被忽略。

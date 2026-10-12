@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 晓得·别解 —— 卡片骨架渲染器 + 合规检查器（零第三方依赖）
+ * 晓得·汉语新解 —— 卡片骨架渲染器 + 合规检查器（零第三方依赖）
  *
  *   node scripts/card.mjs render --word 甲方 --pinyin "jiǎ fāng" \
  *       --en "Client / Party A" --trad-same \
@@ -60,7 +60,7 @@ const PALETTES = {
 const PALETTE_NAMES = Object.keys(PALETTES);
 
 const KAI = "'Kaiti SC','STKaiti',KaiTi,serif";
-const TITLE_TEXT = '晓得·别解';
+const TITLE_TEXT = '晓得·汉语新解';
 const DEFAULT_FOOTER = '一目晓得';
 
 /**

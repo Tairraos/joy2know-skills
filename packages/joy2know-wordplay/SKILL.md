@@ -1,6 +1,6 @@
 ---
 name: joy2know-wordplay
-display_name: 晓得·别解
+display_name: 晓得·汉语新解
 display_name_en: joy2know Wordplay
 description: >-
   给一个汉语词写一句辛辣的另类释义，再配一张自己排的图解卡片——不是词典释义，是别解：把一个词的用法
@@ -19,7 +19,7 @@ description_en: >-
   hot-word explanations. Not for dictionary-grade definitions, etymology, charts that need real
   data, or posters and UI mockups.
 category: writing
-version: 1.0.0
+version: 1.0.1
 author: Tairraos - 晓得乐
 ---
 
@@ -142,7 +142,7 @@ author: Tairraos - 晓得乐
 - 字号**不小于 11px**
 - **不出现 emoji 当图标**；`<title>` 与 `<desc>` 必须有
 - 不写 HTML 注释、不引外部资源（无 `http`、无 `url(`、无 `<script>`）
-- **刊头固定「晓得·别解」**；页脚默认「一目晓得」——**卡片里不出现任何第三方作品名或作者名**
+- **刊头固定「晓得·汉语新解」**；页脚默认「一目晓得」——**卡片里不出现任何第三方作品名或作者名**
 
 **脚本不校验、须人工把关的两条**：图解**节点 7–9 个**、**连线 ≤12 条**。
 ⚠️ `check` 回显里的「元素 N」是**整卡图形元素数**（含卡片外框与文字），**不等于图解节点数**——

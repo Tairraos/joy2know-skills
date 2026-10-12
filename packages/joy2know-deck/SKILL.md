@@ -1,6 +1,6 @@
 ---
 name: joy2know-deck
-display_name: 晓得·讲得清
+display_name: 晓得·PPT优雅讲稿
 display_name_en: joy2know Tell-It-Clear
 description: >-
   把一份几十页的报告，提炼成 15 页以内能讲的 PPT 结构，每页附可直接念的口播稿，让写得好也能讲得清。
@@ -19,7 +19,7 @@ description_en: >-
   draft first, then self-check page count and word count, then converge. Produces structure + scripts, not
   the .pptx file itself.
 category: writing
-version: 1.2.0
+version: 1.2.1
 author: 晓得乐
 ---
 

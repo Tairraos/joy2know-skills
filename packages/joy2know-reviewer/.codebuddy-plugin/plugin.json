@@ -1,6 +1,6 @@
 {
   "name": "joy2know-reviewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "joy2know Performance Reviewer: lines published posts up against their real numbers to find which funnel layer actually broke — not pushed, not clicked, not read, or read but not acted on. Falsifies its own conclusion before delivering it, refuses to call a pattern on fewer than five data points, routes every fix back to the owner it belongs to, and can turn the numbers into a one-page dashboard",
   "author": {
     "name": "晓得乐"
