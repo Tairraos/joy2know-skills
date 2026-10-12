@@ -1,0 +1,153 @@
+---
+name: joy2know-asset-trace
+display_name: 晓得·资产状态追踪
+display_name_en: joy2know Asset Trace
+description: >-
+  读回平台状态并正确记账。⭐四态模型：① 未提交 / ② 审核中 / ④ 待发布 / ③ 已上架 ——
+  「审核通过」≠「上架」，`approved` 是待发布，不点「发布」不上架；「② 清零」≠ 全部上架。
+  记账四字段口径 + 「submitted 不一定真提交过」的反证要求。
+  **凭证不进包**：只教方法，凭证留 ~/.workbuddy/secrets/。
+  触发词：平台状态、读状态、有没有上架、审核中、待发布、已驳回、发布记账、
+  release.config、四态、approved 是什么、审核过了还看不到。
+  不适用于：字段取值、检测报告、驳回处置、包内维护。
+description_zh: >-
+  读回平台状态并正确记账。四态模型（①未提交/②审核中/④待发布/③已上架），
+  「审核通过」≠「上架」；记账字段口径与反证要求。凭证不进包。
+description_en: >-
+  Reading platform status back and recording it correctly: the four-state model where
+  "approved" means pending-release rather than published, the accounting fields in
+  release.config.json, and the rule that a recorded submitted version must still be
+  counter-verified against the platform. Credentials are never included.
+category: capability
+version: 1.0.0
+author: 晓得乐
+---
+
+# 资产状态追踪
+
+**读回平台侧状态，并把它记对。**
+
+⚠️ **本技能不带凭证、不联网、不含任何账号信息。**
+它只教「怎么读」与「字段怎么记」。凭证落在 `~/.workbuddy/secrets/`（权限 600、不入任何 git 仓库），
+登录一次即可长期免登。
+
+---
+
+## 一、四态模型（★ 最容易漏的是 ④）
+
+```
+① 开发完待提交  →  ② 提交完待审核  →  ④ 待发布  →  ③ 已上架
+                                              ↘（被拒）→  ⑤ 已驳回
+```
+
+| 状态 | 接口特征 | 界面文案 | 记在哪个字段 |
+|---|---|---|---|
+| ① 未提交 | 查不到该资产 | — | 四个字段都没有 |
+| ② 审核中 | `status=under_review` | 审核中 | `submitted` |
+| ④ **待发布** | `status=approved` | **「待发布」+ 一个「发布」按钮** | `approved` |
+| ③ 已上架 | `status=published` | 已发布 | `platform` |
+| ⑤ 已驳回 | `status=rejected` | 已驳回 | `rejected` |
+
+### ⭐ 三条硬结论
+
+1. **「审核通过」≠「上架」。** 审核过后顶层 `status` 变成 **`approved`**（不是 `published`），
+   发布管理页文案就叫「**待发布**」，旁边一个「**发布**」按钮，**不点不上架**。
+2. **「② 清零」不等于「全部上架」** —— 每次同步要**单独数一遍停在 `approved` 的**。
+3. ⚠️ **接口里两个 `status` 是两层，别混**：判「有没有上架」**只看顶层 `status`**。
+   已上架资产的 `currentVersion.status` 同样可能是 `approved`（也可能是 `not_started`），
+   **两者都表示该版本已通过**。
+
+### 拿不准时，用界面交叉验证
+
+接口给的是**枚举值**，界面给的是**语义**。遇到没见过的枚举值（如 `approved`），
+导航到 `/expert/all`（或 `/skill/all`）**看它的中文文案**最快 —— 实测界面还会直接给出可用动作。
+
+---
+
+## 二、读法（只教方法）
+
+登录态下同源 POST：
+
+```
+POST /api/v2/open-platform/capabilities/list
+头：X-Party-Id: <你的 party id>
+body：filters:[{name:'capability_type',values:['skill'|'expert']}]
+```
+
+**两类各调一次**（技能 / 专家），返回每条含 `assetId` / `name` / `visibleScope` /
+顶层 `status` / `currentVersion{version,status}` / `updatedAt` / `submitCountToday`。
+
+实测一次读回 28 个资产（技能 17 + 专家/团 11），耗时 **< 2 秒**，不开浏览器。
+
+### 降级路径
+
+拿不到接口时 → 用浏览器打开 `/skill/all` 与 `/expert/all` 读页面正文
+（正文会直接印「已发布 · 公开 · vX.Y.Z · assetId」）。
+⚠️ **该路径写死了「本机已缓存 Chrome for Testing」，在别人机器上会静默失效** ——
+本技能不把它写成唯一答案，只作降级。
+
+### ⛔ 三条已作废的旧口径
+
+- ~~「② 只能人工截图、专家/团读不到」~~ —— 开发者接口对三类资产一视同仁。
+- ~~「市场显示 1.1.0 = 没提交新版本」~~ —— 曾据此把在审写成没传过。
+- ~~「每 3 天自动同步」定时任务~~ —— **已下线**，改为指定时机手工触发。
+  别照仓库里留存的描述判断有没有自动任务。
+
+---
+
+## 三、记账口径（`release.config.json`）
+
+| 字段 | 记什么 | 什么时候写 |
+|---|---|---|
+| `platform` | ③ 已上架的版本 + `assetId` + 日期 | 真上架（`published`）才把值移进来 |
+| `approved` | ④ 待发布的版本 | 过审后是 `approved` 就写它，**并提醒用户点「发布」** |
+| `submitted` | ② 审核中的版本 | 刚提交只写它 |
+| `rejected` | ⑤ 已驳回 | 审核没过 |
+
+**② / ③ / ④ / ⑤ 同时存在是常态** —— 新版本过审上架前，③ 仍是上一个已上架的老版本。
+**别把 ② 删掉。**
+
+### ⭐ 写前必须重新检索
+
+平台侧会变。**照抄上一轮读数会把过期状态固化成「真源」。**
+日期没记就写「日期未记录」，**不编日期**。
+
+### ⚠️ `submitted` 不一定真提交过
+
+判据补丁（2026-10-01 踩到）：`cine-team` 记了 `submitted: 1.6.0`，
+平台侧该资产是 `published 1.3.0` 且**无任何在审版本** → 1.6.0 只是**打包了没上传**。
+
+→ **每次同步都要用平台接口对 `submitted` 也做一次反证**，不能只信真源里写了什么。
+
+### 从未提交过的包
+
+这类包在本文件里**没有 `submitted` 字段**，「等式推进」判据永远推不动它。
+正确判据是「**市场里出现了 = 已上架**」，**须人工补 `platform`**。
+每次复核时除了逐包比等式，还要**扫一眼市场返回名单里有没有状态为空的新名字**。
+
+---
+
+## 四、自检脚本（本地记账对账，无凭证）
+
+```bash
+# 对账：本地包版本 vs release.config.json 记的平台状态
+python3 scripts/reconcile.py --config release.config.json --packages packages
+
+# 反向自检
+python3 scripts/reconcile.py --selftest
+```
+
+它回答两个问题：**哪些包还停在 ④ 待发布**，以及**哪些包本地比平台新（该上传了）**。
+**它不联网、不带凭证** —— 只对账本地文件。
+
+**退出码**：0 = 账实相符；1 = 有该同步的包；2 = 用法错或文件读不了。
+
+---
+
+## 五、本技能的边界
+
+- **只管「读回 + 记账口径」**。字段取值 → 「资产字段规范」；检测报告 → 「资产包门禁」；
+  驳回处置 → 「发布与驳回」；包内维护 → 「资产包维护」。
+- **不带凭证、不存账号、不写死任何本机路径**。凭证在 `~/.workbuddy/secrets/`，
+  由使用者自己登录一次。
+- **平台状态一律实测，别照抄发布清单** —— 清单是派生信息，会漂移。
