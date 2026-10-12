@@ -3,19 +3,13 @@ name: joy2know-asset-spec
 display_name: 晓得·资产字段规范
 display_name_en: joy2know Asset Spec
 description: >-
-  查 WorkBuddy 开放平台资产包的**字段与结构唯一口径**：技能 SKILL.md 的 9 个必填 frontmatter、
-  专家包 plugin.json 全字段、agent frontmatter、15 类 categoryId 全清单、四条平台硬约束
-  （displayDescription 40–50 汉字、defaultInitPrompt 逐字等于 quickPrompts[0]、tags 与 quickPrompts 各 3 个、
-  中英成对）、技能/专家/专家团三种体积上限、zip 第一层必须是包目录。
-  另含卡片主标题取 profession 的实证坑、description_en ≤ 1000 字符的解析失败线、
-  上传类型与包类型必须一致的校验器匹配规则。
-  **内置自检脚本 fieldcheck.py，可直接校验本地包目录或 zip，不需要联网、不带凭证。**
-  触发词：SKILL.md 字段、frontmatter 必填、plugin.json、categoryId、专家类目、displayDescription、
-  quickPrompts、defaultInitPrompt、agent frontmatter、maxTurns、包体积上限、zip 第一层、
-  卡片显示的是哪个名字、profession 还是 displayName、description_en 超长、上传类型选哪个、
-  专家包结构、技能包结构、专家团结构、settings.json。
-  不适用于：内容怎么写（那是「技能包组装」的事）、门禁与自检流程（那是「资产包门禁」的事）、
-  上传被驳回怎么处置（那是「发布与驳回」的事）。
+  WorkBuddy 资产包的字段与结构唯一口径：9 必填 frontmatter、plugin.json 全字段、
+  15 类 categoryId、四条平台硬约束、三种体积上限、zip 第一层规则。
+  附 fieldcheck.py 离线校验本地包或 zip，零依赖、不联网、不带凭证。
+  触发词：SKILL.md 字段、frontmatter 必填、plugin.json、categoryId、专家类目、
+  quickPrompts、defaultInitPrompt、包体积上限、zip 第一层、profession 还是 displayName、
+  description_en 超长、上传类型选哪个、专家团结构。
+  不适用于：内容怎么写、门禁与检测、驳回处置、平台状态。
 description_zh: >-
   WorkBuddy 资产包的字段与结构唯一口径：9 必填 frontmatter、plugin.json 全字段、15 类 categoryId、
   四条平台硬约束、三种体积上限、卡片主标题取 profession 的实证坑，
