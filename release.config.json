@@ -365,13 +365,7 @@
         "date": "2026-09-30",
         "assetId": "os_18ee949b469d87ee"
       },
-      "submitted": {
-        "version": "1.2.1",
-        "assetId": "os_18ee949b469d87ee",
-        "versionId": 47431,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
-      }
+      "platformNote": ""
     },
     "joy2know-cine-team": {
       "suggestedCategory": null,
@@ -395,14 +389,7 @@
         "date": "2026-10-02",
         "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审 1.2.0 已过审。本地版本已追平。"
       },
-      "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。",
-      "submitted": {
-        "version": "1.2.1",
-        "assetId": "oe_47e82c0a9493f4bc",
-        "versionId": 44798,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
-      }
+      "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。"
     },
     "joy2know-promo-team": {
       "suggestedCategory": null,
@@ -460,13 +447,7 @@
         "date": "2026-10-03",
         "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；内嵌已过审的 `joy2know-humanize` 1.1.0。"
       },
-      "submitted": {
-        "version": "1.0.1",
-        "assetId": "oe_02a241e98a06a0fc",
-        "versionId": 44790,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
-      }
+      "platformNote": ""
     },
     "joy2know-reviewer": {
       "suggestedCategory": null,
@@ -478,13 +459,7 @@
         "date": "2026-10-03",
         "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；内嵌已过审的 `joy2know-dashboard` 1.2.0。"
       },
-      "submitted": {
-        "version": "1.0.1",
-        "assetId": "oe_bd86598a504db810",
-        "versionId": 44795,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
-      }
+      "platformNote": ""
     },
     "joy2know-viral-topic": {
       "suggestedCategory": "内容创作 > 文案",
