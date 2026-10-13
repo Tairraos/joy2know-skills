@@ -20,7 +20,7 @@ description_en: >-
   and the two levers that stop most "should not be an expert" cases, the craft of
   writing description as the product itself, and seven consistency rules for a series.
 category: capability
-version: 1.0.0
+version: 1.0.1
 author: 晓得乐
 ---
 
