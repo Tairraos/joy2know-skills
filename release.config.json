@@ -427,11 +427,12 @@
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有字段校验报告文本**（跑 fieldcheck.py 的退出码与报告），不生成音频/图像/视频、不接入任何生成接口、不带账号与密钥 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包（grep 确认引用方）。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "draft": {
         "version": "1.0.0",
         "assetId": "os_33e266dd59b7a13f",
+        "versionId": 47004,
         "date": "2026-10-13",
-        "note": "2026-10-13 用 `pub.mjs` **纯接口发布**（全程未开浏览器）：init-upload → COS 直传 → complete-upload → 头像 presign+直传 → submit。分类 marketCategories=[development-tools]、categories=[tools:office]，头像为真实 CDN 地址。status=under_review，versionId=47004。"
+        "note": "2026-10-13 曾以 1.0.0 纯接口送审（under_review），同日由用户指示 **withdraw 撤回** → 回到 draft。⚠️ **assetId 与版本号 1.0.0 已被平台记录** —— 重新提交**必须先把包内 version 抬到 1.0.1**，否则 complete-upload 报「包内版本号 1.0.0 必须大于当前最新版本 1.0.0」。"
       }
     },
     "joy2know-asset-gate": {
