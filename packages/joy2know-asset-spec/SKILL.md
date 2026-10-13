@@ -162,18 +162,26 @@ author: 署名
 | `defaultInitPrompt` | 必须与 `quickPrompts[0]` **逐字一致** |
 | `tags` / `quickPrompts` | 固定各 **3 个** |
 | `displayName` / `profession` / `displayDescription` | **必须中英成对** |
-| `categoryId` | 必须命中官方 15 类（见下），专家与专家团**共用同一份清单** |
+| `categoryId` | 必须命中官方分类清单（见下），专家与专家团**共用同一份清单** |
 | `avatar` | 必须是 `avatars/` 下的相对路径，且该文件为合法 PNG 512×512 / ≤500KB |
 | `plugin` | 与 `name` 一致；`name` 与目录名一致 |
 
-### `categoryId` 官方 15 类（`01`~`15`）
+### `categoryId` 官方 16 类（2026-10-13 实测订正）
 
 | | | | |
 |---|---|---|---|
 | `01-ProductDesign` 产品设计 | `02-Engineering` 技术工程 | `03-GameSpatial` 游戏空间 | `04-DataAI` 数据智能 |
 | `05-MarketingGrowth` 营销增长 | `06-ContentCreative` 内容创作 | `07-SalesCommerce` 销售商务 | `08-FinanceInvestment` 金融投资 |
 | `09-OperationsHR` 运营人力 | `10-ProjectQuality` 项目质量 | `11-SecurityCompliance` 法务安全 | `12-IndustryConsultant` 行业顾问 |
-| `13-TencentZone` 腾讯专家 | `14-WorldWise` 全球发展 | `15-Education` 教育 | |
+| `13-TencentZone` 腾讯专家 | `14-WorldWise` 全球发展 | `15-Education` 教育 | `17-CampusGuide` 高校新生攻略 |
+
+⚠️ **编号不连续** —— 有 `17-` 但没有 `16-`，且总数是 **16 个**。按「01~15」写判据会**漏掉 `17-CampusGuide`**（2026-10-13 从平台接口实测，接口 `GET /capabilities/categories?capabilityType=expert` 返回 16 条）。
+
+⚠️ **上表的 16 类是「专家包内 `plugin.json` 的 `categoryId`」专用。**
+发布**技能**时后台要选的是**另外两套**，与它完全不同 ——
+「市场展示分类」是 13 个扁平 slug（`development-tools` 等），
+「服务类目」是 9 个一级的树（`tools:office` 等）。
+两者都可从平台接口导出（见技能 `开放平台发布`）。**别把三套混着填。**
 
 ⚠️ **不存在 `00-ExpertTeam` 这类「专家团专属分类」。** 曾填进去被平台直接打回。
 **专家团页面本身没有分类表**（清单在专家页，全平台共用）—— 找不到不等于不用管；两个团选同一类目是允许的。

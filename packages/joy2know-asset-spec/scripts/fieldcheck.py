@@ -52,6 +52,9 @@ VALID_CATEGORY_IDS = {
     "05-MarketingGrowth", "06-ContentCreative", "07-SalesCommerce", "08-FinanceInvestment",
     "09-OperationsHR", "10-ProjectQuality", "11-SecurityCompliance", "12-IndustryConsultant",
     "13-TencentZone", "14-WorldWise", "15-Education",
+    # ⚠️ 编号不连续：有 17- 但没有 16-。总计 16 类。
+    # 2026-10-13 从平台接口实测订正（旧版按「01~15」写，会漏掉这一类）。
+    "17-CampusGuide",
 }
 
 #: 包根一级子目录白名单 —— 平台只认这三个
@@ -758,7 +761,7 @@ def t_bad_category_id():
 
 
 @selftest
-def t_all_15_category_ids_pass():
+def t_all_category_ids_pass():
     for cid in sorted(VALID_CATEGORY_IDS):
         files = _mk_expert(cfg_over={"categoryId": cid})
         rep, _ = check_package(files, "t", None)
