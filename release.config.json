@@ -432,13 +432,7 @@
         "date": "2026-10-08",
         "note": "2026-10-08 13:29 开发者接口直读：**已发布**（`status=published` / currentVersion 1.0.1 approved）—— 10-03 被驳回的 1.0.0 **已在架版本为空**的情况下，抬版本到 1.0.1 重提，**当日过审并直接上架**（无需手动点发布）。★ 与 `musician` 1.6.1、`cine-team` 1.6.1 同一规律：**内容零改动、只抬版本号即可过审** —— 决定因素是类目 / 提交口径，不是包内容。"
       },
-      "submitted": {
-        "version": "1.0.2",
-        "assetId": "oe_b08b1b0e7d5fa14a",
-        "versionId": 44792,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
-      }
+      "platformNote": ""
     },
     "joy2know-market-scout": {
       "suggestedCategory": null,

@@ -242,7 +242,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-cine-team` | 晓得·AI 视频生产团队 | 专家团 | 1.6.2 | `joy2know-storyboard` 1.2.1、`joy2know-character` 1.2.1、`joy2know-musician` 1.6.1 | 7 角色 | 4288.3 KB | ③ 已上架（在架 1.6.1）+【本地升级】 |
 | `joy2know-polish-team` | 晓得·文案打磨团 | 专家团 | 1.2.1 | `joy2know-clarify` 1.2.1、`joy2know-humanize` 1.1.1、`joy2know-deck` 1.2.1、`joy2know-dashboard` 1.2.1 | 5 角色（1 主理 + 4 成员） | 3920.5 KB | ② 待审核（在架 1.2.0） |
 | `joy2know-promo-team` | 晓得·项目推广专家团 | 专家团 | 1.0.1 | `joy2know-clarify` 1.2.1、`joy2know-humanize` 1.1.1、`joy2know-dashboard` 1.2.1 | 7 角色（1 主理 + 6 成员） | 4523.3 KB | ② 待审核（在架 1.0.0） |
-| `joy2know-topic-planner` | 晓得·爆款选题策划专家 | 专家 | 1.0.2 | `joy2know-viral-topic` 1.0.1 | — | 898.3 KB | ② 待审核（在架 1.0.1） |
+| `joy2know-topic-planner` | 晓得·爆款选题策划专家 | 专家 | 1.0.2 | `joy2know-viral-topic` 1.0.1 | — | 898.3 KB | ③ 已上架（在架 1.0.1）+【本地升级】 |
 | `joy2know-market-scout` | 晓得·竞品与受众情报专家 | 专家 | 1.0.0 | — | — | 397.8 KB | ③ 审核完成 · 已上架 |
 | `joy2know-positioning` | 晓得·产品定位与卖点专家 | 专家 | 1.0.0 | — | — | 458.0 KB | ③ 审核完成 · 已上架 |
 | `joy2know-copywriter` | 晓得·推广文案编导 | 专家 | 1.0.1 | `joy2know-humanize` 1.1.1 | — | 815.7 KB | ② 待审核（在架 1.0.0） |
