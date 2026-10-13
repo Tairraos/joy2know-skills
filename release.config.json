@@ -132,6 +132,13 @@
         "skillId": "skill_2104157920229318656",
         "date": "2026-09-28",
         "assetId": "os_25b93ef8fc7d24cd"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_25b93ef8fc7d24cd",
+        "versionId": 47429,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-character": {
@@ -143,6 +150,13 @@
         "skillId": "skill_2104157898847330304",
         "date": "2026-09-28",
         "assetId": "os_d20039a916fead28"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_d20039a916fead28",
+        "versionId": 47419,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-clarify": {
@@ -153,6 +167,13 @@
         "skillId": "skill_2099154350141239296",
         "date": "2026-09-30",
         "assetId": "os_36cdeff4eff0914e"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_36cdeff4eff0914e",
+        "versionId": 47417,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-cmdforge": {
@@ -163,6 +184,13 @@
         "skillId": "skill_2102019463359930368",
         "date": "2026-09-30",
         "assetId": "os_0b971c83da02a521"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_0b971c83da02a521",
+        "versionId": 47425,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-code-scholar": {
@@ -174,6 +202,13 @@
         "assetId": "oe_5574ee7b30d046de",
         "date": "2026-10-02",
         "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审的 1.2.0 已过审，覆盖旧的 1.1.0。（**专家包也能被接口读到**，此前「专家不在检索范围、只能人工记」的局限已不成立。）"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "oe_5574ee7b30d046de",
+        "versionId": 44789,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-codebase": {
@@ -184,6 +219,13 @@
         "skillId": "skill_2102019532563116032",
         "date": "2026-09-30",
         "assetId": "os_dec94259d6bddb1d"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_dec94259d6bddb1d",
+        "versionId": 47426,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-conversation-digest": {
@@ -204,6 +246,13 @@
         "skillId": "skill_2101578699018956800",
         "date": "2026-09-30",
         "assetId": "os_cc23da54ba259c0d"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_cc23da54ba259c0d",
+        "versionId": 47430,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-deck": {
@@ -214,6 +263,13 @@
         "skillId": "skill_2101576067084210176",
         "date": "2026-09-30",
         "assetId": "os_c12e5973735dbcbf"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_c12e5973735dbcbf",
+        "versionId": 47427,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-design-tokens": {
@@ -224,6 +280,13 @@
         "skillId": "skill_2102019512580087808",
         "date": "2026-09-30",
         "assetId": "os_f53fdc7a9f91abdb"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_f53fdc7a9f91abdb",
+        "versionId": 47418,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-errorfix": {
@@ -244,6 +307,13 @@
         "skillId": "skill_2102571934082871296",
         "date": "2026-09-23",
         "assetId": "os_5e9356f928882d4b"
+      },
+      "submitted": {
+        "version": "1.1.1",
+        "assetId": "os_5e9356f928882d4b",
+        "versionId": 47420,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-logdetective": {
@@ -265,6 +335,13 @@
         "assetId": "oe_376ee759f0c7d86d",
         "date": "2026-10-02",
         "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审 1.2.0 已过审。⚠️ 保留的旧约束：**`name` 不可改**（平台驳回原文「name 是资产的唯一标识，不允许修改」）。"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "oe_376ee759f0c7d86d",
+        "versionId": 44787,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-musician": {
@@ -287,6 +364,13 @@
         "skillId": "skill_2102019558763569152",
         "date": "2026-09-30",
         "assetId": "os_18ee949b469d87ee"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "os_18ee949b469d87ee",
+        "versionId": 47431,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-cine-team": {
@@ -299,7 +383,14 @@
         "date": "2026-10-08",
         "note": "2026-10-08 13:36 过审（`status=approved`）→ 小乐于13:5x 在发布管理页手动点「发布」，**已正式上架**。⭐ **本包 1.3.0 → 1.6.1 追平，长期悬案闭环**（在架版本历史：1.3.0（≤09-30）→ 1.6.0 驳回 → 1.6.1 上架）。🎯 **驳回真实原因（2026-10-08 小乐向客服问明，取代此前「驳回原文待确认」的悬案）**：**机器审核**依据「生成式 AI 服务需资质」判定本包涉及**调用 LLM 以外的 AI 能力做内容生成**；小乐向客服说明实情 —— **本包只产出提示词，只用 LLM 与本地工具，不生成音频/图像/视频、不接任何生成接口**，**由客服人工审核放行**，**无需补充资质、也无需增加任何类目**。⭐⭐ **由此得出本仓最硬的一条规律（一次说清三次驳回的原因）**：① **机器审核看的是「能力表象」不是「实际行为」** —— 描述里出现「AI 视频生产 / 生成 / 合成」等字样就容易被判为需资质；② **类目不是「写错了」，而是「机器要求你补资质的那一档」** —— 资质与类目绑定，机器要求加类目 ⇔ 要求补资质，所以「改类目」其实是「换合规判据」的副作用，**真正要解决的是让审核看见「我们只出文本提示词」**；③ **遇到机器审核误判，先找客服人工复审，别急着改包** —— 本包 1.6.1 与被驳的 1.6.0 **包内字节数完全相同（4,391,052）**，内容零改动即过审，反证「改内容」在此类驳回里完全无效。"
       },
-      "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。"
+      "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。",
+      "submitted": {
+        "version": "1.6.2",
+        "assetId": "oe_c044234d33471929",
+        "versionId": 44797,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+      }
     },
     "joy2know-polish-team": {
       "suggestedCategory": null,
@@ -311,7 +402,14 @@
         "date": "2026-10-02",
         "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审 1.2.0 已过审。本地版本已追平。"
       },
-      "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。"
+      "platformNote": "2026-10-02 起由开发者接口直读（旧记录「无法自动读取」已作废）。",
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "oe_47e82c0a9493f4bc",
+        "versionId": 44798,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+      }
     },
     "joy2know-promo-team": {
       "suggestedCategory": null,
@@ -322,6 +420,13 @@
         "assetId": "oe_c7c45bd3e72ba72e",
         "date": "2026-10-03",
         "note": "2026-10-03 01:45 开发者接口直读 + 发布管理页交叉核对：**已发布**（接口 `status=published` / `currentVersion 1.0.0` `approved` / `visibleScope=ALL`）—— 界面显示「已发布 · 公开 · v1.0.0」。本包 2026-10-02 当日提交、当日过审上架。⚠️ 更早一轮读到 `status=draft`（后台存了草稿、未提交成功）属过期读数，小乐重提后已闭环。"
+      },
+      "submitted": {
+        "version": "1.0.1",
+        "assetId": "oe_c7c45bd3e72ba72e",
+        "versionId": 44799,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-topic-planner": {
@@ -333,6 +438,13 @@
         "assetId": "oe_b08b1b0e7d5fa14a",
         "date": "2026-10-08",
         "note": "2026-10-08 13:29 开发者接口直读：**已发布**（`status=published` / currentVersion 1.0.1 approved）—— 10-03 被驳回的 1.0.0 **已在架版本为空**的情况下，抬版本到 1.0.1 重提，**当日过审并直接上架**（无需手动点发布）。★ 与 `musician` 1.6.1、`cine-team` 1.6.1 同一规律：**内容零改动、只抬版本号即可过审** —— 决定因素是类目 / 提交口径，不是包内容。"
+      },
+      "submitted": {
+        "version": "1.0.2",
+        "assetId": "oe_b08b1b0e7d5fa14a",
+        "versionId": 44792,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-market-scout": {
@@ -366,6 +478,13 @@
         "assetId": "oe_02a241e98a06a0fc",
         "date": "2026-10-03",
         "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；内嵌已过审的 `joy2know-humanize` 1.1.0。"
+      },
+      "submitted": {
+        "version": "1.0.1",
+        "assetId": "oe_02a241e98a06a0fc",
+        "versionId": 44790,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-reviewer": {
@@ -377,6 +496,13 @@
         "assetId": "oe_bd86598a504db810",
         "date": "2026-10-03",
         "note": "2026-10-03 首次提交即上架 1.0.0（13:41）。单飞专家，**走专家入口**；内嵌已过审的 `joy2know-dashboard` 1.2.0。"
+      },
+      "submitted": {
+        "version": "1.0.1",
+        "assetId": "oe_bd86598a504db810",
+        "versionId": 44795,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-viral-topic": {
@@ -388,6 +514,13 @@
         "assetId": "os_6a8bf8d9bd203d60",
         "date": "2026-10-04",
         "note": "2026-10-04 15:15 开发者接口直读：**已发布**（`status=published` / currentVersion 1.0.0 approved / `visibleScope=ALL`）—— 10-02 22:34 提交的 1.0.0 已过审上架。⚠️ 本包是 `joy2know-topic-planner` 的内嵌技能，它 10-08 上架 1.0.1 时本技能已在架，无连带重提。"
+      },
+      "submitted": {
+        "version": "1.0.1",
+        "assetId": "os_6a8bf8d9bd203d60",
+        "versionId": 47422,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-wordplay": {
@@ -399,6 +532,13 @@
         "assetId": "os_ab3d5b87eacd1dc4",
         "date": "2026-10-02",
         "note": "2026-10-02 开发者接口直读：**已发布**（status=published / version=approved）· 公开 · v1.0.0。**此前人工记「从未提交」有误** —— 它已于 2026-10-02 11:33 过审上架。"
+      },
+      "submitted": {
+        "version": "1.0.1",
+        "assetId": "os_ab3d5b87eacd1dc4",
+        "versionId": 47428,
+        "date": "2026-10-13",
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
       }
     },
     "joy2know-harness": {
