@@ -1,7 +1,7 @@
 ---
 name: joy2know-asset-gate
-display_name: 晓得·资产包门禁
-display_name_en: joy2know Asset Gate
+display_name: 晓得·技能专家质量控制
+display_name_en: joy2know Skill Expert Quality Control
 description: >-
   发布前四道门的可执行门禁：门 1 真跑（禁读代码推断）、门 2 对照承诺（抓「文档写了、实现没做」）、
   门 3 合理性、门 4 测试真实性（防放水）。核心是 gatecheck.py —— 把放水信号灯做成判据：
@@ -26,7 +26,7 @@ version: 1.0.0
 author: 晓得乐
 ---
 
-# 资产包门禁
+# 技能专家质量控制
 
 **检测不是「跑一遍没报错」。** 四道门依次过，每道门留下**可复核的证据**（命令 + 样本 + 输出要点）。
 

@@ -1,7 +1,7 @@
 ---
 name: joy2know-asset-spec
-display_name: 晓得·资产字段规范
-display_name_en: joy2know Asset Spec
+display_name: 晓得·技能专家规范审核
+display_name_en: joy2know Skill Expert Spec Review
 description: >-
   WorkBuddy 资产包的字段与结构唯一口径：9 必填 frontmatter、plugin.json 全字段、
   15 类 categoryId、四条平台硬约束、三种体积上限、zip 第一层规则。
@@ -27,7 +27,7 @@ version: 1.0.0
 author: 晓得乐
 ---
 
-# 资产字段规范
+# 技能专家规范审核
 
 **只回答一件事：字段叫什么、填什么值、什么会被打回。**
 内容怎么写、打包流程、驳回处置都不在这里 —— 它们各自有技能。

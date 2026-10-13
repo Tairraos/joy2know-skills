@@ -1,7 +1,7 @@
 ---
 name: joy2know-asset-publish
-display_name: 晓得·发布与驳回
-display_name_en: joy2know Asset Publish
+display_name: 晓得·技能专家发布维护
+display_name_en: joy2know Skill Expert Publish and Maintenance
 description: >-
   上传到开放平台与**被驳回之后**怎么办：上传类型必须与包类型一致（选错必报「未找到 SKILL.md」，
   100% 是入口选错不是包坏）、三类驳回的区分、⭐**版本占用判据**——解析失败可同名重传，
@@ -25,7 +25,7 @@ version: 1.0.0
 author: 晓得乐
 ---
 
-# 发布与驳回
+# 技能专家发布维护
 
 **上传、以及被驳回之后怎么办。**
 

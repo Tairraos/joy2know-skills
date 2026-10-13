@@ -1,7 +1,7 @@
 ---
 name: joy2know-asset-maint
-display_name: 晓得·资产包维护
-display_name_en: joy2know Asset Maintenance
+display_name: 晓得·技能专家包维护
+display_name_en: joy2know Skill Expert Package Maintenance
 description: >-
   包建好之后的维护纪律：⭐升技能必查「谁内嵌了它」——构建不拦版本不匹配，
   会 0 告警地嵌着旧版，还有第二层过期（agent 正文复述旧规则，自检全绿但照旧指令人做错事）；
@@ -22,7 +22,7 @@ version: 1.0.0
 author: 晓得乐
 ---
 
-# 资产包维护
+# 技能专家包维护
 
 **包建好只是开始。** 这一环的坑几乎全是**静默的** ——
 不报错、不告警，只是内容悄悄和真相不一致。

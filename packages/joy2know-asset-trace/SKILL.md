@@ -1,7 +1,7 @@
 ---
 name: joy2know-asset-trace
-display_name: 晓得·资产状态追踪
-display_name_en: joy2know Asset Trace
+display_name: 晓得·技能专家状态追踪
+display_name_en: joy2know Skill Expert Status Tracking
 description: >-
   读回平台状态并正确记账。⭐四态模型：① 未提交 / ② 审核中 / ④ 待发布 / ③ 已上架 ——
   「审核通过」≠「上架」，`approved` 是待发布，不点「发布」不上架；「② 清零」≠ 全部上架。
@@ -23,7 +23,7 @@ version: 1.0.0
 author: 晓得乐
 ---
 
-# 资产状态追踪
+# 技能专家状态追踪
 
 **读回平台侧状态，并把它记对。**
 
