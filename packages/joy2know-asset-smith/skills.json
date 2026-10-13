@@ -6,6 +6,7 @@
     "joy2know-asset-gate",
     "joy2know-asset-publish",
     "joy2know-asset-trace",
-    "joy2know-asset-maint"
+    "joy2know-asset-maint",
+    "joy2know-asset-insight"
   ]
 }

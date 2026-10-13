@@ -14,7 +14,8 @@
     "./skills/joy2know-asset-gate",
     "./skills/joy2know-asset-publish",
     "./skills/joy2know-asset-trace",
-    "./skills/joy2know-asset-maint"
+    "./skills/joy2know-asset-maint",
+    "./skills/joy2know-asset-insight"
   ],
   "expertType": "agent",
   "agentName": "joy2know-asset-smith",
