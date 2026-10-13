@@ -1,0 +1,68 @@
+{
+  "name": "joy2know-asset-smith",
+  "version": "1.0.0",
+  "description": "joy2know Skill Specialist Builder: builds WorkBuddy skills and experts end to end — decides the right form first (skill, expert or team), writes the fields to the platform's exact spec, packs and gates the artifact, then walks the upload, review and update path. Also designs the avatar: it asks whether you want to generate one yourself or have WorkBuddy draw it, hands you a ready-to-paste image prompt either way, and crops the result to a clean 512x512. Never invents platform rules: when a rule is unknown it says so and points you at the official channel",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-asset-smith.md"
+  ],
+  "skills": [
+    "./skills/joy2know-asset-spec",
+    "./skills/joy2know-asset-compose",
+    "./skills/joy2know-asset-gate",
+    "./skills/joy2know-asset-publish",
+    "./skills/joy2know-asset-trace",
+    "./skills/joy2know-asset-maint"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-asset-smith",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Skill Specialist Builder",
+    "zh": "晓得·技能专家构建师"
+  },
+  "displayDescription": {
+    "en": "Builds WorkBuddy skills and experts end to end: picks the right form, fills every field to spec, packs and gates the zip, then walks the upload and review path — plus avatar design with a ready-to-paste prompt and a clean 512x512 crop.",
+    "zh": "把技能与专家从想法做到上架：先定形态，再按平台口径填字段、打包过门禁，然后走上传与审核，附头像设计与 512×512 裁切。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "02-Engineering",
+  "defaultInitPrompt": {
+    "zh": "我有个想法，想做成 WorkBuddy 技能，从字段设计到打包上架帮我走一遍",
+    "en": "I have an idea for a WorkBuddy skill — walk me from field design through packing and publishing"
+  },
+  "plugin": "joy2know-asset-smith",
+  "tags": [
+    {
+      "en": "Skill Packaging",
+      "zh": "技能打包"
+    },
+    {
+      "en": "Field Spec",
+      "zh": "字段规范"
+    },
+    {
+      "en": "Avatar Design",
+      "zh": "头像设计"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "I have an idea for a WorkBuddy skill — walk me from field design through packing and publishing",
+      "zh": "我有个想法，想做成 WorkBuddy 技能，从字段设计到打包上架帮我走一遍"
+    },
+    {
+      "en": "Help me design an avatar for my expert — should I draw it myself or have WorkBuddy do it?",
+      "zh": "帮我给这个专家设计头像，我该自己生成还是让 WorkBuddy 画？"
+    },
+    {
+      "en": "My skill got rejected — tell me exactly what to fix and whether to bump the version",
+      "zh": "我的技能被驳回了，告诉我具体改什么、要不要抬版本号"
+    }
+  ]
+}

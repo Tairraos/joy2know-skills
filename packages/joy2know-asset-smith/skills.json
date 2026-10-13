@@ -1,0 +1,11 @@
+{
+  "$comment": "本包内嵌的技能。源文件不在本目录，构建时从 packages/<名字>/ 复制真实技能进来（唯一真源）。六个技能保持独立可售，同时被本专家内嵌 —— 纯增量，不产生副本。",
+  "skills": [
+    "joy2know-asset-spec",
+    "joy2know-asset-compose",
+    "joy2know-asset-gate",
+    "joy2know-asset-publish",
+    "joy2know-asset-trace",
+    "joy2know-asset-maint"
+  ]
+}
