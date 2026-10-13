@@ -5,7 +5,7 @@ display_name_en: joy2know Asset Publish
 description: >-
   上传到开放平台与**被驳回之后**怎么办：上传类型必须与包类型一致（选错必报「未找到 SKILL.md」，
   100% 是入口选错不是包坏）、三类驳回的区分、⭐**版本占用判据**——解析失败可同名重传，
-  提交成功后被审核驳回必须抬版本（否则报「包内版本号必须大于当前最新版本」）、
+  **被平台审核过**（驳回或通过）必须抬版本；**自己撤回的不需要抬**（2026-10-13 订正）、
   类目被驳回的处置顺序（**先找客服，别急着改包**）与说明层回退四条。
   内置 reject.py：贴入驳回原文或平台状态，直接给出处置路径与是否抬版本。
   触发词：上传被拒、解析失败、类目不符、深度合成、审核驳回、要不要抬版本号、
@@ -17,8 +17,9 @@ description_zh: >-
   内置 reject.py 直接给出处置路径与是否抬版本。
 description_en: >-
   Uploading to the open platform and handling rejections: type matching, the three rejection
-  classes, the version-occupancy rule (parse failures allow same-name re-upload; post-submit
-  rejections force a version bump), and the escalation order for category rejections.
+  classes, the version-occupancy rule (parse failures allow same-name re-upload; assets that
+  HAVE BEEN REVIEWED — rejected or approved — force a version bump, while self-withdrawn ones
+  do not), and the escalation order for category rejections.
 category: capability
 version: 1.0.0
 author: 晓得乐
@@ -86,19 +87,39 @@ author: 晓得乐
 
 回退基线取「**最近一个过审版本的说明字段**」，不要凭空重写。
 
-### 第三类：抬版本号的判据 = 「有没有走到过『提交成功』」
+### 第三类：抬版本号的判据 = 「**这个资产有没有被平台审核过**」
+
+> ⚠️ **2026-10-13 订正**：旧判据写的是「有没有走到过『提交成功』」—— **那是错的**。
+> 平台的真实口径是（用户给出）：
+>
+> **「提交后，被审核过的，不论是驳回还是通过，都需要提升版本；
+> 自己撤回的，不需要提升版本。」**
 
 | 情形 | 平台占用版本号了吗 | 处置 |
 |---|---|---|
 | **解析失败**（描述超限 / 入口选错 / 结构不符） | 否 | 修完**同名重传** |
-| **提交成功后被审核驳回**（类目不符等） | **是** | **必须抬版本号，内嵌它的包一起抬** |
+| **提交成功、但在审核前自己撤回**（`withdraw`） | **否** | **不用抬版本**，同版本号可继续用 |
+| **被审核过** —— 驳回（`rejected`）/ 通过（`approved` / `published` / `delisted`） | **是** | **必须抬版本号，内嵌它的包一起抬** |
 
-两类原文长相不同：带「解析失败」前缀的多为前者，说「所选类目与应用类目不符」的多为后者。
+**判断口诀：看它有没有被平台「看过」。**
 
-⚠️ 同名重传已占用过的版本号，必报：
+| 顶层 `status` | 被看过吗 | 要抬版本吗 |
+|---|---|---|
+| `draft`（从未提交成功，或**自己撤回**后回落） | ❌ 没被看过 | **不用抬** |
+| `rejected` / `approved` / `published` / `delisted` | ✅ 被看过 | **要抬** |
+
+两类驳回原文长相不同：带「解析失败」前缀的多为前者，说「所选类目与应用类目不符」的多为后者。
+
+⚠️ 同名重传**已占用过**的版本号，必报：
 `解析失败：包内版本号「X」必须大于当前最新版本「X」`。
 
-⚠️ **仍有一条未实证**：平台记账维度、删草稿是否释放版本号。
+⭐ **补一条实测（2026-10-13）：删草稿会释放版本号。**
+`withdraw → delete` 掉旧 assetId 之后，**可以用原版本号当新包重发**（已实测通过）。
+所以遇到「自己撤回的资产、抬版本也不生效（`versionId` 不动）」时，
+最干净的处置是 **删掉当新包发**，而不是纠结怎么把版本号抬上去。
+
+⚠️ 另一条实测：**更新版本路径下 `versionId` 可能不变** ——
+`submit` 返回 `code:0` 不等于版本生效，**必须回读 `currentVersion.versionId` 是否变化**。
 
 ---
 
