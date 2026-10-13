@@ -49,12 +49,50 @@
 
 ---
 
+## 二·五、⭐ **提示词必须写成两段式**（否则「锁服装」这个错会反复犯）
+
+**教训（真实，犯过两次）**：只在文档里写「服装要按领域换」**拦不住**——
+一到动手，`wearing a grey hoodie` 还是会被顺手写进「保持角色不变」那段。
+
+**所以模板本身要长成这样**，让「锁定」与「可变」在**结构上分开**：
+
+**模板共三段** —— 缺任何一段都会出问题：
+
+```
+① LOCK ONLY THESE (copy from reference):
+     the same face shape, the same facial features, the same eyes,
+     the same hair style, the same felt texture and art style.
+
+② VARY FOR THIS ASSET (do NOT copy the reference):
+     wearing <按领域选的服装>,   ← 服装必须出现在这一行
+     holding <按领域选的道具>.
+
+③ COMPOSITION (fixed for every avatar in the series):
+     half-body portrait / head and shoulders only —— 上半身头像，
+     头部较大的可爱造型，非写实，成年亚洲面孔。
+     ⚠️ 参考图往往是**全身站姿**，不显式写这段，模型就会照着画全身。
+```
+
+### 四 条硬规矩
+
+| # | 规矩 | 为什么 |
+|---|---|---|
+| ① | 服装**只写进 `VARY` 段**，`LOCK` 段里**不许出现 any 衣物词** | 写进 LOCK 段就等于锁死 |
+| ② | 必要时加一句反向排除：`must NOT wear the <参考图里的那件衣服>` | 模型会默认延续参考图的穿搭 |
+| ③ | 也别在别处追加衣物修饰（如「在卫衣上加个紫色配饰」） | 那等于二次锁定服装 |
+| ④ | **构图段必须写死「上半身 / half-body / head and shoulders」** | ⚠️ **参考图多为全身**，不写就画全身；这条不能省 |
+
+### 两条自检口诀
+
+- 数一下 `LOCK ONLY THESE` 段里有没有**衣服** —— **有就是写错了**；
+- 数一下全文有没有**构图词**（half-body / 上半身 / head and shoulders）—— **没有就是漏了第 ③ 段**。
+
 ## 三、路线 A · 给用户自己生成的提示词
 
 ### 模板（照抄，只替换 `<>` 里的内容）
 
 ```
-一个 <> 性别的 2.5D 头像，半身，头部较大的可爱造型，非写实，成年亚洲面孔，
+一个 <> 性别的 2.5D 头像，**上半身**（头部 + 肩胸，不要全身），头部较大的可爱造型，非写实，成年亚洲面孔，
 穿着 <专业服装>，手里或身旁有 <专业道具>，
 面向正面偏侧，表情 <专业且亲切 / 冷静专注>，柔和的正面光，
 干净的纯色或浅渐变背景，构图居中，上下左右留出适当边距，方形 1:1
