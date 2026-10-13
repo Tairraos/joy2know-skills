@@ -414,13 +414,7 @@
         "date": "2026-10-03",
         "note": "2026-10-03 01:45 开发者接口直读 + 发布管理页交叉核对：**已发布**（接口 `status=published` / `currentVersion 1.0.0` `approved` / `visibleScope=ALL`）—— 界面显示「已发布 · 公开 · v1.0.0」。本包 2026-10-02 当日提交、当日过审上架。⚠️ 更早一轮读到 `status=draft`（后台存了草稿、未提交成功）属过期读数，小乐重提后已闭环。"
       },
-      "submitted": {
-        "version": "1.0.1",
-        "assetId": "oe_c7c45bd3e72ba72e",
-        "versionId": 44799,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
-      }
+      "platformNote": ""
     },
     "joy2know-topic-planner": {
       "suggestedCategory": null,
