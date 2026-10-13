@@ -199,7 +199,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-asset-publish` | 晓得·技能专家发布维护 | 1.0.0 | 上传类型匹配、三类驳回区分、版本占用判据、类目驳回先找客服 | 9.6 KB | ② 待审核（首次上架） |
 | `joy2know-asset-trace` | 晓得·技能专家状态追踪 | 1.0.0 | 四态模型（审核通过 ≠ 上架）+ 记账字段口径，附无凭证对账脚本 | 8.0 KB | ② 待审核（首次上架） |
 | `joy2know-asset-maint` | 晓得·技能专家包维护 | 1.0.0 | 内嵌联动 R8、派生信息漂移、检测报告失真、头像三处同步 | 9.1 KB | ② 待审核（首次上架） |
-| `joy2know-asset-insight` | 晓得·技能专家运营洞察 | 1.0.0 | 把平台运营数据（安装/调用/活跃/频次/次周留存）按「集中度·粘性·留存·加速」四把尺子算成一页可决策报告；纯接口直读，含三个接口坑与口径边界 | 15.6 KB | ① 开发完待提交 |
+| `joy2know-asset-insight` | 晓得·技能专家数据洞察 | 1.0.0 | 把平台运营数据（安装/调用/活跃/频次/次周留存）按「集中度·粘性·留存·加速」四把尺子算成一页可决策报告；纯接口直读，含三个接口坑与口径边界 | 15.6 KB | ② 待审核（首次上架） |
 
 > **状态列的口径（2026-09-25 立三态；2026-10-03 补第四档）**：一个资产有四种状态 ——
 > **① 开发完待提交** → **② 提交完待审核**（**用户端看不到**）→ **④ 待发布**（**审核已过、还没上架**）→ **③ 审核完成**（上架，用户端可见）。
@@ -249,7 +249,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-copywriter` | 晓得·推广文案编导 | 专家 | 1.0.1 | `joy2know-humanize` 1.1.1 | — | 815.7 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-reviewer` | 晓得·投放效果复盘专家 | 专家 | 1.0.1 | `joy2know-dashboard` 1.2.1 | — | 793.8 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-harness` | 晓得·harness 工程专家 | 专家 | 1.0.0 | `joy2know-harness-rules` 1.0.0 | — | 900.8 KB | ③ 审核完成 · 已上架 |
-| `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.0 | `joy2know-asset-spec` 1.0.0、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.0、`joy2know-asset-trace` 1.0.0、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.0 | — | 2144.2 KB | ② 待审核（首次上架） |
+| `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.0 | `joy2know-asset-spec` 1.0.0、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.0、`joy2know-asset-trace` 1.0.0、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.0 | — | 2429.1 KB | ② 待审核（首次上架） |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 

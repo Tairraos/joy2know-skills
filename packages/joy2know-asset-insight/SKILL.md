@@ -1,7 +1,7 @@
 ---
 name: joy2know-asset-insight
-display_name: 晓得·技能专家运营洞察
-display_name_en: joy2know Skill Expert Operations Insight
+display_name: 晓得·技能专家数据洞察
+display_name_en: joy2know Skill Expert Data Insight
 description: >-
   把 WorkBuddy 开放平台的「运营数据」变成一个能决策的结论，而不是一堆数字。纯接口直读
   asset-metrics/daily，拿到安装量、调用量、活跃用户、人均频次、次周留存五条指标与日序列，
@@ -19,7 +19,7 @@ version: 1.0.0
 author: 晓得乐
 ---
 
-# 技能专家运营洞察
+# 技能专家数据洞察
 
 **一句话**：把平台「运营数据」页的数字，变成「所以呢？」的答案。
 

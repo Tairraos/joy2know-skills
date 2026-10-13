@@ -597,16 +597,23 @@
       "categoryNote": "专家包，`expertType: agent` 单飞专家，**内嵌 6 个 asset-* 技能**。专家发布表单比技能少一步：**头像从包内 avatars/ 自动上传**，只需选「市场展示分类」（16 类）+「服务类目」（1~5 个）。⚠️ **内嵌联动**：6 个内嵌技能任一升版本，本包必须连带重建（zip 内是副本）。2026-10-13 建包（含头像制作能力：两条路线 + crop-avatar.py）**尚未提交平台**（① 待提交）。",
       "submitted": {
         "version": "1.0.0",
-        "assetId": "oe_e572b1a0a29d9afb",
-        "versionId": 44827,
+        "assetId": "oe_cac6470036d01abc",
+        "versionId": 44961,
         "date": "2026-10-13",
-        "note": "2026-10-13 **更名后重发**（用户要求把展示名改直白）。因该资产当时是 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 用原版本号当新包发。"
+        "note": "2026-10-13 **内嵌技能 6→7**（新增 joy2know-asset-insight）+ insight 改名换图后**连带重建重发**。当时该专家为 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 原版本号重发。平台侧 profession = 晓得·技能专家构建师。"
       }
     },
     "joy2know-asset-insight": {
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
-      "categoryNote": "**发布时两个分类要分开填**：①「市场展示分类*」= `development-tools`；②「服务类目*」= `tools:office`（工具 > 办公）。⚠️ 本技能的数据源 `POST /api/v2/open-platform/asset-metrics/daily` **不在常规接口清单里**，三个坑（接口名 / 日期必须是 YYYY-MM-DD 字符串 / metricTypes 只认 6 个值）已写入技能文档。⚠️ **被 `joy2know-asset-smith` 内嵌**（该专家现内嵌 7 个技能），任一方改动要连带重建对方。2026-10-13 建包，**尚未提交平台**（① 待提交）。"
+      "categoryNote": "**发布时两个分类要分开填**：①「市场展示分类*」= `development-tools`；②「服务类目*」= `tools:office`（工具 > 办公）。⚠️ 本技能的数据源 `POST /api/v2/open-platform/asset-metrics/daily` **不在常规接口清单里**，三个坑（接口名 / 日期必须是 YYYY-MM-DD 字符串 / metricTypes 只认 6 个值）已写入技能文档。⚠️ **被 `joy2know-asset-smith` 内嵌**（该专家现内嵌 7 个技能），任一方改动要连带重建对方。2026-10-13 建包，**尚未提交平台**（① 待提交）。",
+      "submitted": {
+        "version": "1.0.0",
+        "assetId": "os_8182aa3e77e0228f",
+        "versionId": 47519,
+        "date": "2026-10-13",
+        "note": "2026-10-13 纯接口发布。**展示名改为「晓得·技能专家数据洞察」**（用户要求，原名\"运营洞察\"）；头像换成**毛毡小人系列**（放大镜+数据图表），与其余资产同风格。"
+      }
     }
   },
   "submittedBatches": [
