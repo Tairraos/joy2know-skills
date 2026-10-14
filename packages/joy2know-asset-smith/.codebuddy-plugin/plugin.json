@@ -1,6 +1,6 @@
 {
   "name": "joy2know-asset-smith",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "joy2know Skill Specialist Builder: builds WorkBuddy skills and experts end to end — decides the right form first (skill, expert or team), writes the fields to the platform's exact spec, packs and gates the artifact, then walks the upload, review and update path. Also designs the avatar: it asks whether you want to generate one yourself or have WorkBuddy draw it, hands you a ready-to-paste image prompt either way, and crops the result to a clean 512x512. Never invents platform rules: when a rule is unknown it says so and points you at the official channel",
   "author": {
     "name": "晓得乐"
@@ -28,8 +28,8 @@
     "zh": "晓得·技能专家构建师"
   },
   "displayDescription": {
-    "en": "Builds WorkBuddy skills and experts end to end: picks the right form, fills every field to spec, packs and gates the zip, then walks the upload and review path — plus avatar design with a ready-to-paste prompt and a clean 512x512 crop.",
-    "zh": "把技能与专家从想法做到上架：先定形态，再按平台口径填字段、打包过门禁，然后走上传与审核，附头像设计与 512×512 裁切。"
+    "en": "You bring the idea, I handle the rest: research, competitor scan, differentiation design, development, testing, avatar design, packaging, publishing, and operations analysis — the whole way through.",
+    "zh": "帮你把想法做成技能与专家：你只管出想法，调研、竞品、差异设计、开发、测试、画头像、打包、发布上架、运营分析，我全包。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "02-Engineering",
