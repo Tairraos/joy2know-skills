@@ -21,7 +21,7 @@ description_en: >-
   HAVE BEEN REVIEWED — rejected or approved — force a version bump, while self-withdrawn ones
   do not), and the escalation order for category rejections.
 category: capability
-version: 1.0.4
+version: 1.0.5
 author: 晓得乐
 ---
 
@@ -130,6 +130,28 @@ author: 晓得乐
 
 
 
+### ⭐⭐⭐ `withdraw` 的真实行为：**不下架，原地回到已上架版本**（用户确认 + 实测）
+
+**这条推翻了一个常见误解。** 对**已上架**资产撤回待审版本后：
+
+| 字段 | 撤回后 |
+|---|---|
+| 顶层 `status` | **`published`** —— 资产仍在架 |
+| `currentVersion` | 回到**已上架的那个版本**（如 `v1.0.0 (published)`） |
+| `publishedVersion` | 同上 |
+| **用户端** | **完全不受影响** —— 一直搜得到、一直能用 |
+
+**实测记录（用户手动撤回 1.0.4 / 1.0.2 后）**：
+```
+asset-publish: 顶层 published · currentVersion v1.0.0 (published) · publishedVersion v1.0.0 (published)
+asset-smith : 顶层 published · currentVersion v1.0.0 (published) · publishedVersion v1.0.0 (published)
+```
+
+**⇒ 结论**：
+- ✅ **撤回是"安全操作"** —— 它只是丢掉那个**待审的新版**，**不会把线上的版本撤下来**；
+- ✅ 撤回后**资产回到"已上架 + 无待审"的干净状态**，可以重新规划版本号；
+- ❌ **但撤回【不释放】版本号** —— 见下节（实测两次，含手动撤回）。
+
 ### ⭐⭐⭐ 抬版本：**平台的两条口径不一致，按「更严的那条」准备**（2026-10-14 实测）
 
 **用户给出的平台规则**：
@@ -148,6 +170,13 @@ asset-smith ：包内版本号 "1.0.1" 必须大于当前最新版本 "1.0.1"
 |---|---|
 | **平台规则（用户口径）** | 只算**已审核通过**的版本 |
 | **实测行为** | **连撤回过的也算** —— 报错里的「当前最新版本」是**提交过的最高版本** |
+
+**实测：撤回后版本号【仍占位】**（第二次实测，用户手动撤回后立即重试）
+```
+asset-publish：包内 1.0.1 必须大于当前最新版本 "1.0.4"   （1.0.4 已被手动撤回，仍占位）
+asset-smith ：包内 1.0.1 必须大于当前最新版本 "1.0.2"   （1.0.2 已被手动撤回，仍占位）
+```
+⇒ **下限 = 该资产「提交过的最高版本号」**，**撤回不降低下限**。
 
 **⇒ 稳妥做法（按实测准备，`complete-upload` 会告诉你确切下限）**：
 
