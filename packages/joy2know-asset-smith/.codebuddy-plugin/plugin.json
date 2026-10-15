@@ -1,6 +1,6 @@
 {
   "name": "joy2know-asset-smith",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "joy2know Skill Specialist Builder: builds WorkBuddy skills and experts end to end — decides the right form first (skill, expert or team), writes the fields to the platform's exact spec, packs and gates the artifact, then walks the upload, review and update path. Also designs the avatar: it asks whether you want to generate one yourself or have WorkBuddy draw it, hands you a ready-to-paste image prompt either way, and crops the result to a clean 512x512. Never invents platform rules: when a rule is unknown it says so and points you at the official channel",
   "author": {
     "name": "晓得乐"
