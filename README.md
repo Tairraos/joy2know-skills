@@ -250,7 +250,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-copywriter` | 晓得·推广文案编导 | 专家 | 1.0.1 | `joy2know-humanize` 1.1.1 | — | 815.7 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-reviewer` | 晓得·投放效果复盘专家 | 专家 | 1.0.1 | `joy2know-dashboard` 1.2.1 | — | 793.8 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-harness` | 晓得·harness 工程专家 | 专家 | 1.0.0 | `joy2know-harness-rules` 1.0.0 | — | 900.8 KB | ③ 审核完成 · 已上架 |
-| `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.7 | `joy2know-asset-spec` 1.0.0、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.1、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.0 | — | 2712.1 KB | ⑤ 已驳回（在架 1.0.6，待改后重提） |
+| `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.7 | `joy2know-asset-spec` 1.0.0、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.1、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.0 | — | 2712.1 KB | ② 待审核（在架 1.0.6） |
 | `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.0.0 | `joy2know-mureka-musician` 1.0.0 | — | 826.5 KB | ③ 审核完成 · 已上架 |
 | `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.0.1 | `joy2know-musician` 1.6.1 | — | 782.0 KB | ② 待审核（首次上架） |
 
