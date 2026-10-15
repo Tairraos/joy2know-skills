@@ -19,7 +19,7 @@ description_en: >-
   release.config.json, and the rule that a recorded submitted version must still be
   counter-verified against the platform. Credentials are never included.
 category: capability
-version: 1.0.0
+version: 1.0.1
 author: 晓得乐
 ---
 
