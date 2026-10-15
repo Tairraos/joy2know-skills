@@ -670,6 +670,19 @@
         "versionId": 47539,
         "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47539}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       }
+    },
+    "joy2know-suno-maestro": {
+      "suggestedCategory": null,
+      "categoryConfirmed": false,
+      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与同门 joy2know-mureka-maestro 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；cine-team 1.6.1 内容零改动过审为证）。⚠️ **内嵌的是在架技能** joy2know-musician 1.6.1（平台 ③ published）——与 asset-smith 1.0.7 因「内嵌未过审版本」被驳的疑点不同，本包结构性避开；musician 后续升级时必查本包连带重建。2026-10-15 建包，头像为占位图（用户自画），从未提交。",
+      "note": "单专家，内嵌 joy2know-musician（Suno 口径）。用户口径：与 mureka-maestro 对应，强调仅生产提示词。",
+      "submitted": {
+        "version": "1.0.0",
+        "assetId": "oe_e5df049c0d3ac773",
+        "versionId": 50066,
+        "date": "2026-10-15",
+        "note": "**首次提交**（新 assetId）。market=06-ContentCreative + service=tools:office。内嵌在架技能 musician 1.6.1（避开 asset-smith 内嵌未过审版本疑点）。头像为占位图，用户自画后须重建重提。"
+      }
     }
   },
   "submittedBatches": [
