@@ -215,10 +215,11 @@
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.2.0",
-        "skillId": "skill_2102019532563116032",
-        "date": "2026-09-30",
-        "assetId": "os_dec94259d6bddb1d"
+        "version": "1.2.1",
+        "assetId": "os_dec94259d6bddb1d",
+        "date": "2026-10-15",
+        "versionId": 47426,
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47426}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       },
       "submitted": {
         "version": "1.2.1",
@@ -276,10 +277,11 @@
       "suggestedCategory": "工具 > 设计",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.2.0",
-        "skillId": "skill_2102019512580087808",
-        "date": "2026-09-30",
-        "assetId": "os_f53fdc7a9f91abdb"
+        "version": "1.2.1",
+        "assetId": "os_f53fdc7a9f91abdb",
+        "date": "2026-10-15",
+        "versionId": 47418,
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47418}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       },
       "submitted": {
         "version": "1.2.1",
@@ -348,13 +350,27 @@
       "suggestedCategory": null,
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与在架单专家 joy2know-mr 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」要求补资质：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；`cine-team` 1.6.1 内容零改动过审，反证「改内容」在这类驳回里无效）。2026-10-15 建包，从未提交。",
-      "note": "单专家，内嵌 joy2know-mureka-musician。用户口径：擅长爵士、蓝调、民谣风格，只产出提示词。"
+      "note": "单专家，内嵌 joy2know-mureka-musician。用户口径：擅长爵士、蓝调、民谣风格，只产出提示词。",
+      "submitted": {
+        "version": "1.0.0",
+        "assetId": "oe_61f939bb0ab28e64",
+        "versionId": 49424,
+        "date": "2026-10-15",
+        "note": "**首次提交**（新 assetId）。market=06-ContentCreative + service=tools:office。专家头像由平台自动上传包内 avatars/"
+      }
     },
     "joy2know-mureka-musician": {
       "suggestedCategory": "内容创作 > 文案",
       "categoryConfirmed": false,
       "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-viral-topic` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 `joy2know-musician` 同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。备选问法：`musician` 的最终落点是「工具 > 办公」（2026-09-30 客服直接指定）。⚠️ 内嵌关系：被 `joy2know-mureka-maestro` 内嵌——若本包类目被打回，要连带看引用方是否需同轮重建。2026-10-15 建包，从未提交。",
-      "note": "技能包。内容主干 = 仓库根《Mureka音乐人提示词指南.md》（2026-10-14 V9.5 真机实测）+ 官方 FAQ（2026-10-15 抓取）。"
+      "note": "技能包。内容主干 = 仓库根《Mureka音乐人提示词指南.md》（2026-10-14 V9.5 真机实测）+ 官方 FAQ（2026-10-15 抓取）。",
+      "submitted": {
+        "version": "1.0.0",
+        "assetId": "os_c27f2eeaf9a4832e",
+        "versionId": 51021,
+        "date": "2026-10-15",
+        "note": "**首次提交**（新 assetId）。market=content-creation + service=tools:office（沿用 musician 客服指定口径，避开深度合成语义）。头像经两轮 AI 生成后被小乐判「大头照」亲手重画（写谱意象）"
+      }
     },
     "joy2know-musician": {
       "suggestedCategory": "工具 > 办公",
@@ -572,11 +588,18 @@
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有文本判定与对账报告**（跑自带脚本），不生成音频/图像/视频、不接入任何生成接口、不带账号与凭证 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
       "submitted": {
+        "version": "1.0.7",
+        "assetId": "os_02f476ffb27876cb",
+        "versionId": 51015,
+        "date": "2026-10-15",
+        "note": "小乐重画头像（半身像）+ 抬版本重提；同日 1.0.6 已先 release 上架"
+      },
+      "platform": {
         "version": "1.0.6",
         "assetId": "os_02f476ffb27876cb",
+        "date": "2026-10-15",
         "versionId": 49606,
-        "date": "2026-10-14",
-        "note": "2026-10-14 **技能与专家统一版本号 1.0.6**（用户要求）。同时更正版本号知识：**下限 = 该资产提交过的最高版本，撤回过的也占位**（此前记的「只比已审核通过版本高」「撤回不算」两条均已作废）。老版本 1.0.0 仍在线，新版 1.0.6 待审。"
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":49606}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       }
     },
     "joy2know-asset-trace": {
@@ -584,11 +607,18 @@
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有文本判定与对账报告**（跑自带脚本），不生成音频/图像/视频、不接入任何生成接口、不带账号与凭证 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
       "submitted": {
+        "version": "1.0.1",
+        "assetId": "os_35410e1b71668a22",
+        "versionId": 51017,
+        "date": "2026-10-15",
+        "note": "小乐重画头像（半身像）+ 抬版本重提；同日 1.0.0 已先 release 上架"
+      },
+      "platform": {
         "version": "1.0.0",
         "assetId": "os_35410e1b71668a22",
+        "date": "2026-10-15",
         "versionId": 47443,
-        "date": "2026-10-13",
-        "note": "2026-10-13 **更名后重发**（用户要求把展示名改直白）。因该资产当时是 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 用原版本号当新包发。"
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47443}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       }
     },
     "joy2know-asset-maint": {
@@ -608,11 +638,18 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包，`expertType: agent` 单飞专家，**内嵌 6 个 asset-* 技能**。专家发布表单比技能少一步：**头像从包内 avatars/ 自动上传**，只需选「市场展示分类」（16 类）+「服务类目」（1~5 个）。⚠️ **内嵌联动**：6 个内嵌技能任一升版本，本包必须连带重建（zip 内是副本）。2026-10-13 建包（含头像制作能力：两条路线 + crop-avatar.py）**尚未提交平台**（① 待提交）。",
       "submitted": {
+        "version": "1.0.7",
+        "assetId": "oe_d00ce19381afbdfb",
+        "versionId": 49421,
+        "date": "2026-10-15",
+        "note": "专家自身头像重画 + 内嵌 publish/trace 新版连带重建；同日 1.0.6 已先 release 上架（专家 release 实测首例）"
+      },
+      "platform": {
         "version": "1.0.6",
         "assetId": "oe_d00ce19381afbdfb",
+        "date": "2026-10-15",
         "versionId": 47713,
-        "date": "2026-10-14",
-        "note": "2026-10-14 **技能与专家统一版本号 1.0.6**（用户要求）。同时更正版本号知识：**下限 = 该资产提交过的最高版本，撤回过的也占位**（此前记的「只比已审核通过版本高」「撤回不算」两条均已作废）。老版本 1.0.0 仍在线，新版 1.0.6 待审。"
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47713}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       }
     },
     "joy2know-asset-insight": {
@@ -625,6 +662,13 @@
         "versionId": 47539,
         "date": "2026-10-13",
         "note": "2026-10-13 **用户更新参考图为半身后**重生成头像（半身 + 深蓝衬衫 + 灰色小马尾 + 放大镜/柱状图），一次到位。参考图在 `private/refs/毛毡小人-参考图.jpg`（gitignore，**不入库不进包**）。"
+      },
+      "platform": {
+        "version": "1.0.0",
+        "assetId": "os_b7cc76908ea4e5d8",
+        "date": "2026-10-15",
+        "versionId": 47539,
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47539}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
       }
     }
   },
