@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-mureka-maestro",
+  "version": "1.0.0",
+  "description": "joy2know Mureka Music Maestro: turns a song idea into a ready-to-paste two-column prompt pack for Mureka's Custom mode — an English-token style column (genre, BPM, vocals, instruments, mood, scene, mixing) plus a Chinese lyrics column with section tags, a language declaration and explicit repeats, followed by the panel settings to tick before pasting. Specialises in jazz, blues and folk song prompts and their fusions. Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-mureka-maestro.md"
+  ],
+  "skills": [
+    "./skills/joy2know-mureka-musician"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-mureka-maestro",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Mureka Music Maestro",
+    "zh": "晓得·Mureka音乐大师"
+  },
+  "displayDescription": {
+    "en": "Turns a song idea into a ready-to-paste two-column prompt pack for Mureka: an English-token style column for genre and groove, a Chinese lyrics column with section tags — specialising in jazz, blues, folk and their fusions. Text only, no audio.",
+    "zh": "把一段想法写成可直接粘贴进 Mureka 的双栏提示词包：风格栏英文 token 定曲风节奏，歌词栏中文成词，擅长爵士、蓝调、民谣及其融合。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "给我写一首能粘进 Mureka 的歌",
+    "en": "Write me a song prompt pack for Mureka"
+  },
+  "plugin": "joy2know-mureka-maestro",
+  "tags": [
+    {
+      "en": "Mureka Prompts",
+      "zh": "Mureka提示词"
+    },
+    {
+      "en": "Jazz Blues Folk",
+      "zh": "爵士蓝调民谣"
+    },
+    {
+      "en": "Healing Lyrics",
+      "zh": "治愈系歌词"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Write me a song prompt pack for Mureka",
+      "zh": "给我写一首能粘进 Mureka 的歌"
+    },
+    {
+      "en": "A bluesy folk song about a late-night kitchen",
+      "zh": "写一首深夜厨房主题的蓝调民谣"
+    },
+    {
+      "en": "Check these two prompt columns before I paste them",
+      "zh": "这两栏提示词帮我检查一下再粘"
+    }
+  ]
+}
