@@ -10,7 +10,7 @@
 
 - **包名**：joy2know-suno-maestro
 - **类型**：单专家（`expertType: "agent"`）
-- **对应版本**：1.0.0
+- **对应版本**：1.0.1
 - **检测状态**：⚠️ 有条件通过
 - **最后检测**：2026-10-15
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
@@ -30,12 +30,13 @@
 只用 Python 标准库（argparse / re / sys），结构性零依赖成立（该脚本随内嵌技能 1.6.1 整包带入，
 其自身零依赖已在技能包 1.6.1 检测中核过）。
 
-源包体（四个源文件，**不含本报告**）约 14.9 KB；构建产物 `dist/joy2know-suno-maestro-v1.0.0.zip`
-实测 **415,427 字节（405.7 KB）**（含构建注入的占位头像 + 内嵌技能及其图标）。专家包上限 **20 MB**，余量约 50 倍。
+源包体（四个源文件，**不含本报告**）约 15.0 KB；构建产物 `dist/joy2know-suno-maestro-v1.0.1.zip`
+实测 **800,720 字节（782.0 KB）**（含构建注入的专家头像 + 内嵌技能及其图标）。专家包上限 **20 MB**，余量约 50 倍。
 
-**头像（占位图）**：`avatars/joy2know-suno-maestro.png` = 512×512 / 10.7 KB 占位图
-（已入 `.placeholders.json` 台账），**用户（小乐）宣布自己画**——换真图后须重跑构建（专家图标在 zip 内），
-见第六节。
+**头像（真图）**：`avatars/joy2know-suno-maestro.png` = 512×512 / 395,597 字节（386.3 KB），**10-15 晚小乐自画真图**
+（半身像：灰发小马尾 + 深蓝毛毡马甲白衬衫领结，书桌前执羽毛笔写谱，与 mureka 系列同「写谱」意象），
+替换当日占位图 10.7 KB；`.placeholders.json` 台账条目已同步清空；四角采样背景冷白系（右下角桌面木色入画，
+属画面元素非背景违规）。换图后已重跑构建（专家图标在 zip 内）。
 
 **描述字段硬约束实测**：`displayDescription.zh` **49 汉字**（40–50 内，中段）；
 `defaultInitPrompt` **逐字等于** `quickPrompts[0]`（zh/en 双语核过）；`tags` / `quickPrompts` **各 3**；
@@ -107,7 +108,7 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-suno-maestro-v1.0.0.z
 - **错误提示是否可指导下一步**：✅ 降级路径都给明确动作（五问默认值 → 直接产出；判据争议 → 回规则核对）。
 - **边界是否优雅**：✅ §六 覆盖六类边界（不生成音频 / 不做封面 MV / 不提额度 / 直接交付 / 无内部 ID / 禁解释）。
 - **零依赖是否守住**：✅ 结构性成立（专家本体纯文本；内嵌校验器 Python 标准库、只读）。
-- **值来源是否可追溯**：✅ 版本号 1.0.0 两处一致（plugin.json / README）；头像真源在仓库根 `avatars/`；
+- **值来源是否可追溯**：✅ 版本号 1.0.1 两处一致（plugin.json / README）；头像真源在仓库根 `avatars/`；
   内嵌技能真源在 `packages/joy2know-musician/`（已实测副本逐字节一致）。
 - **maxTurns=50**：与单专家先例（topic-planner / mureka-maestro 均 50）一致；单飞流程约 7 步、无成员编排，50 轮充足。
 
@@ -179,3 +180,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-suno-maestro-v1.0.0.z
 | 日期 | 版本 | 状态 | 摘要（本轮测了什么、改了什么） |
 |---|---|---|---|
 | 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·Suno音乐大师」，内嵌在架技能包 `joy2know-musician` 1.6.1（Suno 三段方法论 + 方言防破音 + 结构校验器）。**源目录与解压交付形态自检全部通过**（displayDescription.zh 实测 49 汉字；defaultInitPrompt==quickPrompts[0] 逐字相同；tags/quickPrompts 各 3；categoryId=06-ContentCreative）；`platformcheck --zip` 判 **Expert ✅**（Skill ❌ 属预期）；内嵌副本与主源 **diff 逐字节一致**、内嵌 icon sha1 与源图一致、内嵌版本 1.6.1 与平台在架一致（结构性避开 asset-smith 1.0.7 内嵌未过审版本的驳回疑点）。displayName 为品牌署名「晓得乐」、无花名（单飞纪律）。头像为 10.7 KB 占位图（用户自画）。R6 审计未跑（已列未覆盖项）。4 项未覆盖 + 2 项弱项。 |
+| 2026-10-15 | 1.0.1 | ✅ 通过 | **换头像重提**。内容性变化仅 2 处：① 专家头像 10.7 KB 占位图 → **386.3 KB 小乐自画真图**（半身像：灰发小马尾红发圈 + 深蓝毛毡马甲白衬衫领结，书桌前执羽毛笔写谱，与 mureka 系列同「写谱」意象；四角采样冷白系）；② 版本行 plugin.json / README 1.0.0→1.0.1（1.0.0 已提交成功版本号被占用，按判据抬版）。重建 zip **800,720 字节（782.0 KB）**；zip 内 `avatars/expert.png` sha1 与源图**逐字一致**（c0c900eb…）；内嵌 musician 1.6.1 与图标未动。源目录 selfcheck 全绿 + 解压形态 selfcheck 全绿 + `platformcheck --zip` **Expert ✅**。`.placeholders.json` 占位台账条目同步清空。 |
