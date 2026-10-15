@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-suno-maestro",
+  "version": "1.0.0",
+  "description": "joy2know Suno Music Maestro: turns a song idea into a ready-to-paste prompt pack for Suno — a title, an optimized Style line that locks language and accent in the first field (nine fields for vocals, instrumental and seamless-loop variants), and section-tagged lyrics with explicit repeats. Specialises in healing folk and dialect songs (Cantonese word-locks and tonal compensation stop cracked pronunciation), plus phantom-vocal-free instrumental and loop structures. Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-suno-maestro.md"
+  ],
+  "skills": [
+    "./skills/joy2know-musician"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-suno-maestro",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Suno Music Maestro",
+    "zh": "晓得·Suno音乐大师"
+  },
+  "displayDescription": {
+    "en": "Turns a song idea into a ready-to-paste prompt pack for Suno: a title, a Style line that locks language first, and section-tagged lyrics — healing folk, Cantonese and other dialects, instrumental and loop structures. Text only, no audio.",
+    "zh": "把一段想法写成可直接粘贴进 Suno 的歌曲提示词包：标题、Style 与带段落标签的歌词，支持粤语等方言防跑偏，仅产出提示词文本。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "给我写一首能粘进 Suno 的歌",
+    "en": "Write me a song prompt pack for Suno"
+  },
+  "plugin": "joy2know-suno-maestro",
+  "tags": [
+    {
+      "en": "Suno Prompts",
+      "zh": "Suno提示词"
+    },
+    {
+      "en": "Healing Lyrics",
+      "zh": "治愈系歌词"
+    },
+    {
+      "en": "Cantonese Dialect Songs",
+      "zh": "粤语方言歌"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Write me a song prompt pack for Suno",
+      "zh": "给我写一首能粘进 Suno 的歌"
+    },
+    {
+      "en": "A Cantonese song about a late-night convenience store",
+      "zh": "写一首深夜便利店主题的粤语歌"
+    },
+    {
+      "en": "Check this prompt pack before I paste it",
+      "zh": "这份提示词帮我检查一下再粘"
+    }
+  ]
+}
