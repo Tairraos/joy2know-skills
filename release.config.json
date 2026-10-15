@@ -219,14 +219,7 @@
         "assetId": "os_dec94259d6bddb1d",
         "date": "2026-10-15",
         "versionId": 47426,
-        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47426}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
-      },
-      "submitted": {
-        "version": "1.2.1",
-        "assetId": "os_dec94259d6bddb1d",
-        "versionId": 47426,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47426}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。首提交履历：2026-10-13 中文名重取轮 `pub.mjs` 纯接口 republish（沿用原分类）。"
       }
     },
     "joy2know-conversation-digest": {
@@ -281,14 +274,7 @@
         "assetId": "os_f53fdc7a9f91abdb",
         "date": "2026-10-15",
         "versionId": 47418,
-        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47418}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
-      },
-      "submitted": {
-        "version": "1.2.1",
-        "assetId": "os_f53fdc7a9f91abdb",
-        "versionId": 47418,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47418}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。首提交履历：2026-10-13 中文名重取轮 `pub.mjs` 纯接口 republish（沿用原分类）。"
       }
     },
     "joy2know-errorfix": {
@@ -351,12 +337,11 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与在架单专家 joy2know-mr 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」要求补资质：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；`cine-team` 1.6.1 内容零改动过审，反证「改内容」在这类驳回里无效）。2026-10-15 建包，从未提交。",
       "note": "单专家，内嵌 joy2know-mureka-musician。用户口径：擅长爵士、蓝调、民谣风格，只产出提示词。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "oe_61f939bb0ab28e64",
-        "versionId": 49424,
         "date": "2026-10-15",
-        "note": "**首次提交**（新 assetId）。market=06-ContentCreative + service=tools:office。专家头像由平台自动上传包内 avatars/"
+        "note": "2026-10-15 晚 `ow.mjs state` 回读 ③ 已上架（与 musician 过审同期；发布动作非本仓脚本执行——用户手动或平台侧）。首提交履历：2026-10-15 首提即过审（新 assetId；market=06-ContentCreative + service=tools:office；专家头像由平台自动上传包内 avatars/）。"
       }
     },
     "joy2know-mureka-musician": {
@@ -364,12 +349,11 @@
       "categoryConfirmed": false,
       "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-viral-topic` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 `joy2know-musician` 同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。备选问法：`musician` 的最终落点是「工具 > 办公」（2026-09-30 客服直接指定）。⚠️ 内嵌关系：被 `joy2know-mureka-maestro` 内嵌——若本包类目被打回，要连带看引用方是否需同轮重建。2026-10-15 建包，从未提交。",
       "note": "技能包。内容主干 = 仓库根《Mureka音乐人提示词指南.md》（2026-10-14 V9.5 真机实测）+ 官方 FAQ（2026-10-15 抓取）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "os_c27f2eeaf9a4832e",
-        "versionId": 51021,
         "date": "2026-10-15",
-        "note": "**首次提交**（新 assetId）。market=content-creation + service=tools:office（沿用 musician 客服指定口径，避开深度合成语义）。头像经两轮 AI 生成后被小乐判「大头照」亲手重画（写谱意象）"
+        "note": "2026-10-15 晚过审（④ 待发布）→ `pub.mjs release` 当轮上架：body={\"versionId\":51021} → ③ published（Mureka 线技能侧首个上架；平台列表接口不吐 skillId，本条缺该字段）。首提交履历：2026-10-15 首提（新 assetId；market=content-creation + service=tools:office，沿用 musician 客服指定口径避开深度合成语义）；头像经两轮 AI 生成后被小乐判「大头照」亲手重画（写谱意象）。"
       }
     },
     "joy2know-musician": {
@@ -637,12 +621,12 @@
       "suggestedCategory": "02-Engineering（专家 categoryId，写死在包内）",
       "categoryConfirmed": false,
       "categoryNote": "专家包，`expertType: agent` 单飞专家，**内嵌 6 个 asset-* 技能**。专家发布表单比技能少一步：**头像从包内 avatars/ 自动上传**，只需选「市场展示分类」（16 类）+「服务类目」（1~5 个）。⚠️ **内嵌联动**：6 个内嵌技能任一升版本，本包必须连带重建（zip 内是副本）。2026-10-13 建包（含头像制作能力：两条路线 + crop-avatar.py）**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "rejected": {
         "version": "1.0.7",
         "assetId": "oe_d00ce19381afbdfb",
         "versionId": 49421,
         "date": "2026-10-15",
-        "note": "专家自身头像重画 + 内嵌 publish/trace 新版连带重建；同日 1.0.6 已先 release 上架（专家 release 实测首例）"
+        "note": "2026-10-15 提交 1.0.7，当日被平台驳回（`ow.mjs state`：⑤ 已驳回；接口无 reason 字段，驳回原文待小乐提供）。变更内容：专家自身头像重画 + 内嵌 publish/trace 新版连带重建；同日 1.0.6 已先 release 上架（专家 release 实测首例）。**疑点**：内嵌的 publish 1.0.7 / trace 1.0.1 当时未过审——若平台校验「内嵌技能须已过审版本」即为根因；**在架 1.0.6 不受影响**。"
       },
       "platform": {
         "version": "1.0.6",
@@ -656,19 +640,12 @@
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填**：①「市场展示分类*」= `development-tools`；②「服务类目*」= `tools:office`（工具 > 办公）。⚠️ 本技能的数据源 `POST /api/v2/open-platform/asset-metrics/daily` **不在常规接口清单里**，三个坑（接口名 / 日期必须是 YYYY-MM-DD 字符串 / metricTypes 只认 6 个值）已写入技能文档。⚠️ **被 `joy2know-asset-smith` 内嵌**（该专家现内嵌 7 个技能），任一方改动要连带重建对方。2026-10-13 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
-        "version": "1.0.0",
-        "assetId": "os_b7cc76908ea4e5d8",
-        "versionId": 47539,
-        "date": "2026-10-13",
-        "note": "2026-10-13 **用户更新参考图为半身后**重生成头像（半身 + 深蓝衬衫 + 灰色小马尾 + 放大镜/柱状图），一次到位。参考图在 `private/refs/毛毡小人-参考图.jpg`（gitignore，**不入库不进包**）。"
-      },
       "platform": {
         "version": "1.0.0",
         "assetId": "os_b7cc76908ea4e5d8",
         "date": "2026-10-15",
         "versionId": 47539,
-        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47539}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47539}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。首提交履历：2026-10-13 用户更新参考图为半身后重生成头像（半身 + 深蓝衬衫 + 灰色小马尾 + 放大镜/柱状图）一次到位；参考图 `private/refs/毛毡小人-参考图.jpg`（gitignore 不入库）。"
       }
     },
     "joy2know-suno-maestro": {
