@@ -28,10 +28,13 @@
 **零第三方依赖核对**：专家本体无 `scripts/`、无 import、无网络调用；内嵌技能的 `mureka_check.mjs`
 只用 Node 标准库（`node:fs`），结构性零依赖成立。
 
-源包体（四个源文件，**不含本报告**）**14,977 字节 ≈ 14.6 KB**；构建产物 `dist/joy2know-mureka-maestro-v1.0.0.zip` 实测 **59,349 字节（58.0 KB）**（含构建注入的头像与内嵌技能）。专家包上限 **20 MB**，余量约 350 倍。
+源包体（四个源文件，**不含本报告**）**14,977 字节 ≈ 14.6 KB**；构建产物 `dist/joy2know-mureka-maestro-v1.0.0.zip` 实测 **539,349 字节（526.7 KB）**（含构建注入的真头像 261.2 KB + 内嵌技能及其图标 226.7 KB）。专家包上限 **20 MB**，余量约 38 倍。
 
-**头像规格（占位图）**：`avatars/joy2know-mureka-maestro.png` = 512×512 / 11.1 KB 占位图
-（已入 `.placeholders.json` 台账），**待小乐拍板配色后换真图**（见第六节）。
+**头像规格（真图）**：`avatars/joy2know-mureka-maestro.png` = 512×512 / **261.2 KB**（≤500KB 达标）。
+2026-10-15 与技能图标同批以**真源参考图** `private/refs/毛毡小人-参考图.jpg` 生成裁切（第一轮误用衍生图当参考，
+被判返工重做）：灰发顶髻红发圈毛毡小孩，**深蓝三件套西装 + 领结 + 银色口琴**（与音乐人版酒红背心 + 萨克斯为
+同一小孩换装），四角背景 `#F0EFED~#F1F1EE`（冷白，与音乐人版彼此差 ≤5/255）。
+构建后 zip 内 `avatars/expert.png` 的 sha1（28f3abea…）与源图**逐字一致**。
 
 ---
 
@@ -162,3 +165,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-mureka-maestro-v1.0.0
 | 日期 | 版本 | 状态 | 摘要（本轮测了什么、改了什么） |
 |---|---|---|---|
 | 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·Mureka音乐大师」，内嵌同步新建的技能包 `joy2know-mureka-musician`（双栏方法论 + 三体裁配方 + 结构校验器）。**源目录自检全部通过**（displayDescription.zh 实测 49 汉字；defaultInitPrompt==quickPrompts[0] 逐字相同；tags/quickPrompts 各 3；categoryId=06-ContentCreative）；**解压后交付形态自检全部通过**；`platformcheck --zip` 判 **Expert ✅**（Skill ❌ 属预期）；内嵌副本与主源 **diff 逐字节一致**；内嵌校验器 21 项自检全绿 + 反向验证有效（详见技能包报告）。displayName 为品牌署名「晓得乐」、无花名（单飞纪律）。头像为 11.1 KB 占位图待换真图。R6 跨包审计不含本包。4 项未覆盖 + 1 项弱项。 |
+| 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **第二轮：换真头像 + 重建（图标变更，不抬版本）**。与技能图标同批以真源参考图 `private/refs/毛毡小人-参考图.jpg` 生成 → 垂直偏移裁切 512×512 / 261.2 KB（深蓝三件套 + 领结 + 口琴，与音乐人版同一小孩换装）。**第一轮误用 `avatars/joy2know-musician.png` 衍生图当参考被判返工**；重做时抓到并修掉两处生成问题：全身构图（会切发髻 → 锁「严格半身像」）与背景色温不一致（锁「冷白 #FAFAFA」后与音乐人版收敛到差 ≤5/255）。重跑构建（zip 59,349 → 539,349 字节，真头像 + 内嵌图标入包）；**sha1 校验**：zip 内 `avatars/expert.png`（28f3abea…）与内嵌 `icon.png`（c9d9e5ff…）均与源图逐字一致；内嵌副本 diff 逐字节一致；解压后 selfcheck 全绿。头像未覆盖项消掉（剩 3 项未覆盖 + 1 项弱项），状态维持有条件通过。 |
