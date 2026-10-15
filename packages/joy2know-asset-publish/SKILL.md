@@ -21,7 +21,7 @@ description_en: >-
   HAVE BEEN REVIEWED — rejected or approved — force a version bump, while self-withdrawn ones
   do not), and the escalation order for category rejections.
 category: capability
-version: 1.0.6
+version: 1.0.7
 author: 晓得乐
 ---
 
