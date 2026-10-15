@@ -626,7 +626,7 @@
         "assetId": "oe_d00ce19381afbdfb",
         "versionId": 49421,
         "date": "2026-10-15",
-        "note": "2026-10-15 提交 1.0.7，当日被平台驳回（`ow.mjs state`：⑤ 已驳回；接口无 reason 字段，驳回原文待小乐提供）。变更内容：专家自身头像重画 + 内嵌 publish/trace 新版连带重建；同日 1.0.6 已先 release 上架（专家 release 实测首例）。**疑点**：内嵌的 publish 1.0.7 / trace 1.0.1 当时未过审——若平台校验「内嵌技能须已过审版本」即为根因；**在架 1.0.6 不受影响**。"
+        "note": "2026-10-15 提交 1.0.7，当日被平台驳回（`ow.mjs state`：⑤ 已驳回；接口无 reason 字段）。**驳回原文（小乐 10-15 深夜提供）**：「资产违规使用平台能力，违规内容后续邮件统一反馈，请按邮件指引进行修改」（审核时间 2026-10-15 17:18）——**非「内嵌未过审版本」的直接表述**，具体违规点待邮件；小乐指示**先不动包**，等邮件指引。变更内容：专家自身头像重画 + 内嵌 publish/trace 新版连带重建；同日 1.0.6 已先 release 上架（专家 release 实测首例）。此前疑点（内嵌 publish 1.0.7 / trace 1.0.1 未过审）保留备查——「违规使用平台能力」可能涵盖内嵌机制，但未被证实。**在架 1.0.6 不受影响**。"
       },
       "platform": {
         "version": "1.0.6",
@@ -651,14 +651,14 @@
     "joy2know-suno-maestro": {
       "suggestedCategory": null,
       "categoryConfirmed": false,
-      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与同门 joy2know-mureka-maestro 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；cine-team 1.6.1 内容零改动过审为证）。⚠️ **内嵌的是在架技能** joy2know-musician 1.6.1（平台 ③ published）——与 asset-smith 1.0.7 因「内嵌未过审版本」被驳的疑点不同，本包结构性避开；musician 后续升级时必查本包连带重建。2026-10-15 建包，头像为占位图（用户自画），从未提交。",
+      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与同门 joy2know-mureka-maestro 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；cine-team 1.6.1 内容零改动过审为证）。⚠️ **内嵌的是在架技能** joy2know-musician 1.6.1（平台 ③ published）——与 asset-smith 1.0.7 因「内嵌未过审版本」被驳的疑点不同，本包结构性避开；musician 后续升级时必查本包连带重建。",
       "note": "单专家，内嵌 joy2know-musician（Suno 口径）。用户口径：与 mureka-maestro 对应，强调仅生产提示词。",
       "submitted": {
-        "version": "1.0.0",
-        "assetId": "oe_e5df049c0d3ac773",
-        "versionId": 50066,
+        "version": "1.0.1",
+        "assetId": "oe_f4f465b268a90e6f",
+        "versionId": 50142,
         "date": "2026-10-15",
-        "note": "**首次提交**（新 assetId）。market=06-ContentCreative + service=tools:office。内嵌在架技能 musician 1.6.1（避开 asset-smith 内嵌未过审版本疑点）。头像为占位图，用户自画后须重建重提。"
+        "note": "**⭐ 版本史（同一包两次提交，首 assetId 已删）**：① 1.0.0（oe_e5df049c0d3ac773 / vid 50066）10-15 晚首提 ② 在审；② 10-15 深夜小乐自画头像真图到位（386.3 KB 半身像「灰发马尾+羽毛笔写谱」）→ 抬 1.0.1 重建重提。**⭐ 实测教训：withdraw 后资产回 draft，对 draft 直接 publish 会复用旧 versionId（50066 仍是 1.0.0 标签）——包内抬的版本不生成新版本记录；要换版本号必须 withdraw → delete → 重新 create**（delete 仅限从未上架的 draft；本包从未过审故 1.0.0 版本号未被占用）。③ 终局：delete 旧 assetId 后 create 提交 1.0.1 → oe_f4f465b268a90e6f / vid 50142 / ② 审核中，回读 version=1.0.1 确认。头像占位台账已清空。"
       }
     }
   },

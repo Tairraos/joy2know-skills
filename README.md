@@ -252,7 +252,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-harness` | 晓得·harness 工程专家 | 专家 | 1.0.0 | `joy2know-harness-rules` 1.0.0 | — | 900.8 KB | ③ 审核完成 · 已上架 |
 | `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.7 | `joy2know-asset-spec` 1.0.0、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.1、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.0 | — | 2712.1 KB | ⑤ 已驳回（在架 1.0.6，待改后重提） |
 | `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.0.0 | `joy2know-mureka-musician` 1.0.0 | — | 826.5 KB | ③ 审核完成 · 已上架 |
-| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.0.0 | `joy2know-musician` 1.6.1 | — | 405.7 KB | ② 待审核（首次上架） |
+| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.0.1 | `joy2know-musician` 1.6.1 | — | 782.0 KB | ② 待审核（首次上架） |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 
