@@ -342,6 +342,13 @@
         "assetId": "oe_61f939bb0ab28e64",
         "date": "2026-10-16",
         "note": "2026-10-15 晚 `ow.mjs state` 回读 ③ 已上架（与 musician 过审同期；发布动作非本仓脚本执行——用户手动或平台侧）。首提交履历：2026-10-15 首提即过审（新 assetId；market=06-ContentCreative + service=tools:office；专家头像由平台自动上传包内 avatars/）。 ⚠️ 2026-10-16 20:00 接口直读订正：`platform` 原记 1.0.0、`submitted` 记 1.2.1；实际 `status=published` 且 currentVersion=**1.2.1** approved（`updatedAt` 2026-10-16T18:12:18）→ 1.2.1 已过审上架（客服式「点发布」那步已做）。`submitted` 清除。"
+      },
+      "submitted": {
+        "version": "1.2.2",
+        "assetId": "oe_61f939bb0ab28e64",
+        "versionId": "52556",
+        "date": "2026-10-16",
+        "note": "2026-10-16 20:1x 走 pub.mjs 接口 republish（同名更新版本，`action=republish`）。上传 + 校验 ok；专家头像由平台自动上传包内 avatars/。回读核对：version=1.2.2 / versionId=52556 / status=under_review。**在架版本仍是 1.2.1**（`platform` 字段未动）—— 审核通过后会转 `approved`（待发布），**还需在发布管理页点一次「发布」才真正上架**。"
       }
     },
     "joy2know-mureka-musician": {
@@ -360,7 +367,13 @@
       "suggestedCategory": "内容创作 > 文案",
       "categoryConfirmed": false,
       "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-musician` / `joy2know-mureka-musician` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 musician 系列同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` 与 `joy2know-mureka-maestro` 两个专家内嵌（这两个专家在架 1.0.1/ 1.0.0）——若本包类目或内容被打回，两个引用方需同轮重建。2026-10-16 建包，从未提交。",
-      "note": "技能包。专辑层技能：九项信息收集 + 0–8 章节骨架 + 六条门禁（album_check.py，28 项内置自检）+ 唯一真源渲染（build_album.py，9 项内置自检）。两份 md 由脚本渲染以避免文档漂移。"
+      "note": "技能包。专辑层技能：九项信息收集 + 0–8 章节骨架 + 六条门禁（album_check.py，28 项内置自检）+ 唯一真源渲染（build_album.py，9 项内置自检）。两份 md 由脚本渲染以避免文档漂移。",
+      "submitted": {
+        "version": "1.1.0",
+        "assetId": "os_c599c9f9e3383d68",
+        "date": "2026-10-16",
+        "note": "2026-10-16 20:1x 走 `开放平台发布`（pub.mjs）接口提交（`action=create`，新 assetId）。market=content-creation + service=tools:office（沿用 musician / mureka-musician 的过审口径）。上传 + 校验 ok（warnings/errors 均空）+ 头像已传。回读核对：version=1.1.0 / versionId=53185 / status=under_review（② 审核中）。⚠️ 技能包无图标槽位，头像已随接口单独上传。⚠️ 本包属音乐域，若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**。"
+      }
     },
     "joy2know-musician": {
       "suggestedCategory": "工具 > 办公",
@@ -675,6 +688,13 @@
         "assetId": "oe_f4f465b268a90e6f",
         "date": "2026-10-15",
         "note": " ⚠️ 2026-10-16 20:00 接口直读订正：`submitted` 原记 1.0.1（②在审），实际 `status=published`（`updatedAt` 2026-10-16T09:23:37）→ 1.0.1 **已过审并上架**，移入 `platform`。"
+      },
+      "submitted": {
+        "version": "1.2.1",
+        "assetId": "oe_f4f465b268a90e6f",
+        "versionId": "52554",
+        "date": "2026-10-16",
+        "note": "2026-10-16 20:1x 走 pub.mjs 接口 republish（同名更新版本，`action=republish`）。上传 + 校验 ok；专家头像由平台自动上传包内 avatars/。回读核对：version=1.2.1 / versionId=52554 / status=under_review。**在架版本仍是 1.0.1**（`platform` 字段未动）—— 审核通过后会转 `approved`（待发布），**还需在发布管理页点一次「发布」才真正上架**。"
       }
     }
   },
