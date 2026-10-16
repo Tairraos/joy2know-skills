@@ -1,7 +1,7 @@
 {
   "name": "joy2know-suno-maestro",
-  "version": "1.2.0",
-  "description": "joy2know Suno Music Maestro: turns a song idea into a ready-to-paste prompt pack for Suno — a title, an optimized Style line that locks language and accent in the first field (nine fields for vocals, instrumental and seamless-loop variants), and section-tagged lyrics with explicit repeats. Specialises in healing folk and dialect songs (Cantonese word-locks and tonal compensation stop cracked pronunciation), and plans whole albums (album brief intake, tone tokens, track table, difference matrix, time-signature and mode rationale, per-track prompts and cover prompts). Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "version": "1.2.1",
+  "description": "joy2know Suno Music Maestro: turns a song idea into a ready-to-paste prompt pack for Suno — a title, an optimized Style line that locks language and accent in the first field (nine fields for vocals, instrumental and seamless-loop variants), and section-tagged lyrics with explicit repeats. Specialises in healing folk and dialect songs (Cantonese word-locks and tonal compensation stop cracked pronunciation), and designs whole albums: one round of questions collects the brief (album name, purpose, track count, theme, lyrical themes and style, sonic anchor, mood, track names), then two text files come out — an album plan document and a per-track paste-ready checklist. The plan turns the sonic anchor into concrete style tokens, lays out the album structure, tabulates every track, and runs a difference matrix so no two tracks collide (all BPM values distinct, at most two axes shared between any pair); the checklist carries each track's style column, lyrics column and cover-art prompt with the track name and the blank-space placement. Text only Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
   "author": {
     "name": "晓得乐"
   },
@@ -23,8 +23,8 @@
     "zh": "晓得·Suno音乐大师"
   },
   "displayDescription": {
-    "en": "Turns a song idea into a ready-to-paste prompt pack for Suno (title, Style, lyrics), and plans whole albums. Text only.",
-    "zh": "把想法写成可粘贴进 Suno 的歌曲包（标题 + Style + 歌词），也规划整张专辑：曲目表、差异矩阵、逐首提示词。仅产出文本。"
+    "en": "Turns a song idea into a ready-to-paste prompt pack for Suno, and designs whole albums. Text only.",
+    "zh": "把想法写成可粘贴进 Suno 的歌曲包（标题 + Style + 歌词），也设计整张专辑：曲目表、差异矩阵、逐首粘贴。仅产出文本。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "06-ContentCreative",
