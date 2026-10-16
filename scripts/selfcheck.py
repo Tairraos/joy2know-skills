@@ -45,7 +45,11 @@ import sys
 # 专家/专家团 categoryId 合法取值 —— 官方文档「行业分类」一节（/docs/expert）。
 # 全平台共用这一份清单：专家团页面没有自己的分类表，也必须从这里选。
 # 注意：不存在 "00-ExpertTeam" 之类的「专家团专属分类」（曾据此误填，上传时报
-# 「categoryId 不在合法分类列表中」）。15 类之外一律判错。
+# 「categoryId 不在合法分类列表中」）。本清单之外一律判错。
+#
+# ⚠️ 2026-10-16 订正：官方是 16 类不是 15 类 —— 平台字典实测多出
+#    `17-CampusGuide`（高校新生攻略），且**编号不连续**（跳过 16）。
+#    导出命令：node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts
 VALID_CATEGORY_IDS = {
     "01-ProductDesign",      # 产品设计
     "02-Engineering",        # 技术工程
@@ -61,7 +65,8 @@ VALID_CATEGORY_IDS = {
     "12-IndustryConsultant", # 行业顾问
     "13-TencentZone",        # 腾讯专家
     "14-WorldWise",          # 全球发展
-    "15-Education",          # 教育
+    "15-Education",          # 教育学习
+    "17-CampusGuide",        # 高校新生攻略（编号不连续，无 16）
 }
 
 issues, oks, notes = [], [], []
@@ -244,15 +249,15 @@ def check_expert(base, name, skill_names):
     if pj.get("plugin") != name:
         bad(f"[expert] plugin 字段与 name 不一致")
 
-    # categoryId 必须在官方 15 类行业分类白名单内（专家与专家团同一份清单）。
+    # categoryId 必须在官方 16 类行业分类白名单内（专家与专家团同一份清单）。
     # 平台侧报错原文：「categoryId "XX" 不在合法分类列表中」。
     cid = pj.get("categoryId")
     if cid in VALID_CATEGORY_IDS:
         ok(f"[expert] categoryId 合法: {cid}")
     elif cid is None:
-        bad("[expert] categoryId 缺失（官方必填，取官方 15 类行业分类之一）")
+        bad("[expert] categoryId 缺失（官方必填，取官方 16 类行业分类之一）")
     else:
-        bad(f"[expert] categoryId 不在合法分类列表中: {cid!r}（合法取值见官方文档「行业分类」，共 15 类）")
+        bad(f"[expert] categoryId 不在合法分类列表中: {cid!r}（合法取值见官方文档「行业分类」，共 16 类；编号不连续，无 16）")
 
     # 6) 专家团根目录：settings.json 与 setting.json 两个名字都要有，内容一致
     #    平台校验器实查 settings.json（缺了直接「解析失败」，2026-09-17 实测），
@@ -401,6 +406,33 @@ def check_expert(base, name, skill_names):
             bad(f"[expert] 有 {len(only_lead)} 个 agent 文件名等于 agentName（应只有主理人 1 个）")
         elif len(only_lead) == 1:
             ok(f"[expert] 主理人文件名带团前缀且等于 agentName: {only_lead[0]}")
+
+        # members[].avatar 指向的文件必须真实存在。
+        # 2026-10-16 反向验证补的判据：把某成员的 avatar 改成一个不存在的文件名，
+        # selfcheck 原本**静默通过** —— 上传前看不出，上传后成员卡片才是空的。
+        # （构建期会告警，但那只是告警；selfcheck 是发布前的硬门，必须自己抓。）
+        # 源目录下 avatars/ 是构建时才注入的，故只在**文件确实应该存在**时报错：
+        # 判据 = 该成员头像所在的目录已有其它成员头像 → 说明包已进入产物形态。
+        for mb in members:
+            rel = mb.get("avatar") or ""
+            tag = mb.get("id") or "?"
+            if not rel:
+                continue
+            if not rel.startswith("avatars/"):
+                bad(f"[expert] members[{tag}].avatar 应为 avatars/ 下的相对路径，实为 {rel!r}")
+                continue
+            if not os.path.isfile(os.path.join(root, rel)):
+                # 包内 avatars/ 为空或没有同名文件时，多半是「构建时注入、源目录本来就没有」——
+                # 只有当包内 avatars/ 下确实存在其它成员头像时，才判定为真缺失。
+                avdir = os.path.join(root, "avatars")
+                sibs = ([f for f in os.listdir(avdir) if f.lower().endswith(".png")]
+                        if os.path.isdir(avdir) else [])
+                if sibs:
+                    bad(f"[expert] members[{tag}].avatar 指向的文件不存在: {rel}"
+                        f"（包内 avatars/ 已有 {len(sibs)} 张成员头像，这条是拼错）")
+                else:
+                    notes.append(f"[expert] members[{tag}].avatar={rel} 在源目录不存在，"
+                                 f"按「构建时注入」处理（构建会校验）")
 
     # 主源与内嵌副本一致性
     for s in pj.get("skills", []):
