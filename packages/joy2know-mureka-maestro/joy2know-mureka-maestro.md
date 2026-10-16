@@ -9,9 +9,9 @@
 
 - **包名**：joy2know-mureka-maestro
 - **类型**：单专家（`expertType: "agent"`）
-- **对应版本**：1.0.0
+- **对应版本**：1.1.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-15
+- **最后检测**：2026-10-16
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -19,10 +19,11 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-   2386  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / 1 内嵌技能）
+   2357  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / **2 内嵌技能**）
    4230  README.md                           包说明（他解决什么问题 / 三条底线 / 擅长体裁 / 包内容 / 用法）
-   8162  agents/joy2know-mureka-maestro.md   角色定义（开场引导 / 流程 / 6 条硬规则 / 产出格式 / 9 条自检 / 边界）
-    199  skills.json                         内嵌技能声明（构建时从 packages/<名>/ 复制真源）
+  11991  agents/joy2know-mureka-maestro.md   角色定义（开场引导 / 流程 / 6 条硬规则 / 产出格式 / 9 条自检 / 边界 /
+                                               **专辑路由 + 8 条专辑自检 + 专辑边界**）
+    228  skills.json                         内嵌技能声明（构建时从 packages/<名>/ 复制真源）
 ```
 
 **零第三方依赖核对**：专家本体无 `scripts/`、无 import、无网络调用；内嵌技能的 `mureka_check.mjs`
@@ -166,3 +167,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-mureka-maestro-v1.0.0
 | 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·Mureka音乐大师」，内嵌同步新建的技能包 `joy2know-mureka-musician`（双栏方法论 + 三体裁配方 + 结构校验器）。**源目录自检全部通过**（displayDescription.zh 实测 49 汉字；defaultInitPrompt==quickPrompts[0] 逐字相同；tags/quickPrompts 各 3；categoryId=06-ContentCreative）；**解压后交付形态自检全部通过**；`platformcheck --zip` 判 **Expert ✅**（Skill ❌ 属预期）；内嵌副本与主源 **diff 逐字节一致**；内嵌校验器 21 项自检全绿 + 反向验证有效（详见技能包报告）。displayName 为品牌署名「晓得乐」、无花名（单飞纪律）。头像为 11.1 KB 占位图待换真图。R6 跨包审计不含本包。4 项未覆盖 + 1 项弱项。 |
 | 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **第二轮：换真头像 + 重建（图标变更，不抬版本）**。与技能图标同批以真源参考图 `private/refs/毛毡小人-参考图.jpg` 生成 → 垂直偏移裁切 512×512 / 261.2 KB（深蓝三件套 + 领结 + 口琴，与音乐人版同一小孩换装）。**第一轮误用 `avatars/joy2know-musician.png` 衍生图当参考被判返工**；重做时抓到并修掉两处生成问题：全身构图（会切发髻 → 锁「严格半身像」）与背景色温不一致（锁「冷白 #FAFAFA」后与音乐人版收敛到差 ≤5/255）。重跑构建（zip 59,349 → 539,349 字节，真头像 + 内嵌图标入包）；**sha1 校验**：zip 内 `avatars/expert.png`（28f3abea…）与内嵌 `icon.png`（c9d9e5ff…）均与源图逐字一致；内嵌副本 diff 逐字节一致；解压后 selfcheck 全绿。头像未覆盖项消掉（剩 3 项未覆盖 + 1 项弱项），状态维持有条件通过。 |
 | 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **第三轮：小乐重画头像（半身像）+ 重建（包内容零改动，仍不抬版本——从未提交平台）**。新图：米色围巾 + 黑背心白衬衫领结 + 背带，肩挎包露黄铜小号，谱架前执笔写谱（与音乐人版「写谱」意象成对），512×512 / 397.8 KB。重跑构建：zip 539,349 → 846,297 字节；**sha1 校验**：zip 内 `avatars/expert.png`（aa4ed842…）与内嵌 `icon.png`（98eef71b…）均与源图逐字一致。selfcheck 全绿 + platformcheck 判 Expert ✅。**首次提交平台走本轮 publish（1.0.0 首提，action=create，走专家入口）**。 |
+| 2026-10-16 | 1.1.0 | ⚠️ 有条件通过 | **第二轮：接入专辑规划能力（内嵌新技能 `joy2know-album-design`）+ 修一处规则漂移**。内容性变化：① `skills.json` / `plugin.json` 内嵌技能 1 → **2**（新增 `joy2know-album-design`）；② `agents/*.md` 增「什么时候走专辑路径」小节（九问一次 / 曲名两段式 / 脚本渲染 / 六条门禁 / 三个纪律）+ **8 条专辑自检清单** + 专辑边界（只给封面提示词文本、不交付音频、不承诺效果）；③ `plugin.json` description 与 displayDescription 补专辑能力、tags 与 quickPrompts 保持官方固定 **3** 条（**把专辑并进第 1 个 tag、另同步：`plugin.json` 的 `skills` 数组已按 `skills.json` 写成 `./skills/joy2know-mureka-musician` + `./skills/joy2know-album-design`（构建会按 skills.json 重写它、只告警不拦，为免每次构建都出告警，这里把源文件一并对齐）。 |
