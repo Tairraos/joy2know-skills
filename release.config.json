@@ -338,17 +338,10 @@
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与在架单专家 joy2know-mr 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」要求补资质：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；`cine-team` 1.6.1 内容零改动过审，反证「改内容」在这类驳回里无效）。",
       "note": "单专家，内嵌 joy2know-mureka-musician + joy2know-album-design。用户口径：擅长爵士、蓝调、民谣风格，只产出提示词。",
       "platform": {
-        "version": "1.0.0",
-        "assetId": "oe_61f939bb0ab28e64",
-        "date": "2026-10-15",
-        "note": "2026-10-15 晚 `ow.mjs state` 回读 ③ 已上架（与 musician 过审同期；发布动作非本仓脚本执行——用户手动或平台侧）。首提交履历：2026-10-15 首提即过审（新 assetId；market=06-ContentCreative + service=tools:office；专家头像由平台自动上传包内 avatars/）。"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "oe_61f939bb0ab28e64",
-        "versionId": 51000,
         "date": "2026-10-16",
-        "note": "**⭐ 版本史（在架 1.0.0 之上）**：① 1.1.0（10-16 内嵌 album-design 1.1.0）**从未提交**，与 1.2.0（专辑交付物收缩为两份 + 内嵌 album-design）合并同轮送审；② 1.2.0（vid 50996）10-16 送审 ②，专家头像自动上传正常（详情回读 coverUrl=COS 真图）→ 但内嵌技能 musician 1.2.0 因补头像流程在平台 withdraw，在审专家内嵌的技能版本失去平台记录（asset-smith 1.0.7「内嵌未过审版本」被驳的同类结构风险）→ 同轮 withdraw；③ 终局：plugin.json → **1.2.1** + 重建（内嵌副本同步 musician 1.2.1）→ publish → vid 51000 / ② 审核中。本轮内容 = 双路线口径同步（跟随 musician 1.2.x 官方模板范式）：agents 8 处 + plugin.json description 英文（中文叙事式六段骨架=主推 / 英文 token=备选）；专辑纪律保持「纯音乐开关关闭」（氛围类单曲可开的例外已注明，与专辑门禁自洽）。"
+        "note": "2026-10-15 晚 `ow.mjs state` 回读 ③ 已上架（与 musician 过审同期；发布动作非本仓脚本执行——用户手动或平台侧）。首提交履历：2026-10-15 首提即过审（新 assetId；market=06-ContentCreative + service=tools:office；专家头像由平台自动上传包内 avatars/）。 ⚠️ 2026-10-16 20:00 接口直读订正：`platform` 原记 1.0.0、`submitted` 记 1.2.1；实际 `status=published` 且 currentVersion=**1.2.1** approved（`updatedAt` 2026-10-16T18:12:18）→ 1.2.1 已过审上架（客服式「点发布」那步已做）。`submitted` 清除。"
       }
     },
     "joy2know-mureka-musician": {
@@ -357,17 +350,10 @@
       "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-viral-topic` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 `joy2know-musician` 同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。备选问法：`musician` 的最终落点是「工具 > 办公」（2026-09-30 客服直接指定）。⚠️ 内嵌关系：被 `joy2know-mureka-maestro` 内嵌——若本包类目被打回，要连带看引用方是否需同轮重建。",
       "note": "技能包。内容主干 = 仓库根《Mureka音乐人提示词指南.md》（2026-10-14 V9.5 真机实测）+ 官方 FAQ（2026-10-15 抓取）+ 官方模板 58 篇语料（2026-10-16）。",
       "platform": {
-        "version": "1.0.0",
-        "assetId": "os_c27f2eeaf9a4832e",
-        "date": "2026-10-15",
-        "note": "2026-10-15 晚过审（④ 待发布）→ `pub.mjs release` 当轮上架：body={\"versionId\":51021} → ③ published（Mureka 线技能侧首个上架；平台列表接口不吐 skillId，本条缺该字段）。首提交履历：2026-10-15 首提（新 assetId；market=content-creation + service=tools:office，沿用 musician 客服指定口径避开深度合成语义）；头像经两轮 AI 生成后被小乐判「大头照」亲手重画（写谱意象）。"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "os_c27f2eeaf9a4832e",
-        "versionId": 52270,
         "date": "2026-10-16",
-        "note": "**⭐ 版本史（在架 1.0.0 之上的大版本更新）**：① 1.1.0（10-16 上午修规则 6 开关矛盾 + S6 判据）**从未提交**，与 1.2.0 大改合并同轮送审；② 1.2.0（vid 52268）10-16 送审 ② → 发现 republish 未传 `--avatar`，详情接口回读 `coverUrl=letter:auto`——**在架真图头像被顶成字母图**；带头像重试被拒（审核中不可重复提交）→ withdraw 后重提撞新坑：⭐ **提交成功过的版本号被平台占用，withdraw 也不释放**（complete-upload 拒绝「1.2.0 必须大于 1.2.0」）——与 suno 的「从未过审 draft 撤回可复用 versionId」是两回事；③ 终局：抬 **1.2.1**（内容与 1.2.0 逐字一致，仅版本号+头像）→ publish `--avatar` → vid 52270 / ② 审核中，详情回读 coverUrl=COS 真图。**教训**：技能包 republish 必须带 `--avatar`（专家才自动上传）；送审后用详情接口 `GET /capabilities/{assetId}` + `x-party-id` 核头像。本轮内容 = Mureka 官方 58 模板范式落地：SKILL.md 双路线（叙事式六段骨架=主推 / 英文 token=备选）+ 规则 8 + 校验器 S2/S3/S4/S5 放宽收中文写法 + S6 仅 loop，selftest 28 项。"
+        "note": "2026-10-15 晚过审（④ 待发布）→ `pub.mjs release` 当轮上架：body={\"versionId\":51021} → ③ published（Mureka 线技能侧首个上架；平台列表接口不吐 skillId，本条缺该字段）。首提交履历：2026-10-15 首提（新 assetId；market=content-creation + service=tools:office，沿用 musician 客服指定口径避开深度合成语义）；头像经两轮 AI 生成后被小乐判「大头照」亲手重画（写谱意象）。 ⚠️ 2026-10-16 20:00 开发者接口直读订正：`submitted` 原记 1.2.1，实际**已 `status=published` 且 currentVersion=1.2.1 approved**（`updatedAt` 2026-10-16T18:12:35）—— 即 1.2.1 **已过审并上架**，不是「在审」。据此把 `submitted` 移入 `platform`。"
       }
     },
     "joy2know-album-design": {
@@ -684,12 +670,11 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与同门 joy2know-mureka-maestro 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；cine-team 1.6.1 内容零改动过审为证）。⚠️ **内嵌的是在架技能** joy2know-musician 1.6.1（平台 ③ published）——与 asset-smith 1.0.7 因「内嵌未过审版本」被驳的疑点不同，本包结构性避开；musician 后续升级时必查本包连带重建。",
       "note": "单专家，内嵌 joy2know-musician（Suno 口径）。用户口径：与 mureka-maestro 对应，强调仅生产提示词。",
-      "submitted": {
+      "platform": {
         "version": "1.0.1",
         "assetId": "oe_f4f465b268a90e6f",
-        "versionId": 50142,
         "date": "2026-10-15",
-        "note": "**⭐ 版本史（同一包两次提交，首 assetId 已删）**：① 1.0.0（oe_e5df049c0d3ac773 / vid 50066）10-15 晚首提 ② 在审；② 10-15 深夜小乐自画头像真图到位（386.3 KB 半身像「灰发马尾+羽毛笔写谱」）→ 抬 1.0.1 重建重提。**⭐ 实测教训：withdraw 后资产回 draft，对 draft 直接 publish 会复用旧 versionId（50066 仍是 1.0.0 标签）——包内抬的版本不生成新版本记录；要换版本号必须 withdraw → delete → 重新 create**（delete 仅限从未上架的 draft；本包从未过审故 1.0.0 版本号未被占用）。③ 终局：delete 旧 assetId 后 create 提交 1.0.1 → oe_f4f465b268a90e6f / vid 50142 / ② 审核中，回读 version=1.0.1 确认。头像占位台账已清空。"
+        "note": " ⚠️ 2026-10-16 20:00 接口直读订正：`submitted` 原记 1.0.1（②在审），实际 `status=published`（`updatedAt` 2026-10-16T09:23:37）→ 1.0.1 **已过审并上架**，移入 `platform`。"
       }
     }
   },
