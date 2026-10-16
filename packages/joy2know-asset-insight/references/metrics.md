@@ -5,93 +5,39 @@
 
 ---
 
-## 一、接口
+## 一、数据从哪来（**页面取，不调接口**）
 
-```
-POST /api/v2/open-platform/asset-metrics/daily
-```
+**本参考只讲怎么读数据，不讲怎么取数据。**
 
-**请求体**
+在开放平台打开 **「运营数据」**（左侧菜单，路径 `/operations`）：
 
-```json
-{
-  "assetIds":   ["os_xxxx", "oe_yyyy"],
-  "metricTypes": ["installs","calls","activeUsers","frequency","weekRetention","errorRate"],
-  "startTime":  "2026-09-14",
-  "endTime":    "2026-10-13"
-}
-```
+| 页面元素 | 用途 |
+|---|---|
+| **时间范围** | 切近 7 / 30 / 90 天 —— **三档都看**，单档看不出斜率 |
+| **资产类型** | 技能 / 专家分开看，两类量级差很多 |
+| **具体资产** | 可单独盯一个资产看它的日曲线 |
+| **表格列** | 资产 · 安装量 · 调用量 · 活跃用户 · 人均使用频次 · 次周留存 |
 
-**响应**
+把表格读出来（或截图）交给分析即可。
 
-```json
-{ "code": 0, "data": {
-  "query": { "startTime": "...", "endTime": "...", "metricTypes": [...] },
-  "assetData": [{
-    "assetId": "os_xxxx", "assetName": "晓得·音乐人", "assetType": "skill",
-    "overview": {                                  // ← 窗口内汇总
-      "installs":     { "value": 44, "status": "ready" },
-      "calls":        { "value": 54, "status": "ready" },
-      "activeUsers":  { "value": 31, "status": "ready" },
-      "frequency":    { "value": 1.85, "status": "ready" },
-      "weekRetention":{ "value": 0.136, "status": "ready" },
-      "errorRate":    { "value": null, "status": "na" }
-    },
-    "daily": [ { "date": "2026-09-17",
-                 "metrics": { "installs": {"value":0,"status":"ready"}, ... } } ]
-  }],
-  "platformDailyTotal": [ ... ]                    // 平台级日汇总
-}}
-```
+> ⚠️ **为什么本技能不代取数**：平台要求开发者**不得超出用户、平台或第三方授权调用接口、
+> 执行代码或开展自动化任务**。原先随包的取数脚本**已删除**——
+> 它的代价是整个技能过不了审，而**分析方法本身不受影响**。
 
-### `status` 三态 —— **别把 null 当 0**
+---
 
-| status | 含义 | 处理 |
+## 二、字段与状态怎么读（页面上的数字也有"不可用"态）
+
+页面上你会遇到三种数字，**别把「—」当 0**：
+
+| 页面显示 | 含义 | 处理 |
 |---|---|---|
-| `ready` | 有值 | 正常用 |
-| `pending` | 数据还没算完 | **不要当 0**，会导致趋势图掉坑 |
-| `na` | 本指标对该资产不适用 | 排除，别参与均值 |
+| 正常数字 | 已算出 | 直接用 |
+| **`—` / 空白** | 该指标对这条资产**不适用**，或平台未下发 | **排除**，别当 0 参与均值 |
+| **`0`** | 真的没有 | 正常计 0 |
 
-> 实测 `errorRate` 在全部资产上**恒为 `na`** —— 平台目前不下发这一项，**任何基于它的结论都是编的**。
+⚠️ 实测 **「错误率」长期为空**（平台未下发）—— **任何基于它的结论都是编的**，不要用。
 
----
-
-## 二、三个坑（照 `/capabilities/*` 的规律猜会全错）
-
-### ① 接口名不在常规前缀清单里
-
-前面挖到的接口都是 `/capabilities/*`、`/messages` 这种；运营数据是独立的
-**`/asset-metrics/daily`**。找法：在前端 `page-*.js` 里搜
-`metricsPort.getAssetDailyMetrics`。
-
-**猜路径全部 404**：`/operations`、`/operations/stats`、`/analytics/overview`、
-`/capabilities/stats`、`/metrics` … 一个都不对。
-
-### ② 时间是 `"YYYY-MM-DD"` 字符串，不是时间戳
-
-传毫秒时间戳会报：
-
-```
-{"code":100001,"msg":"请求体不是合法 JSON"}
-```
-
-⚠️ **这个报错极具误导性** —— JSON 结构明明合法。
-真正的意思是「字段类型不对」。前端源码里是这么转的：
-
-```js
-function w(e){ return new Date(e).toISOString().slice(0,10) }   // → "2026-09-14"
-```
-
-### ③ `metricTypes` 只认 6 个值，多一个就整单失败
-
-```
-installs · calls · activeUsers · frequency · weekRetention · errorRate
-```
-
-塞进别的一律返回 **`code 100001`**（**不是**「忽略未知指标」）。
-实测加了 `hourlyCalls` → 整个请求失败，六个指标一个都拿不到。
-
----
 
 ## 三、指标读法
 

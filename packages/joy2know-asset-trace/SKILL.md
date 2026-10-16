@@ -19,7 +19,7 @@ description_en: >-
   release.config.json, and the rule that a recorded submitted version must still be
   counter-verified against the platform. Credentials are never included.
 category: capability
-version: 1.0.1
+version: 1.0.2
 author: 晓得乐
 ---
 
@@ -64,20 +64,24 @@ author: 晓得乐
 
 ---
 
-## 二、读法（只教方法）
+## 二、读法（**看页面，不调接口**）
 
-登录态下同源 POST：
+**本技能不代取数据、不调平台接口。**
 
-```
-POST /api/v2/open-platform/capabilities/list
-头：X-Party-Id: <你的 party id>
-body：filters:[{name:'capability_type',values:['skill'|'expert']}]
-```
+在平台上读状态的位置：
 
-**两类各调一次**（技能 / 专家），返回每条含 `assetId` / `name` / `visibleScope` /
-顶层 `status` / `currentVersion{version,status}` / `updatedAt` / `submitCountToday`。
+| 想看什么 | 去哪儿 |
+|---|---|
+| **技能**的状态、版本、assetId | 开放平台 → 左侧 **「技能」**（`/skill/all`） |
+| **专家 / 专家团**的状态 | 开放平台 → 左侧 **「专家」**（`/expert/all`） |
+| **运营表现**（安装/调用/留存） | 左侧 **「运营数据」**（`/operations`） |
 
-实测一次读回 28 个资产（技能 17 + 专家/团 11），耗时 **< 2 秒**，不开浏览器。
+页面正文会直接印出 **状态 · 可见范围 · 版本号 · assetId**，
+按「四态模型」把状态读准即可（见上一节）。
+
+> ⚠️ **为什么不调接口**：平台要求开发者**不得超出用户、平台或第三方授权调用接口、
+> 执行代码或开展自动化任务**。原先在正文里给出的接口调用方式**已删除**——
+> **页面上的信息与接口返回是同一份**，看页面一样够用，且合规。
 
 ### 降级路径
 
@@ -90,8 +94,7 @@ body：filters:[{name:'capability_type',values:['skill'|'expert']}]
 
 - ~~「② 只能人工截图、专家/团读不到」~~ —— 开发者接口对三类资产一视同仁。
 - ~~「市场显示 1.1.0 = 没提交新版本」~~ —— 曾据此把在审写成没传过。
-- ~~「每 3 天自动同步」定时任务~~ —— **已下线**，改为指定时机手工触发。
-  别照仓库里留存的描述判断有没有自动任务。
+- 本技能**不含任何自动化/周期性任务**，所有动作都由你指按你指定的时机机手工触发。
 
 ---
 

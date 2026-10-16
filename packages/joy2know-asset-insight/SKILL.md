@@ -3,19 +3,18 @@ name: joy2know-asset-insight
 display_name: 晓得·技能专家数据洞察
 display_name_en: joy2know Skill Expert Data Insight
 description: >-
-  把 WorkBuddy 开放平台的「运营数据」变成一个能决策的结论，而不是一堆数字。纯接口直读
-  asset-metrics/daily，拿到安装量、调用量、活跃用户、人均频次、次周留存五条指标与日序列，
+  把开放平台「运营数据」变成一个能决策的结论，而不是一堆数字。拿到安装量、调用量、活跃用户、人均频次、次周留存五条指标与日序列，
   再按「集中度 / 粘性 / 留存 / 加速」四把尺子算成一页运营报告：谁在真的被用、谁装了没人用、
   谁在涨谁在退，以及下一周该把力气花在哪。触发词：运营数据、使用数据、哪个技能最火、
   哪个专家用得最多、访问排行、调用量、安装量、活跃用户、次周留存、使用趋势、运营报告、
-  数据洞察、谁装了没人用、留存为什么低、asset-metrics。
+  数据洞察、谁装了没人用、留存为什么低。
 description_zh: >-
-  纯接口读开放平台运营数据，按集中度 / 粘性 / 留存 / 加速四把尺子算成可决策的运营报告。
+  把开放平台运营数据按集中度 / 粘性 / 留存 / 加速四把尺子算成可决策的运营报告。
 description_en: >-
-  Reads WorkBuddy open-platform operations metrics over a pure API and turns them into a decision-ready
-  report along four axes: concentration, stickiness, retention and acceleration.
+  Turns platform operations metrics into a decision-ready report along four axes:
+  concentration, stickiness, retention and acceleration. Analysis only; it does not fetch data.
 category: capability
-version: 1.0.0
+version: 1.0.1
 author: 晓得乐
 ---
 
@@ -32,29 +31,21 @@ author: 晓得乐
 | 「为什么没人用」「留存怎么这么低」 | 拉数据后**重点做归因**，并区分「样本太小」与「真的没需求」 |
 | 「上周改完有效果吗」 | 拉**两段窗口对比**（改前 / 改后），看调用与安装的斜率变化 |
 
-## 数据从哪来（**纯接口，不必开浏览器**）
+## 数据从哪来（**自己去平台页取，本技能不代取**）
 
-```bash
-NODE=/Users/xiaole/.workbuddy/binaries/node/versions/22.22.2-6/bin/node
-$NODE ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs ops --top 20        # 控制台排行
-$NODE ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs ops --json          # 原始 JSON
-$NODE scripts/ops.mjs --out <输出.html> [--days 30]                        # 本技能：出 HTML 报告
-```
+**本技能只做分析，不取数。** 数据由你自己在平台上导出：
 
-接口：`POST /api/v2/open-platform/asset-metrics/daily`
-体：`{ assetIds:[…], metricTypes:[…], startTime:"YYYY-MM-DD", endTime:"YYYY-MM-DD" }`
+1. 打开开放平台 → 左侧菜单 **「运营数据」**（`/operations`）；
+2. 用页面上的筛选器选 **时间范围**（近 7 / 30 / 90 天）与 **资产类型 / 具体资产**；
+3. 把页面上的表格读出来（或截图），交给本技能分析。
 
-### ⚠️ 三个必须知道的坑（都踩过）
+> ⚠️ **为什么不让脚本代取**：平台明确要求**不得超出用户、平台或第三方授权调用接口、执行代码或开展自动化任务**。
+> 本技能原先附带的取数脚本**已删除** —— 留着的代价是**整个技能过不了审**。
+> 分析方法（下面几节）**全部保留**，只是数据来源改成「你自己给」。
 
-1. **接口名不在常规清单里** —— 它是 `/asset-metrics/daily`，得从前端 `page-*.js` 里的
-   `metricsPort.getAssetDailyMetrics` 才能挖到，**照 `/capabilities/*` 的规律猜会全是 404**。
-2. **时间是 `"YYYY-MM-DD"` 字符串**，不是毫秒时间戳。传数字会报
-   `请求体不是合法 JSON`（这个报错很有误导性 —— 明明 JSON 是合法结构）。
-3. **`metricTypes` 只认 6 个值**：`installs` `calls` `activeUsers` `frequency`
-   `weekRetention` `errorRate`。**塞进任何别的值，整个请求返回 `code 100001`**，
-   而不是「忽略未知指标」。（试过 `hourlyCalls`，全军覆没。）
+字段含义、指标读法、四把尺子见 @references/metrics.md。
 
-细节与字段结构见 @references/metrics.md。
+**你给我的数据可以是**：表格文本 / CSV / 截图 / 手抄的数字 —— 我给结论，不负责取数。
 
 ## 五条指标怎么读
 

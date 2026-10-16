@@ -23,7 +23,7 @@ description_en: >-
   profession rather than displayName. Ships fieldcheck.py, an offline field validator that runs
   against a local package directory or zip and needs no network or credentials.
 category: capability
-version: 1.0.0
+version: 1.0.1
 author: 晓得乐
 ---
 
@@ -175,7 +175,7 @@ author: 署名
 | `09-OperationsHR` 运营人力 | `10-ProjectQuality` 项目质量 | `11-SecurityCompliance` 法务安全 | `12-IndustryConsultant` 行业顾问 |
 | `13-TencentZone` 腾讯专家 | `14-WorldWise` 全球发展 | `15-Education` 教育 | `17-CampusGuide` 高校新生攻略 |
 
-⚠️ **编号不连续** —— 有 `17-` 但没有 `16-`，且总数是 **16 个**。按「01~15」写判据会**漏掉 `17-CampusGuide`**（2026-10-13 从平台接口实测，接口 `GET /capabilities/categories?capabilityType=expert` 返回 16 条）。
+⚠️ **编号不连续** —— 有 `17-` 但没有 `16-`，且总数是 **16 个**。按「01~15」写判据会**漏掉 `17-CampusGuide`**（2026-10-13 在平台「专家」分类选择器上逐个数过，共 16 项）。
 
 ⚠️ **上表的 16 类是「专家包内 `plugin.json` 的 `categoryId`」专用。**
 发布**技能**时后台要选的是**另外两套**，与它完全不同 ——

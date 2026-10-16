@@ -7,7 +7,7 @@
 
 - **包名**：joy2know-asset-spec
 - **类型**：技能（Skill）
-- **对应版本**：1.0.0
+- **对应版本**：1.0.1
 - **检测状态**：⚠️ 有条件通过
 - **最后检测**：2026-10-12
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
@@ -134,3 +134,4 @@ joy2know-asset-spec/
 | 2026-10-13 | 1.0.0 | ⚠️ 有条件通过 | **删除草稿后以全新 1.0.0 重发**（用户指示）。上一版曾抬到 1.0.1 重提，但平台的 `versionId` **未变**（实测 `fields.common.version` 不被接受、更新路径下 `complete-upload` 返回的 `uploadToken` 也带不出新版本）。处置：withdraw → **delete** 掉该 assetId → 版本回到 1.0.0 → 当新包发布。**验证了「删除草稿后版本号可重用」**。 |
 | 2026-10-13 | 1.0.0 | ⚠️ 有条件通过 | **首次上架送审（纯接口，全程未开浏览器）**：assetId `os_33e266dd59b7a13f`，versionId 47004，status `under_review`。链路 init-upload → COS 直传 → complete-upload → 头像 presign+直传 → submit。落库核对：marketCategories=[development-tools]、categories=[tools:office]、头像为真实 CDN 地址。 |
 | 2026-10-12 | 1.0.0 | ⚠️ 有条件通过 | 同日第二轮：description 由 703 压缩到 329 字符（并句删冗词、不删信息块），落在系列经验区间 240–390；重跑构建与全量自检。 |
+| 2026-10-16 | 1.0.1 | ⚠️ 有条件通过 | ⭐ **合规整改（1.0.1）**：把「从平台接口实测」的表述改为「在平台页面上逐个数过」，**去掉接口引用**。 |
