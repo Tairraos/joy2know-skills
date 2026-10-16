@@ -1,6 +1,6 @@
 {
   "name": "joy2know-suno-maestro",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "joy2know Suno Music Maestro: turns a song idea into a ready-to-paste prompt pack for Suno — a title, an optimized Style line that locks language and accent in the first field (nine fields for vocals, instrumental and seamless-loop variants), and section-tagged lyrics with explicit repeats. Specialises in healing folk and dialect songs (Cantonese word-locks and tonal compensation stop cracked pronunciation), and plans whole albums (album brief intake, tone tokens, track table, difference matrix, time-signature and mode rationale, per-track prompts and cover prompts). Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
   "author": {
     "name": "晓得乐"
