@@ -340,12 +340,40 @@ def check_rendered(md_dir, spec):
     album = norm(spec.get("album"))
     plan = os.path.join(md_dir, f"{album}-专辑规划-{style_label}.md")
     paste = os.path.join(md_dir, f"{album}-粘贴清单-{style_label}.md")
-    builder = os.path.join(md_dir, "build_album.py")
 
-    for p, what in ((plan, "主文档"), (paste, "粘贴清单"), (builder, "生成脚本（单真源）")):
+    # ★ 交付只有**两份** md。产物目录里不允许再出现脚本副本或 spec.json ——
+    #   脚本副本是有害的：用户改了副本、技能里的真源没变，下次跑还是旧逻辑，
+    #   等于凭空多一个会漂移的「假真源」。spec 是中间校验数据，用户不需要它。
+    for p, what in ((plan, "专辑规划"), (paste, "粘贴清单")):
         if not os.path.isfile(p):
             add("G1", "FAIL", f"{what}不存在：{os.path.basename(p)}",
-                "三份产物必须同在一个目录；跑 build_album.py 生成")
+                "两份产物必须同在一个目录；跑 build_album.py --outdir 生成")
+
+    # 封面提示词不是第三份文件——它就在粘贴清单的每首下面，单独成文件反而会与清单不一致
+    for p, what in ((plan, "专辑规划"), (paste, "粘贴清单")):
+        if not os.path.isfile(p):
+            continue
+        txt = read_text(p)
+        if "封面提示词" not in txt:
+            add("G1", "FAIL", f"{what}里没有「封面提示词」段",
+                "封面提示词是粘贴清单每首的一部分，不是独立文件——确认没把它拆成第三份")
+
+    # 多余产物检测：本目录只应有两份 md
+    if os.path.isdir(md_dir):
+        expected = {os.path.basename(plan), os.path.basename(paste)}
+        extra = []
+        for name in sorted(os.listdir(md_dir)):
+            full = os.path.join(md_dir, name)
+            if not os.path.isfile(full):
+                continue
+            if name in expected:
+                continue
+            if name in ("album-spec.json", "build_album.py", "album_check.py") or name.endswith(".json"):
+                extra.append(name)
+        if extra:
+            add("G7", "FAIL", "产物目录里有多余文件：" + "、".join(extra),
+                "交付只有专辑规划与粘贴清单两份 md。脚本与 spec 不进交付目录——"
+                "脚本副本会让用户改到「假真源」，下次跑还是旧逻辑")
 
     if os.path.isfile(plan):
         txt = read_text(plan)
@@ -622,9 +650,59 @@ def selftest():
         got = [f["id"] for f in check_rendered("/nonexistent-dir-xyz", _good_spec())
                if f["level"] == "FAIL"]
         if "G1" not in got:
-            return f"缺目录应报 G1（三份产物都要在），实得 {got or '无FAIL'}"
+            return f"缺目录应报 G1（两份产物都要在），实得 {got or '无FAIL'}"
         return None
-    t("三份产物缺一 → G1", missing_dir)
+    t("两份产物缺一 → G1", missing_dir)
+
+    def extra_artifact():
+        """产物目录里不该有脚本副本 / spec.json —— 脚本副本是有害的「假真源」"""
+        import shutil
+        import tempfile
+        d = tempfile.mkdtemp(prefix="album-extra-")
+        try:
+            with open(os.path.join(d, "build_album.py"), "w", encoding="utf-8") as f:
+                f.write("# 用户改坏的副本\n")
+            got = [f["id"] for f in check_rendered(d, _good_spec()) if f["level"] == "FAIL"]
+            if "G7" not in got:
+                return f"目录里有脚本副本应报 G7，实得 {got or '无FAIL'}"
+            return None
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+    t("产物目录混入脚本副本 → G7（多余产物）", extra_artifact)
+
+    def extra_spec():
+        import shutil
+        import tempfile
+        d = tempfile.mkdtemp(prefix="album-spec-")
+        try:
+            with open(os.path.join(d, "album-spec.json"), "w", encoding="utf-8") as f:
+                f.write("{}")
+            got = [f["id"] for f in check_rendered(d, _good_spec()) if f["level"] == "FAIL"]
+            if "G7" not in got:
+                return f"目录里有 spec.json 应报 G7（spec 是中间数据，不进交付），实得 {got or '无FAIL'}"
+            return None
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+    t("产物目录混入 spec.json → G7", extra_spec)
+
+    def only_two_files_ok():
+        """正向对照：只有两份 md 的目录不该报 G7"""
+        import shutil
+        import tempfile
+        d = tempfile.mkdtemp(prefix="album-ok-")
+        try:
+            sp = _good_spec()
+            for fn in (f"{sp['album']}-专辑规划-{sp['styleLabel']}.md",
+                       f"{sp['album']}-粘贴清单-{sp['styleLabel']}.md"):
+                with open(os.path.join(d, fn), "w", encoding="utf-8") as f:
+                    f.write("占位")
+            got = [f["id"] for f in check_rendered(d, sp) if f["id"] == "G7"]
+            if got:
+                return f"只有两份 md 时不该报 G7，实得 {got}"
+            return None
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+    t("基线 · 只有两份 md → 不报 G7", only_two_files_ok)
 
     # ---------- 跑 ----------
     bad = 0

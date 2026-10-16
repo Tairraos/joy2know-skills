@@ -726,23 +726,6 @@ def selftest():
 
 # ---------- 入口 ----------
 
-def copy_self_to(outdir):
-    """把本脚本复制进产物目录 —— 交付要求「三份放同一目录」，而第三份就是这个脚本本身。
-    缺了它，用户手上只有两份 md、没有真源，改一处就得手改 md（= 漂移的起点）。"""
-    import shutil
-    dst = os.path.join(outdir, "build_album.py")
-    src = os.path.abspath(__file__)
-    if os.path.abspath(dst) == src:
-        return dst  # 已经在产物目录里了（例如就地渲染）
-    shutil.copyfile(src, dst)
-    try:
-        shutil.copyfile(os.path.join(os.path.dirname(src), "album_check.py"),
-                        os.path.join(outdir, "album_check.py"))
-    except OSError:
-        pass
-    return dst
-
-
 def main(argv):
     if "--selftest" in argv:
         return selftest()
@@ -753,19 +736,11 @@ def main(argv):
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import album_check
         return album_check.report(album_check.check_spec(build_spec()), "ALBUM 自洽性检查")
-    if "--export-spec" in argv:
-        i = argv.index("--export-spec")
-        path = argv[i + 1] if i + 1 < len(argv) else "album-spec.json"
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(build_spec(), f, ensure_ascii=False, indent=2)
-        print(f"[OK] 已导出 spec → {path}")
-        return 0
 
     i = argv.index("--outdir") if "--outdir" in argv else None
     if i is None:
         print("用法：python3 build_album.py --outdir ./<专辑名>", file=sys.stderr)
         print("      python3 build_album.py --check", file=sys.stderr)
-        print("      python3 build_album.py --export-spec <spec.json>", file=sys.stderr)
         print("      python3 build_album.py --selftest", file=sys.stderr)
         return 2
     outdir = argv[i + 1] if i + 1 < len(argv) else "."
@@ -774,31 +749,29 @@ def main(argv):
     album = sanitize(ALBUM["album"])
     plan_path = os.path.join(outdir, f"{album}-专辑规划-{STYLE_LABEL}.md")
     paste_path = os.path.join(outdir, f"{album}-粘贴清单-{STYLE_LABEL}.md")
-    spec_path = os.path.join(outdir, "album-spec.json")
 
     with open(plan_path, "w", encoding="utf-8") as f:
         f.write(render_plan(ALBUM))
     with open(paste_path, "w", encoding="utf-8") as f:
         f.write(render_paste(ALBUM))
-    with open(spec_path, "w", encoding="utf-8") as f:
-        json.dump(build_spec(), f, ensure_ascii=False, indent=2)
-    print(f"[OK] 主文档 → {plan_path}")
+    # ★ 只写这两份。产物目录里**不**放脚本副本、不放 spec.json：
+    #   脚本副本是有害的 —— 用户改了副本、技能里的真源没变，下次跑还是旧逻辑，
+    #   等于凭空多一个会漂移的「假真源」。spec 是中间校验数据，同样不进交付。
+    print(f"[OK] 专辑规划 → {plan_path}")
     print(f"[OK] 粘贴清单 → {paste_path}")
-    print(f"[OK] 结构化数据 → {spec_path}（校验脚本的输入）")
 
-    # 第三份 = 本脚本自身（唯一真源）。先复制再自检，
-    # 否则 check_rendered 的 G1 必然报「生成脚本不存在」—— 自检自己制造了失败条件。
-    self_dst = copy_self_to(outdir)
-    print(f"[OK] 生成脚本（唯一真源） → {self_dst}")
-
-    # 渲染完立刻自检，不合格就别让用户拿去用
+    # 渲染完立刻自检，不合格就别让用户拿去用。
+    # spec 走内存直传，不落盘 —— 校验需要它，但用户不需要它。
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     try:
         import album_check
     except ImportError:
         print("[WARN] 找不到 album_check.py，跳过自检")
         return 0
-    return album_check.main([spec_path, "--md-dir", outdir])
+
+    spec = build_spec()
+    findings = album_check.check_spec(spec) + album_check.check_rendered(outdir, spec)
+    return album_check.report(findings)
 
 
 if __name__ == "__main__":

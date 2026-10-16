@@ -4,7 +4,7 @@ display_name: 晓得·专辑设计
 display_name_en: joy2know Album Designer
 description: >-
   先用一轮问答收集专辑信息（专辑名、用途、集数、主题、歌词风格、歌词主题、风格锚点、听感、人声形态、曲目名），
-  再按固定章节骨架产出**专辑规划文档 +逐首粘贴清单 + 生成脚本**三份文本：音色口径落到具体英文 token、
+  再按固定章节骨架产出**专辑规划文档 + 粘贴清单**两份文本：音色口径落到具体英文 token、
   专辑结构、曲目表（序号/曲名/时长/BPM/拍号/调式/主奏乐器/编制/音区/情绪）、
   差异矩阵（N 首互不撞，BPM 全不同、任意两首最多两根轴相同）、拍号与调式逐项解释、逐首风格栏与歌词栏、封面提示词。
   纯文本写作工具：只产出文本，不生成图片或视频，不接入任何生成接口，不带账号与密钥。
@@ -12,27 +12,29 @@ description: >-
   album plan、album design、tracklist。
   不适用于：调用音乐生成接口；真实乐谱或 MIDI；混音、母带与音频剪辑；保证生成结果与想象一致。
 description_zh: >-
-  用一轮问答收集专辑信息，按固定章节骨架产出专辑规划文档、逐首粘贴清单与生成脚本三份文本：
+  用一轮问答收集专辑信息，按固定章节骨架产出专辑规划文档与粘贴清单两份文本：
   音色口径、专辑结构、曲目表、差异矩阵、拍号与调式解释、逐首提示词、封面提示词——
   **纯文本写作，不生成音频或图像**。
 description_en: >-
-  Collects an album's brief in one round of questions, then writes three text artefacts from a fixed section
-  skeleton: an album plan document, a per-track paste-ready checklist, and a single-source generator script.
-  The plan turns a stylistic anchor into concrete style tokens, lays out the album structure, tabulates every
-  track (number, title, duration, BPM, time signature, mode, lead instrument, instrumentation, register, mood),
-  and enforces a difference matrix so no two tracks collide (all BPM values distinct, at most two axes shared
-  between any pair), explains what each time signature and mode pair means, and gives per-track style columns,
-  lyrics columns and cover-art prompts. A text-only writing tool: it produces text only — no image or video is
-  generated, no generative AI API is called, and no account or key is carried. Not for calling a music
-  generation API, for real scores or MIDI, or for mixing and mastering.
+  Collects an album's brief in one round of questions, then writes two text files from a fixed section
+  skeleton: an album plan document and a per-track paste-ready checklist. The plan turns a stylistic anchor
+  into concrete style tokens, lays out the album structure, tabulates every track (number, title, duration,
+  BPM, time signature, mode, lead instrument, instrumentation, register, mood), and enforces a difference
+  matrix so no two tracks collide (all BPM values distinct, at most two axes shared between any pair),
+  explains what each time signature and mode pair means, and gives per-track style columns, lyrics columns
+  and cover-art prompts (the cover prompts live inside the checklist, not in a separate file). A text-only
+  writing tool: it produces text only — no image or video is generated, no generative AI API is called, and
+  no account or key is carried. Not for calling a music generation API, for real scores or MIDI, or for
+  mixing and mastering.
 category: writing
-version: 1.0.0
+version: 1.1.0
 author: 晓得乐
 ---
 
 # 晓得 · 专辑设计
 
-> 把「我要做一张专辑」变成**一份能照着做的专辑规划文档 + 一份能照着粘的逐首清单 + 一个改一处就全篇重算的生成脚本**。
+> 把「我要做一张专辑」变成**一份能照着做的专辑规划文档 + 一份能照着粘的粘贴清单**。
+> 两份都由脚本从同一份数据渲染 —— 改一处就全篇重算，不会出现「改了表忘了改清单」。
 > 你不是在写歌，你是在**做专辑企划**：先定音色口径与结构差异，再把每首落成可粘贴的提示词文本。
 
 ## 〇、定位与边界（先读这条）
@@ -41,7 +43,7 @@ author: 晓得乐
 
 | 会被问到的问题 | 本技能的实际情况 |
 |---|---|
-| 产出物是什么 | **纯文本**：专辑规划 Markdown、逐首粘贴清单 Markdown、一个生成脚本。**不产出、不合成、不导出任何音频、图像或视频文件。** |
+| 产出物是什么 | **纯文本**：专辑规划 Markdown + 粘贴清单 Markdown，**两份文件**。**不产出、不合成、不导出任何音频、图像或视频文件。** |
 | 会不会调用生成接口 | **不会。** 不接 Suno、不接 Mureka、不接任何模型 API；两个脚本（`scripts/album_check.py`、`scripts/build_album.py`）只用 Python 标准库，无网络、无账号、无密钥、无额度。 |
 | 有没有深度合成类能力 | **没有。** 不做语音合成、声音克隆、换声、换脸、虚拟人生成，也不做音视频的生成或篡改。 |
 | 音频与封面最后由谁做 | **用户自己**在音乐平台粘贴生成、自己在绘图工具出图。那两步与本技能无关，受那些平台的条款与用户账号约束。 |
@@ -58,7 +60,7 @@ author: 晓得乐
 |---|---|---|---|
 | **专辑层** | 音色锚点、结构分配、差异矩阵、拍号调式口径 | 主文档第 1–7 章 | 保证 N 首是一张专辑，不是 N 首歌的拼盘 |
 | **单曲层** | 每首的风格栏 token、歌词栏标签、意象与结构 | 主文档第 8 章 + 粘贴清单 | 保证每首能直接粘 |
-| **文本层** | 生成脚本里的结构化数据（`tracks[]`） | `build_album.py` 的 `ALBUM` 字典 | **唯一真源**，两份 md 都由它渲染 |
+| **文本层** | 生成脚本里的结构化数据（`tracks[]`） | `build_album.py` 的 `ALBUM` 字典 | **唯一真源**，两份 md 都由它渲染（**脚本本身不进交付目录**） |
 
 **最常见的失败**：专辑层没做，直接写 N 个独立提示词 —— 结果每首都能生成，但放在一起像同一台机器出的货。
 **第二常见**：主文档与粘贴清单各写一遍，改了曲目表忘了改清单 —— 于是清单和文档对不上，用户粘到的是旧版。
@@ -67,7 +69,7 @@ author: 晓得乐
 
 | 情形 | 判定信号 | 走哪条 |
 |---|---|---|
-| **A. 整张专辑** | 「做一张专辑」「规划专辑」「N 集」「EP」「tracklist」 | **本技能主路径**：信息收集 → 差异矩阵 → 三份产物 |
+| **A. 整张专辑** | 「做一张专辑」「规划专辑」「N 集」「EP」「tracklist」 | **本技能主路径**：信息收集 → 差异矩阵 → 两份产物 |
 | **B. 单曲** | 「写首歌」「一首」 | **不适用本技能** —— 交给同包的单曲技能（`joy2know-musician` / `joy2know-mureka-musician`） |
 | **C. 已有专辑，只要重排** | 用户已有曲目清单，要结构与差异 | 走A 的第 4–7 章（结构 / 曲目表 / 差异矩阵 / 拍号调式），第 8 章按已有曲目回填 |
 | **D. 只要歌名候选** | 「先给我几个歌名」 | 走第三节的「曲名未定」分支，只出候选清单，不出全篇 |
@@ -117,7 +119,7 @@ author: 晓得乐
    - **C 组·动作或短句**：用一个动作或半句话命名（例：把伞留在门口）
 2. 每个候选后**一句话注明意象来源**（来自第 5 项的哪个主题）。
 3. 让用户**回复编号**（如「A2 B4 C1」）或自定。
-4. 拿到选择后才生成三份产物，并按选择**重排全篇**（序章 / 收尾的位置要跟着名字的意象走）。
+4. 拿到选择后才生成两份产物，并按选择**重排全篇**（序章 / 收尾的位置要跟着名字的意象走）。
 
 ### 3.4 收集纪律（写的时候就要守）
 
@@ -222,16 +224,24 @@ author: 晓得乐
   2. **一张专辑里，同一调式最多 3 首**（超过就成单一情绪的循环）；
   3. **每一对（拍号 × 调式）在第 8 章都要解释为什么这么配**，不许只给数字。
 
-## 六、产物：三份，同一目录，单一真源
+## 六、产物：两份，同一目录
 
 | # | 产物 | 内容 | 谁产出 |
 |---|---|---|---|
 | 1 | `<专辑名>-专辑规划-<风格版>.md` | 主文档，章节骨架见第七节 | `build_album.py` 渲染 |
-| 2 | `<专辑名>-粘贴清单-<风格版>.md` | 每首三段可直接复制的文本，**全部包在 code tag 内** | `build_album.py` 渲染 |
-| 3 | `build_album.py`（本技能脚本） | **唯一真源**：结构化数据 `ALBUM` + 渲染逻辑 | 手工维护 |
+| 2 | `<专辑名>-粘贴清单-<风格版>.md` | 每首的可复制文本（风格栏 + 歌词栏 + **封面提示词**），**全部包在 code tag 内** | `build_album.py` 渲染 |
 
-**为什么必须有第 3 份**：主文档与粘贴清单里都有曲目表、风格栏、BPM。
-两份手写，改了曲目表忘了改清单，用户粘到的是旧版 —— 所以**两份 md 一律由脚本渲染，不许手写**。
+**交付目录里只有这两份 md。** 封面提示词**就在粘贴清单的每首下面**，不单独成文件 ——
+拆出去就多一份会与清单不一致的副本。生成脚本与 `spec.json` 是干活用的，**都不进交付目录**。
+
+**为什么脚本不进交付目录**：脚本副本是有害的。用户改了那份副本、技能里的真源却没变，
+下次再跑还是旧逻辑 —— 等于凭空多一个会漂移的「假真源」，比不给脚本更糟。
+真源始终在技能包里（`packages/<技能名>/scripts/build_album.py`），两份 md 由它渲染。
+**所以两份 md 一律不手写**：主文档与粘贴清单里都有曲目表、风格栏、BPM，
+手写两份必然漂移（改了曲目表忘了改清单 → 用户粘到旧版）。
+
+**用户要改内容怎么办**：先问清改哪几首、改成什么，由你改 `ALBUM` 数据后**重跑渲染**，
+不要让用户直接编辑那两份 md（更不要他自己改）。
 
 **目录规则**：默认落在**当前工作目录下的 `<专辑名>/`** 文件夹；
 专辑名含 `/ : * ? " < > |` 等非法字符时，目录名替换为 `-` 并在文末注明；
@@ -240,8 +250,8 @@ author: 晓得乐
 **渲染命令**：
 
 ```bash
-python3 scripts/build_album.py --outdir ./<专辑名>
-python3 scripts/build_album.py --check          # 只校验数据自洽，不写文件
+python3 scripts/build_album.py --outdir ./<专辑名>   # 渲染两份 md + 立刻自检
+python3 scripts/build_album.py --check               # 只校验数据自洽，不写文件
 ```
 
 ## 七、主文档章节骨架（必须按此编号与顺序，一章不少）
@@ -304,6 +314,7 @@ python3 scripts/build_album.py --check          # 只校验数据自洽，不写
 - [ ] 有成环需求的曲目：单数 BPM + `seamless loop` + `no fade in` + `no fade out` + 结尾首尾同源，
       且**没有承诺直出无缝**
 - [ ] 每首都附封面提示词，含 `封面文字：<曲名>`、纤细手写体、留白位置
+- [ ] **交付目录里只有那两份 md**（封面提示词在粘贴清单每首下面，脚本与 spec 不进目录）
 - [ ] 两份 md 都由 `build_album.py` 渲染（不是手写）
 - [ ] `album_check.py` 跑过，无 FAIL；WARN 逐条给了处理说明
 - [ ] 全文没有承诺生成效果、没有编造的实体与数据
@@ -346,5 +357,6 @@ python3 scripts/build_album.py --check          # 只校验数据自洽，不写
 | 10 | 承诺「按这张规划直出无缝循环 / 一定出你要的效果」 | 无缝靠后期裁切，拍胸脯就是不诚实 |
 | 11 | 封面提示词只写画面、不点名曲名与留白位置 | 用户拿到图才知道要自己加字 |
 | 12 | 主文档与粘贴清单各手写一份 | 改了一处忘了另一处 = 用户粘到旧版（必须由脚本渲染） |
+| 12b | 把脚本副本或封面提示词单独塞进交付目录 | 脚本副本是「假真源」：用户改了它、技能真源没变，下次跑还是旧逻辑；封面提示词拆出去必然与清单不一致 |
 | 13 | 曲名没定就编 N 个名字直接跑全篇 | 用户多半要改，改了就得整篇重排 |
 | 14 | 提示用户去调「时长 / 版本数 / 人声参数」 | **实测面板里没有这些控件**，会让人白找 |
