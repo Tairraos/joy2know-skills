@@ -5,9 +5,9 @@
 
 - **包名**：joy2know-code-scholar
 - **类型**：专家（expertType: agent）
-- **对应版本**：1.2.1
+- **对应版本**：1.2.2
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-23
+- **最后检测**：2026-10-16（**内嵌联动轮 · R8**）：内嵌的 `joy2know-codebase` 1.2.1 → **1.2.2**（修 `repo_scan.py` 把系统垃圾文件 `.DS_Store` 排进「最重要文件」的缺陷）。按铁律「升技能必查谁内嵌了它」，本包同步抬版本并重建；已复核产物内嵌版本 = 1.2.2）
 - **检测方式**：四道门（AGENT.md §3）
 
 ---
@@ -200,3 +200,4 @@ README.md + plugin.json 的每条承诺，到 `agents/joy2know-code-scholar.md` 
 |---|---|---|---|
 | 2026-09-23 | 1.1.0 | ⚠️ 有条件通过 | 首次成文（覆写骨架）。在 `/tmp` 副本真跑 `scripts/selfcheck.py`：识别为专家包，11 通过 / 2 提示 / 1 问题（avatar，已判定为构建填充，源文件 `avatars/joy2know-code-scholar.png` 存在）。6 组反向验证全抓（删 author/version、displayDescription.zh 30/60 字、defaultInitPrompt 改字、categoryId=00-ExpertTeam）+ 2 组阴性对照（合规包零字段漏报、补 avatar 后全绿）。门2 承诺逐条落地（2 处「部分」属构建注入/他包覆盖）；门3 profession 口径正确、规则自洽、无矛盾。未覆盖 6 项，含 AI 行为层与扫描脚本行为（依赖内嵌技能）。**未改包内任何文件，`packages/` 下无 `__pycache__`。** |
 | 2026-09-23 | 1.2.0 | ⚠️ 有条件通过 | **修复轮**：缺陷 1 → README「目录结构」加注「由构建注入」+ 补「形态说明」段（写明源包实际文件与注入来源）；缺陷 2 → **二审改判为「口径误用」，不改 description**：实测本包 plugin.description(en)=175，兄弟包 176/197 齐平；「239–386」经 YAML 解析 14 个技能包实测确认为**技能包**口径（min 239 clarify / max 386 errorfix）。新增口径探针脚本，证明该区间误用于专家包会产生 3 条不存在缺陷。验收：**真跑 5/5（含探针 3 条），同一套用例对 git 原始版本 4/5**（唯一失败 D1b 即缺陷 1；D2/D3/D4 两侧均通过 = 口径纠正而非改数据）。校验器 D1 初版曾假通过，已修。 |
+| 2026-10-16 | 1.2.2 | ⚠️ 有条件通过 | **内嵌联动轮（R8）· 包内能力零改动。** 内嵌的 `joy2know-codebase` 因修 `repo_scan.py` 的真缺陷（系统垃圾文件 `.DS_Store` 被排进「最重要的 N 个文件」）抬到 **1.2.2**。⭐ **R8 的由来**：构建对内嵌列表只做实时读取、**不拦版本不匹配** → 若不同步重建，清单会显示嵌着新版、旧 zip 里其实是旧版，**且 0 告警**。**本轮处置**：`grep -rl "joy2know-codebase" packages/*/skills.json` 确认引用方**只有本包**一个 → 按「升技能必查谁内嵌了它」抬版本 1.2.1 → 1.2.2 并重建。**验收**：`unzip -p dist/joy2know-code-scholar-v1.2.2.zip joy2know-code-scholar/skills/joy2know-codebase/SKILL.md | grep version` 实测读到 **`version: 1.2.2`** —— 不是照抄配置，是从产物里读出来的。**包内 `agents/*.md` 与 `plugin.json` 的能力描述一字未动**（内嵌技能的脚本修复不改变本专家的行为）。 |

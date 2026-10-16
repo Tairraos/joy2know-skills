@@ -20,7 +20,7 @@ description_en: >-
   explanations and risks only; it does not auto-refactor. Not for one-line bug
   fixes or for binary/encrypted repositories with no source to read.
 category: capability
-version: 1.2.1
+version: 1.2.2
 author: 晓得乐
 ---
 

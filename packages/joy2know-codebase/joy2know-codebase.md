@@ -10,9 +10,9 @@
 
 - **包名**：joy2know-codebase
 - **类型**：技能
-- **对应版本**：1.2.1
+- **对应版本**：1.2.2
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-09-23
+- **最后检测**：2026-10-16（**补检轮**：10-12 改名提交抬了版本号却没重测，本轮真跑四道门；门 1 真跑 `repo_scan.py` 抓到 1 个真缺陷并修复 —— 系统垃圾文件 `.DS_Store` 被启发式打成「层级浅+规模适中」而排进「最重要的 N 个文件」，已加 `SYSTEM_FILE_RE` 过滤并反向验证）
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -190,3 +190,4 @@
 |---|---|---|---|
 | 2026-09-23 | 1.1.0 | ⚠️ 有条件通过 | 首次成文（覆写骨架）。用受管 Python 3.13 在 /tmp 副本真跑：主流程扫真实多语言仓 real-app（32 文件，五维打分/噪音跳过/目录树正确）；8 生态依赖解析中 node/go/rust/java/php/requirements.txt 正确，**抓出 pyproject.toml 错 + 同生态覆盖丢依赖(D1)、Gemfile 错(D2)、DeprecationWarning(D3)、超大文件未彻底跳过(D4)**；27 组边界/降级/反向（空目录/单文件/超大/二进制/无权限/中文/深层/不存在 + --no-ref/--max-files/--max-depth + 不支持语言 dart）；4 组反向验证（删 author→selfcheck 红灯、删 node_modules 噪音→泄漏红灯、clean 样本不乱报）。selfcheck 7 通过/0 失败；AST 确认零第三方依赖。未改包内任何文件。未覆盖项 6 条（AI 行为层 + 触发边界 + 规模化等）。 |
 | 2026-09-23 | 1.2.0 | ⚠️ 有条件通过 | **修复轮**：D1 改用标准库 `tomllib` 按 TOML 结构取依赖 + 同生态**合并**（不再覆盖丢依赖）；D2 加 `Gemfile` 专用解析；D3 `maxsplit=` 关键字化（并全仓扫描无残留）；D4 `SKILL.md` 措辞与实现对齐（超大文件=降权，非跳过）。验收：`app` 样本改前 `python: dependencies,name,pydantic,python,version` → 改后 `SQLAlchemy,fastapi,flask,httpx,pydantic,requests`；`ruby: gem,source` → `pg,rails`；`-W error::DeprecationWarning` 不再告警；node/rust/php/go 回归**逐字未变**。 |
+| 2026-10-16 | 1.2.2 | ⚠️ 有条件通过 | **补检轮 + 修 1 个真缺陷。** `648cac6`（10-12 改名）把本报告「对应版本」抬到 1.2.1 却**只改版本号没重测**，「最后检测」仍是 09-23 → `build --strict` 判「报告比源码旧」。⭐ **抬版本号不等于测过** —— 前者是对平台的承诺、后者才是证据；脱节时构建告警是唯一能揭穿它的地方，**故不用 `touch` 改时间戳糊弄**。门 1 **真跑 `repo_scan.py` 扫本仓**（真实样本，非自造理想样本），**抓到 1 个真缺陷**：系统垃圾文件 `.DS_Store` 被启发式打成「层级浅 + 规模适中」而**排进「最重要的 N 个文件」第 4 名** —— 在 macOS 上几乎每个目录都有一个，它会挤掉真正的入口文件（本仓里 `AGENT.md` 因此被挤出前 5）。**根因**：`NOISE_FILE_RE` 只挡锁文件 / 压缩产物 / sourcemap，**漏了系统与编辑器垃圾文件**。**修法**：新增 `SYSTEM_FILE_RE`（`.DS_Store` / `Thumbs.db` / `desktop.ini` / `._*` AppleDouble / `.Spotlight-V100` / `.Trashes`）并接进 `is_noise_file()`；**首版正则漏了前导点**（写成 `^DS_Store` 而实际是 `.DS_Store`），**改完复跑仍能排到第 4 名** —— 是靠「改完必须复跑」抓到的，不是靠看代码。**反向验证**：造样本目录（`package.json` 带 `express` 依赖 + `index.js` + `app.py` + 两处 `.DS_Store` + `Thumbs.db` + `node_modules/dep.js`）→ **`express` 被识别、`app.py` 进最重要文件、`node_modules` 与系统垃圾全部排除**。**版本抬 1.2.1 → 1.2.2**（脚本行为变更属内容改动），并按 **R8 内嵌联动**同步 `joy2know-code-scholar` 抬到 1.2.2，已核验产物内嵌版本 = 1.2.2。**仍未覆盖**：`--max-files` / `--max-depth` 的边界值行为、超大仓（>1 万文件）的性能与内存表现。 |

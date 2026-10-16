@@ -30,6 +30,13 @@ NOISE_FILE_RE = re.compile(
     r"pnpm-lock\.yaml|composer\.lock|Gemfile\.lock)$",
     re.IGNORECASE,
 )
+# 系统与编辑器垃圾文件：macOS 的 .DS_Store 会被启发式打成「层级浅 + 规模适中」
+# 而排进「最重要的 N 个文件」—— macOS 上几乎每个目录都有一个，纯属噪音。
+# 2026-10-16 实测：在本仓扫描时它排到第 4 名，比真正的入口文件还靠前。
+SYSTEM_FILE_RE = re.compile(
+    r"^(\.?DS_Store|Thumbs\.db|desktop\.ini|\._.*|\.Spotlight-V100|\.Trashes)$",
+    re.IGNORECASE,
+)
 # 超大且通常是固件/数据的文件，默认不计入打分（只看大小，不读内容）
 HUGE_BYTES = 2 * 1024 * 1024
 
@@ -85,6 +92,8 @@ def is_noise_dir(name):
 def is_noise_file(path):
     base = os.path.basename(path)
     if NOISE_FILE_RE.search(base):
+        return True
+    if SYSTEM_FILE_RE.match(base):
         return True
     low = base.lower()
     if low.endswith(".min.js") or low.endswith(".min.css"):
