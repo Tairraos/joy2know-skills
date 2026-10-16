@@ -1,7 +1,7 @@
 {
   "name": "joy2know-mureka-maestro",
-  "version": "1.2.1",
-  "description": "joy2know Mureka Music Maestro: turns a song idea into a ready-to-paste two-column prompt pack for Mureka's Custom mode — a style column in either the official Chinese narrative six-block form (default, per Mureka's own templates) or the English-token seven-element form (genre, BPM, vocals, instruments, mood, scene, mixing), plus a Chinese lyrics column with section tags, a language declaration and explicit repeats, followed by the panel settings to tick before pasting. Specialises in jazz, blues and folk song prompts and their fusions, and plans whole albums (album brief intake, tone tokens, track table, difference matrix, time-signature and mode rationale, per-track prompts and cover prompts). Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "version": "1.2.2",
+  "description": "joy2know Mureka Music Maestro: turns a song idea into a ready-to-paste two-column prompt pack for Mureka's Custom mode — a style column in either the official Chinese narrative six-block form (default, per Mureka's own templates) or the English-token seven-element form (genre, BPM, vocals, instruments, mood, scene, mixing), plus a Chinese lyrics column with section tags, a language declaration and explicit repeats, followed by the panel settings to tick before pasting. Specialises in jazz, blues and folk song prompts and their fusions, and designs whole albums: one round of questions collects the brief (album name, purpose, track count, theme, lyrical themes and style, sonic anchor, mood, track names), then two text files come out — an album plan document and a per-track paste-ready checklist. The plan turns the sonic anchor into concrete style tokens, lays out the album structure, tabulates every track, and runs a difference matrix so no two tracks collide (all BPM values distinct, at most two axes shared between any pair); the checklist carries each track's style column, lyrics column and cover-art prompt with the track name and the blank-space placement. Text only Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
   "author": {
     "name": "晓得乐"
   },
@@ -23,8 +23,8 @@
     "zh": "晓得·Mureka音乐大师"
   },
   "displayDescription": {
-    "en": "Turns a song idea into a ready-to-paste two-column prompt pack for Mureka, and plans whole albums. Text only.",
-    "zh": "把想法写成可粘贴进 Mureka 的双栏提示词包，也规划整张专辑：曲目表、差异矩阵、逐首提示词。仅产出文本。"
+    "en": "Turns a song idea into a ready-to-paste two-column prompt pack for Mureka, and designs whole albums. Text only.",
+    "zh": "把想法写成可粘贴进 Mureka 的双栏提示词包，也设计整张专辑：曲目表、差异矩阵、逐首粘贴清单。仅产出文本。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "06-ContentCreative",
