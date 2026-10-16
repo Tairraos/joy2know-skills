@@ -53,7 +53,7 @@ VALID_CATEGORY_IDS = {
     "09-OperationsHR", "10-ProjectQuality", "11-SecurityCompliance", "12-IndustryConsultant",
     "13-TencentZone", "14-WorldWise", "15-Education",
     # ⚠️ 编号不连续：有 17- 但没有 16-。总计 16 类。
-    # 2026-10-13 从平台接口实测订正（旧版按「01~15」写，会漏掉这一类）。
+    # 2026-10-13 在平台「专家」分类选择器上逐项核对后订正（旧版按「01~15」写，会漏掉这一类）。
     "17-CampusGuide",
 }
 

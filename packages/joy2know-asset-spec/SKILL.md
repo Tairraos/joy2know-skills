@@ -23,7 +23,7 @@ description_en: >-
   profession rather than displayName. Ships fieldcheck.py, an offline field validator that runs
   against a local package directory or zip and needs no network or credentials.
 category: capability
-version: 1.0.1
+version: 1.0.2
 author: 晓得乐
 ---
 
@@ -181,7 +181,7 @@ author: 署名
 发布**技能**时后台要选的是**另外两套**，与它完全不同 ——
 「市场展示分类」是 13 个扁平 slug（`development-tools` 等），
 「服务类目」是 9 个一级的树（`tools:office` 等）。
-两者都可从平台接口导出（见技能 `开放平台发布`）。**别把三套混着填。**
+两者都能在平台页面上查到（见技能 `开放平台发布`）。**别把三套混着填。**
 
 ⚠️ **不存在 `00-ExpertTeam` 这类「专家团专属分类」。** 曾填进去被平台直接打回。
 **专家团页面本身没有分类表**（清单在专家页，全平台共用）—— 找不到不等于不用管；两个团选同一类目是允许的。

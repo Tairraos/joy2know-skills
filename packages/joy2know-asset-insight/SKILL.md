@@ -14,7 +14,7 @@ description_en: >-
   Turns platform operations metrics into a decision-ready report along four axes:
   concentration, stickiness, retention and acceleration. Analysis only; it does not fetch data.
 category: capability
-version: 1.0.1
+version: 1.0.2
 author: 晓得乐
 ---
 
@@ -100,5 +100,5 @@ author: 晓得乐
   **不在表内 ≠ 表现差**，报告里必须写明。
 - **日序列有跳日**（平台只在有活动时落点），算「有效天数」用「调用 > 0 的天数」。
 - **近 7 天 / 30 天 / 90 天**三档窗口都要拉 —— 单窗口看不出斜率。
-- **不做**：来源渠道、地域、机型等维度（平台未开接口，别假装有）。
+- **不做**：来源渠道、地域、机型等维度（平台页面上没有，别假装有）。
 - **不碰凭证**：复用 `开放平台发布` 技能的凭证，失效时按它的提示引导用户重新登录。
