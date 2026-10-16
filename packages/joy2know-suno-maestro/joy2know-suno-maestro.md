@@ -3,16 +3,18 @@
 > **口径说明**：每条结论对应一次**真实运行**（命令 + 样本 + 输出要点）。
 > 校验器为仓库权威版 `scripts/selfcheck.py`；平台侧入口判据复刻在 `scripts/platformcheck.py`；
 > 合规用词门禁为 `scripts/compliance_wording.py`。
-> 本包是单专家（`expertType: agent`），**纯提示词包 + 1 个内嵌技能**：专家本体无 `scripts/`；
-> 内嵌技能 `joy2know-musician`（Suno 口径，平台在架 1.6.1）自带只读 Python 校验器（无网络调用、无写文件、无凭证）。
+> 本包是单专家（`expertType: agent`），**纯提示词包 + 2 个内嵌技能**：专家本体无 `scripts/`；
+> 内嵌技能 `joy2know-musician`（Suno 口径，平台在架 1.6.1）自带只读 Python 校验器，
+> `joy2know-album-design`（专辑层，2026-10-16 新增内嵌）自带只读 Python 校验器与渲染脚本——
+> 两者均无网络调用、无凭证。
 > **排除文件说明**：本报告是包根那一个 `joy2know-suno-maestro.md`（开发期文档，不进 zip）；
 > 角色定义 `agents/joy2know-suno-maestro.md` 是**真 agent、不被排除**。
 
 - **包名**：joy2know-suno-maestro
 - **类型**：单专家（`expertType: "agent"`）
-- **对应版本**：1.0.1
+- **对应版本**：1.1.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-15
+- **最后检测**：2026-10-16
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -20,10 +22,11 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-   2326  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / 1 内嵌技能）
-   3546  README.md                           包说明（他解决什么问题 / 三条底线 / 擅长体裁 / 包内容 / 用法）
-   8847  agents/joy2know-suno-maestro.md     角色定义（开场引导 / 流程 / 6 条硬规则 / 产出格式 / 10 条自检 / 边界）
-    196  skills.json                         内嵌技能声明（构建时从 packages/<名>/ 复制真源）
+   2360  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / **2 内嵌技能**）
+   4408  README.md                           包说明（他解决什么问题 / 三条底线 / 擅长体裁 / 包内容 / 用法）
+  12086  agents/joy2know-suno-maestro.md     角色定义（开场引导 / 流程 / 6 条硬规则 / 产出格式 / 10 条自检 / 边界 /
+                                               **专辑路由 + 8 条专辑自检 + 专辑边界**）
+    221  skills.json                         内嵌技能声明（构建时从 packages/<名>/ 复制真源）
 ```
 
 **零第三方依赖核对**：专家本体无 `scripts/`、无 import、无网络调用；内嵌技能的 `suno_check.py`
@@ -181,3 +184,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-suno-maestro-v1.0.0.z
 |---|---|---|---|
 | 2026-10-15 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·Suno音乐大师」，内嵌在架技能包 `joy2know-musician` 1.6.1（Suno 三段方法论 + 方言防破音 + 结构校验器）。**源目录与解压交付形态自检全部通过**（displayDescription.zh 实测 49 汉字；defaultInitPrompt==quickPrompts[0] 逐字相同；tags/quickPrompts 各 3；categoryId=06-ContentCreative）；`platformcheck --zip` 判 **Expert ✅**（Skill ❌ 属预期）；内嵌副本与主源 **diff 逐字节一致**、内嵌 icon sha1 与源图一致、内嵌版本 1.6.1 与平台在架一致（结构性避开 asset-smith 1.0.7 内嵌未过审版本的驳回疑点）。displayName 为品牌署名「晓得乐」、无花名（单飞纪律）。头像为 10.7 KB 占位图（用户自画）。R6 审计未跑（已列未覆盖项）。4 项未覆盖 + 2 项弱项。 |
 | 2026-10-15 | 1.0.1 | ✅ 通过 | **换头像重提**。内容性变化仅 2 处：① 专家头像 10.7 KB 占位图 → **386.3 KB 小乐自画真图**（半身像：灰发小马尾红发圈 + 深蓝毛毡马甲白衬衫领结，书桌前执羽毛笔写谱，与 mureka 系列同「写谱」意象；四角采样冷白系）；② 版本行 plugin.json / README 1.0.0→1.0.1（1.0.0 已提交成功版本号被占用，按判据抬版）。重建 zip **800,720 字节（782.0 KB）**；zip 内 `avatars/expert.png` sha1 与源图**逐字一致**（c0c900eb…）；内嵌 musician 1.6.1 与图标未动。源目录 selfcheck 全绿 + 解压形态 selfcheck 全绿 + `platformcheck --zip` **Expert ✅**。`.placeholders.json` 占位台账条目同步清空。 |
+| 2026-10-16 | 1.1.0 | ⚠️ 有条件通过 | **第二轮：接入专辑规划能力（内嵌新技能 `joy2know-album-design`）**。内容性变化：① `skills.json` / `plugin.json` 内嵌技能 1 → **2**（新增 `joy2know-album-design`）；② `agents/*.md` 增「什么时候走专辑路径」小节（单曲 vs 专辑对照表 / 五步流程 / 两个纪律：不手改 md、平台字段以 Suno 身份为准）+ **8 条专辑自检清单** + 专辑边界（只给封面提示词文本、不交付音频、不承诺效果）；③ `plugin.json` description 与 displayDescription 补专辑能力；tags 与 quickPrompts 保持官方固定 **3** 条（**把专辑并进第 1 个 tag、用专辑入口替换第 3 个 quickPrompt，不新增第 4 条**—— 初版曾直接 append 导致构建报「tags=4 / quickPrompts=4 超官方固定 3」，已改）；displayDescription.zh 压到 **41 汉字**（官方要求 40–50；初版超限构建报错，已压）。**Suno 侧的专辑纪律特别注明**：`Suno 面板没有「纯音乐」开关`（那条只适用于 Mureka，实测打开会锁死歌词栏），器乐靠 Style 前两字段 `Instrumental, No vocals` 声明——避免把 Mureka 口径误搬过来。内嵌 `joy2know-musician` 保持 1.6.1 未动（本轮未改该技能）。构建后 expert 自检全绿、zip 内 `skills/joy2know-album-design/` 已注入。 |另同步：`plugin.json` 的 `skills` 数组已按 `skills.json` 写成 `./skills/joy2know-musician` + `./skills/joy2know-album-design`（构建会按 skills.json 重写它、只告警不拦，为免每次构建都出告警，这里把源文件一并对齐——**同一份声明只留 skills.json 一个真源，plugin.json 那份由构建同步**）。 |

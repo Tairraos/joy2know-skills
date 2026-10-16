@@ -1,7 +1,7 @@
 {
   "name": "joy2know-suno-maestro",
-  "version": "1.0.1",
-  "description": "joy2know Suno Music Maestro: turns a song idea into a ready-to-paste prompt pack for Suno — a title, an optimized Style line that locks language and accent in the first field (nine fields for vocals, instrumental and seamless-loop variants), and section-tagged lyrics with explicit repeats. Specialises in healing folk and dialect songs (Cantonese word-locks and tonal compensation stop cracked pronunciation), plus phantom-vocal-free instrumental and loop structures. Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "version": "1.1.0",
+  "description": "joy2know Suno Music Maestro: turns a song idea into a ready-to-paste prompt pack for Suno — a title, an optimized Style line that locks language and accent in the first field (nine fields for vocals, instrumental and seamless-loop variants), and section-tagged lyrics with explicit repeats. Specialises in healing folk and dialect songs (Cantonese word-locks and tonal compensation stop cracked pronunciation), and plans whole albums (album brief intake, tone tokens, track table, difference matrix, time-signature and mode rationale, per-track prompts and cover prompts). Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
   "author": {
     "name": "晓得乐"
   },
@@ -9,7 +9,8 @@
     "./agents/joy2know-suno-maestro.md"
   ],
   "skills": [
-    "./skills/joy2know-musician"
+    "./skills/joy2know-musician",
+    "./skills/joy2know-album-design"
   ],
   "expertType": "agent",
   "agentName": "joy2know-suno-maestro",
@@ -22,8 +23,8 @@
     "zh": "晓得·Suno音乐大师"
   },
   "displayDescription": {
-    "en": "Turns a song idea into a ready-to-paste prompt pack for Suno: a title, a Style line that locks language first, and section-tagged lyrics — healing folk, Cantonese and other dialects, instrumental and loop structures. Text only, no audio.",
-    "zh": "把一段想法写成可直接粘贴进 Suno 的歌曲提示词包：标题、Style 与带段落标签的歌词，支持粤语等方言防跑偏，仅产出提示词文本。"
+    "en": "Turns a song idea into a ready-to-paste prompt pack for Suno (title, Style, lyrics), and plans whole albums. Text only.",
+    "zh": "把想法写成可粘贴进 Suno 的歌曲包（标题 + Style + 歌词），也规划整张专辑：曲目表、差异矩阵、逐首提示词。仅产出文本。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "06-ContentCreative",
@@ -34,8 +35,8 @@
   "plugin": "joy2know-suno-maestro",
   "tags": [
     {
-      "en": "Suno Prompts",
-      "zh": "Suno提示词"
+      "en": "Album Planning Prompts",
+      "zh": "专辑与单曲提示词"
     },
     {
       "en": "Healing Lyrics",
@@ -56,8 +57,8 @@
       "zh": "写一首深夜便利店主题的粤语歌"
     },
     {
-      "en": "Check this prompt pack before I paste it",
-      "zh": "这份提示词帮我检查一下再粘"
+      "en": "Design a full album plan for me",
+      "zh": "帮我规划一张专辑"
     }
   ]
 }
