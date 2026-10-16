@@ -30,9 +30,13 @@ function parseArgs(argv) {
   return out;
 }
 
-// 去掉「No vocals / Instrumental」这两个器乐声明词后再查人声词，避免声明本身被误报
+// 去掉「No vocals / Instrumental」声明与**中文否定人声短语**（官方器乐模板写法：「不要人声、不要口白」）
+// 之后再查人声词，避免声明与合法否定句本身被误报（2026-10-16 官方模板实证：否定人声是官方器乐写法）
 function vocalsLeftover(style) {
-  const stripped = style.replace(/no\s+vocals?/gi, '').replace(/instrumental/gi, '');
+  const stripped = style
+    .replace(/no\s+vocals?/gi, '')
+    .replace(/instrumental/gi, '')
+    .replace(/不(要|用)人声|无人声|不(要|用)口白|不(要|用)歌声|无(鼓|打击乐|节奏脉冲)|纯器乐|纯音乐/g, '');
   const m = stripped.match(/vocal|singer|humming|哼唱|人声|歌声/i);
   return m ? m[0] : null;
 }
@@ -106,14 +110,19 @@ export function checkPack({ lyrics = '', style = '', title = '', instrumental = 
 
   // ---- 风格栏 ----
   if (codePoints(style) > 1000) add('S1', 'FAIL', `风格栏 ${codePoints(style)} 字，超过上限 1000`, '并句删冗词，别删信息块');
-  if (!/\b\d{2,3}\s*BPM\b|\bBPM\s*\d{2,3}\b/i.test(style))
-    add('S2', 'FAIL', '风格栏没有 BPM', '写具体数字或窄区间，如「88 BPM」「BPM 92 to 98」；循环包必须写死单个数字');
-  if (!/(female|male)\s+vocal|no\s+vocals|instrumental/i.test(style))
-    add('S3', 'FAIL', '风格栏没有人声声明', '写「female vocal / male vocal」；器乐写「No vocals」');
+  // S2（2026-10-16 放宽）：速度位 = BPM 数字 或 速度形容词。官方 58 模板仅 17% 写 BPM，
+  // 83% 用「缓慢 / 中速 / 慢至中速」等形容词——两个都没有才算 FAIL（循环包仍要 BPM 数字，见 S5）。
+  const hasSpeed = /\b\d{2,3}\s*BPM\b|\bBPM\s*\d{2,3}\b/i.test(style) ||
+    /缓慢|中速|慢速|快速|速度松弛|慢至中速|速度缓慢|节奏缓慢|慢板|中板/i.test(style);
+  if (!hasSpeed)
+    add('S2', 'FAIL', '风格栏没有速度信息（BPM 或速度形容词）', '写「88 BPM」或速度形容词（缓慢 / 中速 / 慢至中速）；循环包必须写死 BPM 单个数字');
+  // S3（2026-10-16 放宽）：人声声明接受英文 token 与中文写法（官方叙事式写「普通话女声」「气声女中音」）
+  if (!/(female|male)\s+vocal|no\s+vocals|instrumental|女声|男声|人声|独唱|童声|女中音|男中音/i.test(style))
+    add('S3', 'FAIL', '风格栏没有人声声明', '写「female vocal / male vocal」或中文叙事式的「普通话女声 / 男声」；器乐写「No vocals / 纯器乐」');
 
   if (instrumental) {
-    if (!/no\s+vocals|instrumental/i.test(style))
-      add('S4', 'FAIL', '器乐包风格栏缺「No vocals」首句', '首句写 No vocals（或 Instrumental）；并提醒用户「纯音乐」开关保持关闭 —— 实测打开后歌词栏会被锁死，方括号编曲标签贴不进去');
+    if (!/no\s+vocals|instrumental|纯器乐|不要人声|无人声|纯音乐/i.test(style))
+      add('S4', 'FAIL', '器乐包风格栏缺「No vocals / 纯器乐」声明', '首句写 No vocals（或 Instrumental / 纯器乐 + 「不要人声」否定句——官方器乐模板写法）；开关路线见规则 6');
     const leftover = vocalsLeftover(style);
     if (leftover)
       add('S4', 'FAIL', `器乐包风格栏出现人声词「${leftover}」`, '删光所有人声词——写了就等于让模型用哼唱把人声补回来');
@@ -128,14 +137,18 @@ export function checkPack({ lyrics = '', style = '', title = '', instrumental = 
         add('S6', 'FAIL', `器乐包段落标签用了「${bad[1]}」（${tag.slice(0, 24)}）`,
           '器乐段名只用 Intro / Loop A / Loop B / Loop A2 / Loop C / End —— Verse/Chorus/Bridge 自带「有人唱」的语义，会招来演唱');
     }
-    if (tagLines.length === 0)
-      add('S6', 'WARN', '器乐包一个段落标签都没有',
-        '音乐流向靠方括号里的编曲动作写：至少给 [Intro] 与 [End]（结尾写「回到开头的和弦与织体、干净切断」）');
+    if (tagLines.length === 0 && loop)
+      add('S6', 'WARN', '循环包一个段落标签都没有',
+        '循环的流向控制靠方括号里的编曲动作写：至少给 [Intro] 与 [End]（结尾写「回到开头的和弦与织体、干净切断」）。氛围/声景类器乐（开关打开路线、非 loop）无标签是合法状态');
+  } else if (!instrumental && tagLines.length === 0) {
+    add('S6', 'WARN', '有人声包一个段落标签都没有',
+      '段落结构靠 [Intro]/[Verse]/[Chorus]/[Outro] 等标签声明；若是「纯音乐」开关打开的器乐包，请改用 --instrumental 跑校验');
   }
 
   if (loop) {
-    if (!/seamless\s+loop/i.test(style))
-      add('S5', 'FAIL', '循环包风格栏缺「seamless loop」', '写「seamless loop, no fade in, no fade out」');
+    // S5（2026-10-16 放宽）：官方 Lo-fi 模板用中文写「结尾应能平滑循环回开头」——接受中英两种循环声明
+    if (!/seamless\s+loop|平滑循环|无缝循环|循环回开头/i.test(style))
+      add('S5', 'FAIL', '循环包风格栏缺循环声明', '写「seamless loop, no fade in, no fade out」或中文「结尾平滑循环回开头」');
     if (hasFadeOut(style)) add('S5', 'FAIL', '风格栏出现 fade out', '循环素材禁淡出：结尾段写「回到开头的和弦与织体、干净切断」');
     if (hasFadeOut(tagLines.join('\n'))) {
       const bad = tagLines.find((t) => /fade\s*out|fading/i.test(t));
@@ -280,10 +293,25 @@ export function selftest() {
     const r = checkPack({ lyrics: VOCAL_LYRICS, style: VOCAL_STYLE });
     if (has(r, 'FAIL', 'S6')) return '有人声包不该被S6 拦';
   });
-  t('器乐包一个标签都没有 → S6 WARN', () => {
-    const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, wide reverb';
+  t('循环包一个标签都没有 → S6 WARN（2026-10-16：氛围类器乐无标签合法，只有 loop 必须有）', () => {
+    const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, wide reverb, seamless loop';
+    const r = checkPack({ lyrics: '', style, instrumental: true, loop: true });
+    if (!has(r, 'WARN', 'S6')) return 'loop 无标签应报 S6 WARN（流向没有落点）';
+  });
+  t('氛围器乐（非 loop）无标签 → 不报 S6（2026-10-16：官方路径，开关打开歌词栏弃用是合法状态）', () => {
+    const style = '纯器乐太空 Ambient 声景，无鼓、无打击乐、不要人声、不要口白，整体宁静、宽阔、深度舒缓。';
     const r = checkPack({ lyrics: '', style, instrumental: true });
-    if (!has(r, 'WARN', 'S6')) return '应报 S6 WARN（音乐流向没有落点）';
+    if (has(r, 'WARN', 'S6') || has(r, 'FAIL', 'S6')) return '氛围类器乐无标签是官方路径，不该报 S6';
+    if (has(r, 'FAIL', 'S4')) return '「不要人声」是否定排除句（官方器乐写法），不该被当正向人声词拦';
+  });
+  t('中文叙事式风格栏 → 全绿（2026-10-16 官方范式：速度形容词 + 中文人声 + 否定排除）', () => {
+    const style = 'Mandarin Folk Pop × Acoustic Folk，整体温暖、亲密、治愈。优先突出贴近的人声叙事与画面感歌词表达。使用柔和木吉他指弹、温暖 Bass、轻柔 Brush Drums、细微钢琴与口琴点缀。Groove 保持缓慢稳定，禁止繁忙 Fill 或跳跃节奏；和声简单温暖，避免爵士/Blues 色彩或炫技 Reharmonization。普通话女声自然、亲密，主歌口语化，副歌开阔易唱。避免 EDM 元素、密集 Synth 层或戏剧化弦乐。时长约三分钟，达到可正式发行的商业混音标准。';
+    const r = checkPack({ lyrics: VOCAL_LYRICS, style });
+    if (ids(r, 'FAIL').length !== 0) return '官方中文叙事式（速度形容词 + 普通话女声）不该有任何 FAIL：' + JSON.stringify(ids(r, 'FAIL')).slice(0, 200);
+  });
+  t('风格栏无速度位（无 BPM 也无速度形容词）→ S2 FAIL', () => {
+    const r = checkPack({ lyrics: VOCAL_LYRICS, style: 'Mandarin folk blues, emotional male vocal, fingerpicked guitar, warm, room reverb' });
+    if (!has(r, 'FAIL', 'S2')) return '速度位空着应报 S2';
   });
   t('循环包带 fade out → S5 FAIL', () => {
     const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, seamless loop';
