@@ -89,7 +89,7 @@ python3 scripts/selfcheck.py packages/joy2know-mr   # 单独跑字段自检（�
 3. 把 `skills.json` 本身排除在 zip 之外；
 4. 若源包里还残留 `skills/` 副本，直接弃用并按描述文件重建。
 
-当前 **16 处引用**（**9 个引用方**、去重后 **10 个**技能）：
+当前 **18 处引用**（**11 个引用方**、去重后 **11 个**技能）：
 
 | 包 | 内嵌技能 |
 |---|---|
@@ -102,6 +102,8 @@ python3 scripts/selfcheck.py packages/joy2know-mr   # 单独跑字段自检（�
 | `joy2know-topic-planner` | `joy2know-viral-topic` |
 | `joy2know-copywriter` | `joy2know-humanize` |
 | `joy2know-reviewer` | `joy2know-dashboard` |
+| `joy2know-mureka-maestro` | `joy2know-mureka-musician`、`joy2know-album-design` |
+| `joy2know-suno-maestro` | `joy2know-musician`、`joy2know-album-design` |
 
 > 同一个技能可以被多个包内嵌（如 `joy2know-clarify` 同时在 `mr` 与 `polish-team` 里）—— 构建时各自从唯一真源复制，不产生副本。
 
@@ -172,7 +174,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 
 ## 资产总表
 
-### 技能（25）
+### 技能（26）
 
 | 包名 | 展示名 | 版本 | 作用 | zip | 状态 |
 |---|---|---|---|---|---|
@@ -200,7 +202,8 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-asset-trace` | 晓得·技能专家状态追踪 | 1.0.1 | 四态模型（审核通过 ≠ 上架）+ 记账字段口径，附无凭证对账脚本 | 8.0 KB | ② 待审核（在架 1.0.0） |
 | `joy2know-asset-maint` | 晓得·技能专家包维护 | 1.0.0 | 内嵌联动 R8、派生信息漂移、检测报告失真、头像三处同步 | 9.1 KB | ② 待审核（首次上架） |
 | `joy2know-asset-insight` | 晓得·技能专家数据洞察 | 1.0.0 | 把平台运营数据（安装/调用/活跃/频次/次周留存）按「集中度·粘性·留存·加速」四把尺子算成一页可决策报告；纯接口直读，含三个接口坑与口径边界 | 15.6 KB | ③ 审核完成 · 已上架 |
-| `joy2know-mureka-musician` | 晓得·Mureka音乐人 | 1.0.0 | 按 Mureka「自定义」双栏真机实测规范产出可直接粘贴的提示词包：风格栏英文 token 七要素（含场景位与官方鼓励的风格融合）+ 歌词栏中文（语言声明 / 段落标签 / 重复位置）+ 粘贴前界面设置；擅长爵士、蓝调、民谣及融合，默认治愈文风，含纯器乐与循环路径；实测纠偏写进包内（面板无时长 / 版本 / 人声参数滑杆） | 28.8 KB | ③ 审核完成 · 已上架 |
+| `joy2know-mureka-musician` | 晓得·Mureka音乐人 | 1.1.0 | 按 Mureka「自定义」双栏真机实测规范产出可直接粘贴的提示词包：风格栏英文 token 七要素（含场景位与官方鼓励的风格融合）+ 歌词栏中文（语言声明 / 段落标签 / 重复位置）+ 粘贴前界面设置；擅长爵士、蓝调、民谣及融合，默认治愈文风，含纯器乐与循环路径；实测纠偏写进包内（面板无时长 / 版本 / 人声参数滑杆） | 30.7 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
+| `joy2know-album-design` | 晓得·专辑设计 | 1.0.0 | 先用一轮问答收集专辑信息（专辑名 / 用途 / 集数 / 主题 / 歌词主题 / 歌词风格 / 风格锚点 / 听感 / 曲名），再按固定章节骨架产出**专辑规划文档 + 逐首粘贴清单 + 生成脚本**三份文本：音色口径落到具体英文 token、专辑结构、曲目表（十列）、差异矩阵（N 首互不撞：拍号 / 调式 / 主奏乐器 / 编制 / 音区 / BPM，BPM 全不同、任意两首≤2 根轴）、拍号与调式逐项解释、逐首风格栏与歌词栏、封面提示词；两份 md 由生成脚本渲染、校验脚本把六条纪律做成可执行门禁 | 46.3 KB | ① 开发完待提交 |
 
 > **状态列的口径（2026-09-25 立三态；2026-10-03 补第四档）**：一个资产有四种状态 ——
 > **① 开发完待提交** → **② 提交完待审核**（**用户端看不到**）→ **④ 待发布**（**审核已过、还没上架**）→ **③ 审核完成**（上架，用户端可见）。
@@ -251,8 +254,8 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-reviewer` | 晓得·投放效果复盘专家 | 专家 | 1.0.1 | `joy2know-dashboard` 1.2.1 | — | 793.8 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-harness` | 晓得·harness 工程专家 | 专家 | 1.0.0 | `joy2know-harness-rules` 1.0.0 | — | 900.8 KB | ③ 审核完成 · 已上架 |
 | `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.7 | `joy2know-asset-spec` 1.0.0、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.1、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.0 | — | 2712.1 KB | ② 待审核（在架 1.0.6） |
-| `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.0.0 | `joy2know-mureka-musician` 1.0.0 | — | 826.5 KB | ③ 审核完成 · 已上架 |
-| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.0.1 | `joy2know-musician` 1.6.1 | — | 782.0 KB | ② 待审核（首次上架） |
+| `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.1.0 | `joy2know-mureka-musician` 1.1.0、`joy2know-album-design` 1.0.0 | — | 885.8 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
+| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.1.0 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.0.0 | — | 839.2 KB | ② 待审核（交 1.0.1，首次上架）+【本地升级】 |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 

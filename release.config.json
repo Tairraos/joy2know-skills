@@ -356,6 +356,12 @@
         "note": "2026-10-15 晚过审（④ 待发布）→ `pub.mjs release` 当轮上架：body={\"versionId\":51021} → ③ published（Mureka 线技能侧首个上架；平台列表接口不吐 skillId，本条缺该字段）。首提交履历：2026-10-15 首提（新 assetId；market=content-creation + service=tools:office，沿用 musician 客服指定口径避开深度合成语义）；头像经两轮 AI 生成后被小乐判「大头照」亲手重画（写谱意象）。"
       }
     },
+    "joy2know-album-design": {
+      "suggestedCategory": "内容创作 > 文案",
+      "categoryConfirmed": false,
+      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-musician` / `joy2know-mureka-musician` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 musician 系列同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` 与 `joy2know-mureka-maestro` 两个专家内嵌（这两个专家在架 1.0.1/ 1.0.0）——若本包类目或内容被打回，两个引用方需同轮重建。2026-10-16 建包，从未提交。",
+      "note": "技能包。专辑层技能：九项信息收集 + 0–8 章节骨架 + 六条门禁（album_check.py，28 项内置自检）+ 唯一真源渲染（build_album.py，9 项内置自检）。两份 md 由脚本渲染以避免文档漂移。"
+    },
     "joy2know-musician": {
       "suggestedCategory": "工具 > 办公",
       "categoryConfirmed": true,
