@@ -113,12 +113,24 @@ export function checkPack({ lyrics = '', style = '', title = '', instrumental = 
 
   if (instrumental) {
     if (!/no\s+vocals|instrumental/i.test(style))
-      add('S4', 'FAIL', '器乐包风格栏缺「No vocals」首句', '首句写 No vocals（或 Instrumental），并提醒用户打开「纯音乐」开关');
+      add('S4', 'FAIL', '器乐包风格栏缺「No vocals」首句', '首句写 No vocals（或 Instrumental）；并提醒用户「纯音乐」开关保持关闭 —— 实测打开后歌词栏会被锁死，方括号编曲标签贴不进去');
     const leftover = vocalsLeftover(style);
     if (leftover)
       add('S4', 'FAIL', `器乐包风格栏出现人声词「${leftover}」`, '删光所有人声词——写了就等于让模型用哼唱把人声补回来');
     if (nonTagLines.length > 0)
-      add('X1', 'FAIL', `器乐包歌词栏方括号外有内容（首处：「${nonTagLines[0].slice(0, 20)}…」）`, '清空歌词栏或只留段落标签；同时提醒打开「纯音乐」开关');
+      add('X1', 'FAIL', `器乐包歌词栏方括号外有内容（首处：「${nonTagLines[0].slice(0, 20)}…」）`, '清空歌词栏或只留方括号标签（方括号外一个字不留）；段名用 Intro/Loop A/Loop B/Loop A2/Loop C/End，不用 Verse/Chorus/Bridge');
+    // S6（2026-10-16 新增）：器乐段落名禁用 Verse/Chorus/Bridge ——
+    // 这三个词携带「有人唱」的语义，贴进去等于招来演唱。这是实测纠偏带出来的判据，
+    // 补上才不至于下次又写回去。
+    for (const tag of tagLines) {
+      const bad = tag.match(/\b(verse|chorus|pre-?chorus|bridge|hook)\b/i);
+      if (bad)
+        add('S6', 'FAIL', `器乐包段落标签用了「${bad[1]}」（${tag.slice(0, 24)}）`,
+          '器乐段名只用 Intro / Loop A / Loop B / Loop A2 / Loop C / End —— Verse/Chorus/Bridge 自带「有人唱」的语义，会招来演唱');
+    }
+    if (tagLines.length === 0)
+      add('S6', 'WARN', '器乐包一个段落标签都没有',
+        '音乐流向靠方括号里的编曲动作写：至少给 [Intro] 与 [End]（结尾写「回到开头的和弦与织体、干净切断」）');
   }
 
   if (loop) {
@@ -253,6 +265,25 @@ export function selftest() {
     const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm';
     const r = checkPack({ lyrics: '这一行不该出现', style, instrumental: true });
     if (!has(r, 'FAIL', 'X1')) return '应报 X1';
+  });
+  t('器乐包段落标签用 Verse/Chorus/Bridge → S6 FAIL', () => {
+    const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, wide reverb';
+    const r = checkPack({ lyrics: '[Intro – Piano]\n[Chorus – Full band]', style, instrumental: true });
+    if (!has(r, 'FAIL', 'S6')) return '应报 S6（这些段名会招来演唱）';
+  });
+  t('器乐包用 Loop 段名池 → 无 S6 FAIL', () => {
+    const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, wide reverb';
+    const r = checkPack({ lyrics: '[Intro – Piano]\n[Loop A – Add cello]\n[End – Return to opening chord]', style, instrumental: true });
+    if (has(r, 'FAIL', 'S6')) return '规范段名池不该报 S6';
+  });
+  t('有人声包用 Verse/Chorus → 不报 S6（有人的包就该用）', () => {
+    const r = checkPack({ lyrics: VOCAL_LYRICS, style: VOCAL_STYLE });
+    if (has(r, 'FAIL', 'S6')) return '有人声包不该被S6 拦';
+  });
+  t('器乐包一个标签都没有 → S6 WARN', () => {
+    const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, wide reverb';
+    const r = checkPack({ lyrics: '', style, instrumental: true });
+    if (!has(r, 'WARN', 'S6')) return '应报 S6 WARN（音乐流向没有落点）';
   });
   t('循环包带 fade out → S5 FAIL', () => {
     const style = 'No vocals, Ambient, 72 BPM, solo grand piano, calm, seamless loop';
