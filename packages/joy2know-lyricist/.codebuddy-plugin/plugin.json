@@ -1,0 +1,63 @@
+{
+  "name": "joy2know-lyricist",
+  "version": "1.0.0",
+  "description": "joy2know Lyric Designer: writes and revises lyrics that sing. One round of questions collects the brief (theme, point of view, genre, language, mood, avoid-list, use), then the genre picks the rhyme scheme and line shapes — seventeen genres each have their own conventions and there is no universal default, so the folk ballad, rap flow, blues AAB and Chinese-mode voices are handled differently. Hook-first writing (three candidate hooks before the chorus), a cliché blacklist (neon, broken, forever, tonight-as-rhyme, templated phrases) paired with a required-concrete-object list, and a rule that verse two must develop rather than twin verse one. Ships a read-only checker that makes six craft rules executable: section skeleton, cliché scan, line-length rhythm, hook presence, rhyme-versus-genre fit, and open-vowel chorus rhymes. Also fills in section tags and style-line suggestions. Text only — no audio is generated, no generative AI API is called, no account or key is carried; no copyright clearance or registration.",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-lyricist.md"
+  ],
+  "skills": [
+    "./skills/joy2know-lyric-design"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-lyricist",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Lyric Designer",
+    "zh": "晓得·歌词设计师"
+  },
+  "displayDescription": {
+    "en": "Turns a feeling into lyrics that sing: genre-accurate rhyme schemes, hook-first drafting, a cliché blacklist, and a six-rule structure check. Text only.",
+    "zh": "把感觉写成能唱的歌词：按体裁选押韵方案、先给钩子候选、避开陈词滥调，逐段结构检查。仅产出文本。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "帮我写首歌词",
+    "en": "Write me some lyrics"
+  },
+  "plugin": "joy2know-lyricist",
+  "tags": [
+    {
+      "en": "Lyric Writing",
+      "zh": "歌词写作"
+    },
+    {
+      "en": "Rhyme & Hooks",
+      "zh": "押韵与钩子"
+    },
+    {
+      "en": "Lyric Revision",
+      "zh": "改词润色"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Write me some lyrics",
+      "zh": "帮我写首歌词"
+    },
+    {
+      "en": "My chorus is forgettable — give me three better hooks",
+      "zh": "我的副歌记不住，给我三个更好的钩子"
+    },
+    {
+      "en": "Tighten these lyrics without rewriting the whole song",
+      "zh": "打磨这版词，但别整首重写"
+    }
+  ]
+}
