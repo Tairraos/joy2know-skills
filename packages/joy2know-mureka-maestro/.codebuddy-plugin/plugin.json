@@ -1,7 +1,7 @@
 {
   "name": "joy2know-mureka-maestro",
-  "version": "1.2.2",
-  "description": "joy2know Mureka Music Maestro: turns a song idea into a ready-to-paste two-column prompt pack for Mureka's Custom mode — a style column in either the official Chinese narrative six-block form (default, per Mureka's own templates) or the English-token seven-element form (genre, BPM, vocals, instruments, mood, scene, mixing), plus a Chinese lyrics column with section tags, a language declaration and explicit repeats, followed by the panel settings to tick before pasting. Specialises in jazz, blues and folk song prompts and their fusions, and designs whole albums: one round of questions collects the brief (album name, purpose, track count, theme, lyrical themes and style, sonic anchor, mood, track names), then two text files come out — an album plan document and a per-track paste-ready checklist. The plan turns the sonic anchor into concrete style tokens, lays out the album structure, tabulates every track, and runs a difference matrix so no two tracks collide (all BPM values distinct, at most two axes shared between any pair); the checklist carries each track's style column, lyrics column and cover-art prompt with the track name and the blank-space placement. Text only Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "version": "1.3.0",
+  "description": "joy2know Mureka Music Maestro: writes and revises lyrics (genre-specific rhyme schemes and line shapes, hook-first writing, cliché blacklist) and turns a finished lyric into a ready-to-paste two-column pack for Mureka's Custom mode — a style column in either the official Chinese narrative six-block form (default) or the English-token seven-element form, plus a Chinese lyrics column with section tags, a language declaration and explicit repeats. Specialises in jazz, blues, folk and their fusions, and plans whole albums. Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
   "author": {
     "name": "晓得乐"
   },
@@ -10,7 +10,8 @@
   ],
   "skills": [
     "./skills/joy2know-mureka-musician",
-    "./skills/joy2know-album-design"
+    "./skills/joy2know-album-design",
+    "./skills/joy2know-lyric-design"
   ],
   "expertType": "agent",
   "agentName": "joy2know-mureka-maestro",
@@ -23,8 +24,8 @@
     "zh": "晓得·Mureka音乐大师"
   },
   "displayDescription": {
-    "en": "Turns a song idea into a ready-to-paste two-column prompt pack for Mureka, and designs whole albums. Text only.",
-    "zh": "把想法写成可粘贴进 Mureka 的双栏提示词包，也设计整张专辑：曲目表、差异矩阵、逐首粘贴清单。仅产出文本。"
+    "en": "Writes lyrics that sing and plans whole albums — hook-first, genre-accurate rhyme schemes, ready-to-paste Mureka packs. Text only.",
+    "zh": "写能唱的词（先定钩子、按体裁押韵、避开陈词滥调）并规划整张专辑：曲目表、差异矩阵、逐首粘贴。仅产出文本。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "06-ContentCreative",
@@ -35,8 +36,8 @@
   "plugin": "joy2know-mureka-maestro",
   "tags": [
     {
-      "en": "Album Planning Prompts",
-      "zh": "专辑与单曲提示词"
+      "en": "Lyrics & Album Design",
+      "zh": "作词与专辑设计"
     },
     {
       "en": "Jazz Blues Folk",
@@ -53,8 +54,8 @@
       "zh": "给我写一首能粘进 Mureka 的歌"
     },
     {
-      "en": "A bluesy folk song about a late-night kitchen",
-      "zh": "写一首深夜厨房主题的蓝调民谣"
+      "en": "Write or tighten my lyrics for me",
+      "zh": "帮我写或打磨这首歌的词"
     },
     {
       "en": "Design a full album plan for me",
