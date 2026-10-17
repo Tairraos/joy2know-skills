@@ -1,0 +1,64 @@
+{
+  "name": "joy2know-album-planner",
+  "version": "1.0.0",
+  "description": "joy2know Album Designer: turns a loose idea into a whole album. One round of questions collects the brief (album name, purpose, track count, theme, lyrical themes and style, sonic anchor, mood, vocal form, track names); when track names are undecided it offers candidate names first instead of inventing them. The plan then fixes a sonic anchor, lays out prologue / groups / epilogue, and runs a six-axis difference matrix so no two tracks collide (all BPM values distinct, at most two axes shared between any pair, with prologue-versus-epilogue as the single documented exception). Delivers two text files in one folder — an album plan document with a fixed chapter skeleton, and a per-track paste-ready checklist carrying each track's style column, lyrics column and cover-art prompt. Time signature and mode get explained row by row, and every instrumental track keeps the instrumental switch closed and steers its flow through bracketed section labels. Also writes or revises a single track's lyrics. Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-album-planner.md"
+  ],
+  "skills": [
+    "./skills/joy2know-album-design",
+    "./skills/joy2know-lyric-design"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-album-planner",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Album Designer",
+    "zh": "晓得·音乐专辑设计师"
+  },
+  "displayDescription": {
+    "en": "Turns a feeling into a whole album: track table, difference matrix, time signature and mode, paste-ready checklist. Text only.",
+    "zh": "从一句感觉做到一整张专辑：曲目表、差异矩阵、拍号调式、逐首粘贴清单与封面提示词。仅产出文本。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "帮我规划一张专辑",
+    "en": "Help me plan an album"
+  },
+  "plugin": "joy2know-album-planner",
+  "tags": [
+    {
+      "en": "Album Planning",
+      "zh": "专辑规划"
+    },
+    {
+      "en": "Track Design",
+      "zh": "曲目设计"
+    },
+    {
+      "en": "Lyric Writing",
+      "zh": "歌词写作"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Help me plan an album",
+      "zh": "帮我规划一张专辑"
+    },
+    {
+      "en": "Give me candidate track names before we lay out the album",
+      "zh": "先给我几组曲名候选，再排全篇"
+    },
+    {
+      "en": "Rewrite the lyrics of track three, keep the rest",
+      "zh": "重写第三首的词，其余不动"
+    }
+  ]
+}
