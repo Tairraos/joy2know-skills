@@ -12,9 +12,9 @@
 
 - **包名**：joy2know-suno-maestro
 - **类型**：单专家（`expertType: "agent"`）
-- **对应版本**：1.2.1
+- **对应版本**：1.3.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-16
+- **最后检测**：2026-10-17
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -22,9 +22,9 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-   2360  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / **2 内嵌技能**）
+   2360  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / **3 内嵌技能**）
    4408  README.md                           包说明（他解决什么问题 / 三条底线 / 擅长体裁 / 包内容 / 用法）
-  12859  agents/joy2know-suno-maestro.md     角色定义（开场引导 / 流程 / 6 条硬规则 / 产出格式 / 10 条自检 / 边界 /
+  15931  agents/joy2know-suno-maestro.md     角色定义（开场引导 / 流程 / 6 条硬规则 / 产出格式 / 10 条自检 / 边界 /
                                                **专辑路由 + 8 条专辑自检 + 专辑边界**）
     221  skills.json                         内嵌技能声明（构建时从 packages/<名>/ 复制真源）
 ```
@@ -194,3 +194,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-suno-maestro-v1.0.0.z
 拍号与调式逐项解释 / 逐首风格栏与歌词栏 / 封面提示词含曲名文字与留白位置），触发词另补「专辑策划 / 专辑制作 / tracklist」；
 ② `plugin.json` 的英文 `description` 把专辑句从笼统的括号罗列改写成完整叙事（一轮问答 → 两份文件 → 各自装什么 →
 差异矩阵怎么防撞车）；③ `displayDescription` 把「规划整张专辑」改为「**设计整张专辑**」并把清单写成「逐首粘贴清单」，
+| 2026-10-17 | 1.3.0 | ⚠️ 有条件通过 | **第五轮：接入作词能力（内嵌新技能 `joy2know-lyric-design` 1.0.0）**。内嵌技能 2 → **3**。内容性变化：① `skills.json` / `plugin.json` 增第三个内嵌技能；② `agents/*.md` 新增「三条路径怎么分工（不许互相抢）」小节 —— **写词走歌词设计、整张专辑走专辑设计、单曲提示词包走单曲技能**，并写明**歌词正文的写法一律以歌词设计为准**、单曲技能里的「治愈文风内核」**降级为它的一份预设引用**（不在本专家另立一套歌词规则）；③ 触发词补作词类（写歌词/作词/填词/改词/换个钩子/歌词没画面…）与开场引导；④ 自检清单加「作词包另加」9 条；⑤ `plugin.json` description 与 displayDescription 补作词能力（tags 仍固定 3 条：作词并进第 1 个 tag；quickPrompts 第 2 条换成「帮我写或打磨这首歌的词」）；displayDescription.zh **43 汉字**（官方 40–50）。⭐ **本轮抓到一个自造失误**：第一次写 skills.json 时把 `album-design` 覆盖掉了（写成 `[base, lyric-design]`），**构建后从 zip 内目录清单发现内嵌数只有 2**才察觉——已修回 3 个，并用 `unzip -p ... grep '^version:'` 核了 6 组内嵌版本全部对齐（R8：构建不拦版本不匹配、0 告警）。 |
