@@ -375,6 +375,13 @@
         "note": "2026-10-16 20:1x 走 `开放平台发布`（pub.mjs）接口提交（`action=create`，新 assetId）。market=content-creation + service=tools:office（沿用 musician / mureka-musician 的过审口径）。上传 + 校验 ok（warnings/errors 均空）+ 头像已传。回读核对：version=1.1.0 / versionId=53185 / status=under_review（② 审核中）。⚠️ 技能包无图标槽位，头像已随接口单独上传。⚠️ 本包属音乐域，若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**。"
       }
     },
+    "joy2know-lyric-design": {
+      "suggestedCategory": "内容创作 > 文案",
+      "categoryConfirmed": false,
+      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-humanize` / `joy2know-viral-topic` 同族（产出只有文本，不接任何生成接口，不带账号与密钥）。⚠️ 本包属音乐域（歌词）——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**；客服放行后仅抬版本号重提（属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` 与 `joy2know-mureka-maestro` 两个专家内嵌——若本包类目或内容被打回，两个引用方需同轮重建。2026-10-17 建包，从未提交。",
+      "note": "技能包。作词 + 提示词全流程：七项信息收集 → 体裁押韵表（17 体裁）→ 四阶段出稿（框景/主歌/钩子/副歌）→ 段落标签与风格栏；lyric_check.py 把六条纪律机检化（31 项以内零依赖）。",
+      "platformNote": "图标当前是占位图，等小乐亲手画；技能图标不进 zip，发布时需单独上传。"
+    },
     "joy2know-musician": {
       "suggestedCategory": "工具 > 办公",
       "categoryConfirmed": true,
