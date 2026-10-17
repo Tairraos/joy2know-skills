@@ -103,7 +103,7 @@ python3 scripts/selfcheck.py packages/joy2know-mr   # 单独跑字段自检（�
 3. 把 `skills.json` 本身排除在 zip 之外；
 4. 若源包里还残留 `skills/` 副本，直接弃用并按描述文件重建。
 
-当前 **27 处引用**（**12 个引用方**、去重后 **19 个**技能）：
+当前 **30 处引用**（**14 个引用方**、去重后 **19 个**技能）：
 
 | 包 | 内嵌技能 |
 |---|---|
@@ -118,6 +118,8 @@ python3 scripts/selfcheck.py packages/joy2know-mr   # 单独跑字段自检（�
 | `joy2know-reviewer` | `joy2know-dashboard` |
 | `joy2know-mureka-maestro` | `joy2know-mureka-musician`、`joy2know-album-design`、`joy2know-lyric-design` |
 | `joy2know-suno-maestro` | `joy2know-musician`、`joy2know-album-design`、`joy2know-lyric-design` |
+| `joy2know-lyricist` | `joy2know-lyric-design` |
+| `joy2know-album-planner` | `joy2know-album-design`、`joy2know-lyric-design` |
 | `joy2know-asset-smith` | `joy2know-asset-spec`、`joy2know-asset-compose`、`joy2know-asset-gate`、`joy2know-asset-publish`、`joy2know-asset-trace`、`joy2know-asset-maint`、`joy2know-asset-insight` |
 
 > 同一个技能可以被多个包内嵌（如 `joy2know-clarify` 同时在 `mr` 与 `polish-team` 里）—— 构建时各自从唯一真源复制，不产生副本。
@@ -283,7 +285,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 > 以**仓库根 `发布清单.md`** 为准（那份是构建时按实际状态生成的）。
 > 图标不在此表逐行标注 —— 规格与状态统一见「图标统一管理」一节，缺图不影响打包，但上传前必须补齐。
 
-### 专家与专家团（14）
+### 专家与专家团（16）
 
 | 包名 | 展示名（`profession`） | 类型 | 版本 | 内嵌技能（版本） | 成员 | zip | 状态 |
 |---|---|---|---|---|---|---|---|
@@ -301,6 +303,8 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.10 | `joy2know-asset-spec` 1.0.2、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.3、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.2 | — | 2703.2 KB | ② 待审核（在架 1.0.6） |
 | `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.3.0 | `joy2know-mureka-musician` 1.2.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1269.1 KB | ② 待审核（交 1.2.2，在架 1.2.1）+【本地升级】 |
 | `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.3.0 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1216.9 KB | ② 待审核（交 1.2.1，在架 1.0.1）+【本地升级】 |
+| `joy2know-lyricist` | 晓得·歌词设计师 | 专家 | 1.0.0 | `joy2know-lyric-design` 1.0.0 | — | 57.6 KB | ① 开发完待提交 |
+| `joy2know-album-planner` | 晓得·音乐专辑设计师 | 专家 | 1.0.0 | `joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 453.2 KB | ① 开发完待提交 |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 
