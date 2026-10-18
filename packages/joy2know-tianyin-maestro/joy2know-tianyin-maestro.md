@@ -10,9 +10,9 @@
 
 - **包名**：joy2know-tianyin-maestro
 - **类型**：单专家（`expertType: "agent"`）
-- **对应版本**：1.0.0
+- **对应版本**：1.0.2
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-18（**当日三轮**：首次建包检测 + 头像到位后的构建复检 + 提交平台 —— 详见第七节履历）
+- **最后检测**：2026-10-18（**当日四轮**：首次建包检测 + 头像到位后的构建复检 + 提交平台 + 内嵌技能口径修订联动 —— 详见第七节履历）
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -20,9 +20,10 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-   2559  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / **3 内嵌技能**）
-  17529  agents/joy2know-tianyin-maestro.md  角色定义（开场引导 / 六步流程 / 专辑路径与三纪律 /
-                                              三条路径分工 / 6 条硬规则 / 产出格式 / 三套自检清单 / 边界）
+   2813  .codebuddy-plugin/plugin.json       配置（expertType: agent，1 agent / **3 内嵌技能**）
+  18142  agents/joy2know-tianyin-maestro.md  角色定义（开场引导 / 六步流程（默认高级模式）/
+                                              专辑路径与三纪律 / 三条路径分工 / 6 条硬规则 /
+                                              产出格式 / 三套自检清单 / 边界）
     258  skills.json                         内嵌技能声明（构建时从 packages/<名>/ 复制真源）
    5594  README.md                           包说明（他解决什么问题 / 三条底线 / 三条路径 / 包内容 / 用法）
 ```
@@ -31,7 +32,7 @@
 （`tianyin_check.mjs` / `album_check.py` / `lyric_check.py`）分别只用 Node 标准库（`node:fs`）与
 Python 标准库，结构性零依赖成立。
 
-源包体（四个源文件，**不含本报告**）**25,940 字节 ≈ 25.3 KB**。
+源包体（四个源文件，**不含本报告**）**26,807 字节 ≈ 26.2 KB**。
 
 **头像规格（真图，2026-10-18 小乐亲手画）**：`avatars/joy2know-tianyin-maestro.png` = 512×512 / **388 KB**
 （sha1 `fe745ec2…`）—— 铁律 14 占位图台账已清零（全仓 64 张图标无一张占位图）。
@@ -183,3 +184,5 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-maestro-v1.0.
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·天音音乐大师」，内嵌同步新建的技能包 `joy2know-tianyin-musician`（两种模式方法论 + 18 标签 × 18 歌手适配 + 结构校验器）+ `joy2know-album-design` 1.1.0 + `joy2know-lyric-design` 1.0.0。**源目录自检通过 11 项**（displayDescription.zh 实测 48 汉字——初稿 51 超限 1，当轮删「与控件」三字回区间；defaultInitPrompt==quickPrompts[0] 逐字相同；tags/quickPrompts 各 3；categoryId=06-ContentCreative；agent 名三处一致）；**selfcheck 首轮报 avatar 缺失**，补两张占位图（placeholders.py，sha1 入台账）后复检归零；合规门禁**通过 7 · 提示 0 · 失败 0**；R6 全仓审计 24 条历史候选**零命中本包**；内嵌校验器继承技能包报告证据（24 项自检 + 反向验证 7/7）。⭐ **遵守铁律 14：无真头像不打包** —— 未构建 zip，交付形态层五项（platformcheck / 解压自检 / zip 第一层 / 内嵌 diff / 头像注入校验）与真实开场、平台上传记入未覆盖项，共 5 项未覆盖 + 2 项弱项。 |
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第二轮：真头像到位 → 重跑构建 → 交付形态层补齐**（版本未动：包内容零改动，仅头像就位）。小乐亲手画好 `avatars/joy2know-tianyin-maestro.png`（512×512 / 388 KB / sha1 `fe745ec2…`）；铁律 14 占位台账清零。**重跑构建通过**：`dist/joy2know-tianyin-maestro-v1.0.0.zip`（1643.9 KB，`通过 内嵌 3`，构建暂存自检通过）。**交付形态层五项全部转正**：platformcheck --zip 判 **Expert ✅ 通过**（Skill ❌ 属预期）；解压后 zip 第一层恰为 `joy2know-tianyin-maestro/`；**三组内嵌逐个 `diff -r` 对源包零内容差异**（仅 zip 内多个注入 icon.png、源目录多个检测报告两处预期差异）；四张相关图标（自身 + 三内嵌技能）sha1 全部等于 avatars/ 源图。未覆盖项由 5 条缩到 3 条（交付形态五项 + 头像占位一条全部转正），弱项不变；**发布待小乐确认**。 |
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第三轮：提交平台（小乐点头后执行）**。`pub.mjs publish` 首次提交（action=create，category-type=expert）：market=06-ContentCreative + service=tools:office；上传校验 ok；专家头像由平台从包内 `avatars/` 自动上传（列表接口回读 coverUrl 为 COS 真图）。**回读核对 version=1.0.0 / versionId=55766 / status=under_review（②）** —— assetId `oe_72344c227aff1bb1`。未覆盖项「平台侧真实上传」改写为「已提交、审核结果未定」（附铁律 7/11 口径）。剩 3 项未覆盖（真实开场 / 审核结果 / 天音专辑字段无真实样例）+ 2 项弱项。 |
+| 2026-10-18 | 1.0.1 | ⚠️ 有条件通过 | **第四轮：R8 内嵌联动（`joy2know-tianyin-musician` 1.0.1 口径修订）**。内嵌技能三条口径变更：① 高级模式转正为默认路径（与 Suno／Mureka 高级模式同构）；② 副歌前置默认不勾选（2026-10-17 实测开启降质量）；③ description 合规口径统一为「只产出提示词与操作建议，不生成歌曲」。本包同步：plugin.json version 1.0.0 → 1.0.1、description 与 displayDescription（zh 实测 49 汉字，守 40–50 门禁；en 加 "no songs are generated"）；agent 文件流程②「默认高级」、控件块「副歌前置不勾选」、默认值行、自检清单控件行、产出格式第 1 块高级转正。**门禁真跑**：重跑构建通过（铁律 14 头像门禁 + 内嵌 icon 注入）；selfcheck 通过（displayDescription.zh 49 字在区间、defaultInitPrompt==quickPrompts[0]、tags/quickPrompts 各 3、categoryId=06-ContentCreative）；**platformcheck --zip 判 Expert ✅ 通过**；合规门禁通过 6 · 提示 1 · 失败 0；zip 内三张内嵌技能 icon sha1 全部等于源图；`tianyin_check.mjs --selftest` 24/24（内嵌副本随包）。⚠️ 平台侧 1.0.0（vid 55766）已过审停在 ④ 待发布 —— 是否 withdraw 改提 1.0.1、或先点发布 1.0.0 再走 1.0.1 升级，**等小乐定**（已写入发布清单待办）。 |
+| 2026-10-18 | 1.0.2 | ⚠️ 有条件通过 | **第二轮：同步歌词技能新边界 + R8 联动**。「写词/改词」行补注「**界面设置块由你补**——歌词技能自成一体不管平台那部分」，职责边界那条同步改写；内嵌 `joy2know-lyric-design` 抬 1.1.0，本包重建。**该包本就零交叉**（天音线只提 `joy2know-tianyin-musician`），本轮新增 `scripts/audit_refs.py` 的 R2 判据把它纳入长期守护。 |

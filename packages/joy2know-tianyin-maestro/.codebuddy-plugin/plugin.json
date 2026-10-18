@@ -1,7 +1,7 @@
 {
   "name": "joy2know-tianyin-maestro",
-  "version": "1.0.0",
-  "description": "joy2know Tianyin Music Maestro: turns a rough idea into ready-to-paste input for NetEase Tianyin's AI song composer — a simple-mode inspiration paragraph, or an advanced-mode pair of a style description plus section-tagged lyrics — matched to one of 18 style tags and one of 18 virtual-singer timbres, with the panel picks (vocal gender, chorus-first toggle, song title) and the pure-music and reference-audio routes covered. Also writes lyrics from scratch (hook-first, genre-accurate rhyme schemes, a cliche blacklist) and designs whole albums (one Q&A round to an album plan document plus a per-song paste list, with timbre anchors, a difference matrix and per-song cover prompts). Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "version": "1.0.2",
+  "description": "joy2know Tianyin Music Maestro: turns a rough idea into ready-to-paste prompts and operating advice for NetEase Tianyin's AI song composer — the everyday default is Advanced mode, the same two-panel structure as the advanced modes of Suno and Mureka: a style description plus section-tagged lyrics (each ≤1000 chars), with the panel picks (vocal gender, one of 18 virtual-singer timbres, chorus-first — measured to hurt quality, so leave it off — and a song title ≤30 chars); simple mode (one inspiration paragraph ≤1000 chars) is kept for quick one-prompt songs. Also writes lyrics from scratch (hook-first, genre-accurate rhyme schemes, a cliche blacklist) and designs whole albums (one Q&A round to an album plan document plus a per-song paste list, with timbre anchors, a difference matrix and per-song cover prompts). Prompts and operating advice only — no audio is generated, no generative AI API is called, no account or key is carried.",
   "author": {
     "name": "晓得乐"
   },
@@ -24,8 +24,8 @@
     "zh": "晓得·天音音乐大师"
   },
   "displayDescription": {
-    "en": "Turns ideas into ready-to-paste Tianyin input, writes lyrics that sing, and designs whole albums. Text only.",
-    "zh": "把想法写成能粘进网易天音的输入：灵感一段话或风格描述加歌词两栏，配 18 位虚拟歌手。也写歌词、设计专辑。仅产文本。"
+    "en": "Turns ideas into ready-to-paste Tianyin input (Advanced mode by default), writes lyrics that sing, and designs whole albums. Prompts and operating advice only — no songs are generated.",
+    "zh": "把想法写成能粘进网易天音的输入：默认高级模式，风格加歌词两栏，配 18 位虚拟歌手。也设计专辑。只产提示词，不生成歌曲。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "06-ContentCreative",
