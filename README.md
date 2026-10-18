@@ -312,8 +312,8 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-reviewer` | 晓得·投放效果复盘专家 | 专家 | 1.0.1 | `joy2know-dashboard` 1.2.1 | — | 793.8 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-harness` | 晓得·harness 工程专家 | 专家 | 1.0.0 | `joy2know-harness-rules` 1.0.0 | — | 900.8 KB | ③ 审核完成 · 已上架 |
 | `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.10 | `joy2know-asset-spec` 1.0.2、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.3、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.2 | — | 2703.2 KB | ③ 审核完成 · 已上架 |
-| `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.3.0 | `joy2know-mureka-musician` 1.2.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1269.1 KB | ② 待审核（交 1.2.2，在架 1.2.1）+【本地升级】 |
-| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.3.0 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1216.9 KB | ③ 已上架（在架 1.2.1）+【本地升级】 |
+| `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.3.0 | `joy2know-mureka-musician` 1.2.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1640.7 KB | ② 待审核（交 1.2.2，在架 1.2.1）+【本地升级】 |
+| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.3.0 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1588.4 KB | ③ 已上架（在架 1.2.1）+【本地升级】 |
 | `joy2know-tianyin-maestro` | 晓得·天音音乐大师 | 专家 | 1.0.0 | `joy2know-tianyin-musician` 1.0.0、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1643.9 KB | ④ 待发布（审核已过，待手动点「发布」） |
 | `joy2know-lyricist` | 晓得·歌词设计师 | 专家 | 1.0.0 | `joy2know-lyric-design` 1.0.0 | — | 793.9 KB | ⑤ 已驳回（首次上架，待改后重提） |
 | `joy2know-album-planner` | 晓得·音乐专辑设计师 | 专家 | 1.0.0 | `joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1187.2 KB | ④ 待发布（审核已过，待手动点「发布」） |
@@ -455,6 +455,18 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `release.config.json` | 配置 | 三包 `submitted` → `approved`（含 versionId 与「过审 ≠ 上架、需点发布」口径）；`submittedBatches` 追加 16:0x 直读记录 |
 | `发布清单.md` | 文档 | 当前进度刷新为 **③ 35 · ④ 3 · ② 6 · ⑤ 1 · ① 0**；本轮待办重排（**点「发布」上架三个 ④ 包置顶**，附 assetId/versionId 与两条路径）；逐包核对行同步 |
 | `README.md` | 文档 | 平台快照刷新为 **③ 35 · ④ 3 · ② 6 · ⑤ 1 · ① 0** 并注明三包停在待发布；资产总表三包状态列由构建自动同步（④ 待发布） |
+
+**同日 16:2x · 体检清理轮（全仓对账 + 清 temp/临时文件，揪出 2 处真漂移）**：
+
+| 对象 | 类型 | 变更 |
+|---|---|---|
+| 文档一致性 | 体检 | `audit-docs.mjs` 全仓扫描：README/avatars-README/发布清单的包数·图标数·内嵌引用数（35 处/15 方/21 技能）与真源**全部对上**；6 个旧中文名命中逐一核实**全是误报或合法履历**（`晓得·harness`/`晓得·AI` 是审计正则被空格截断的误报；其余在检测报告履历表内，属命名留痕规则允许的唯一合法处） |
+| 头像对齐 | 体检 | 45+19 张图标全在、sha1 台账 `{}`（占位 0）；**35 处内嵌图标 sha1 逐一复验揪出 2 处与源图不符**：`mureka-maestro` / `suno-maestro` 的 zip 里 `skills/joy2know-lyric-design/icon.png` 还是 10-17 前的占位图（09cbc243，真图 8fc6ccf9）——10-18 头像轮只重建了五个提交包，漏了这两个 R8 引用方。**两包重跑构建修复**（zip 1269.1→1640.7 KB / 1216.9→1588.4 KB），复验 35/35 归零 |
+| 14 份检测报告 | 体检 | 头部「最后检测」日期旧于履历/源码提交（10-12 中文名重取轮与 10-13~16 更名重发/合规二轮只更新报告正文、跑了门禁，没补履历行与头部日期）。本轮**真跑** `selfcheck.py` + `platformcheck --zip` 逐包复核全过后，头部日期订正为 10-18、履历各补一行；包内容零改动、版本不动 |
+| zip 内容 | 体检 | 证实检测报告（`<包名>.md`）**不在任何 zip 内**——所以本轮报告订正不会让内嵌副本过期，无需重建引用方 |
+| `temp/` 与临时文件 | 清理 | **`temp/` 目录撤销**（重发报告-2026-10-16.md 内容已被发布清单覆盖）；11 个 `.DS_Store`（含 `.workbuddy/` 下 3 个、包内 4 个）全删；`private/产物/` 5 个一次性脚本删除（`smith-updatedat` / `dump-updatedat` / `detail` / `extract-names` / `sync-h1`）；未采用的 `头像生成/…00-14-09.png`（sha1 不命中任何真头像）删除 |
+| 过时文档 | 清理 | `设计稿/市场扫描-2026-10-13.md`（无引用）、`设计稿/设计稿.md`（结论已被 asset-smith 报告覆盖）、`运营报告/` 两个 10-13 HTML（过期快照）删除 |
+| `private/` | 保留 | 余 7 个文件**全部有据可查**：`refs/毛毡小人-参考图.jpg`（头像唯一真源）、`Mureka音乐人提示词指南.md`、`中文名重构方案.html`、`产物/天音调研报告.md`、`产物/audit-docs.mjs` + `产物/sync-zh-names.mjs`（README:14 引用的 sanctioned 工具）、`产物/头像草稿/joy2know-album-design-AI草稿.png`（avatars/README:45 明确记载留档） |
 
 ### 2026-10-16（文档同步专项 · 新增铁律 12 / 13）
 
