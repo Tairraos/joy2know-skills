@@ -10,9 +10,9 @@
 
 - **包名**：joy2know-tianyin-musician
 - **类型**：技能（Skill）
-- **对应版本**：1.0.0
+- **对应版本**：1.0.1
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-18（**当日三轮**：首次建包检测 + 头像到位后的构建复检 + 提交平台 —— 详见第七节履历）
+- **最后检测**：2026-10-18（**当日四轮**：首次建包检测 + 头像到位后的构建复检 + 提交平台 + 高级模式口径修订 —— 详见第七节履历）
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -20,17 +20,19 @@
 ## 一、包内文件（从磁盘枚举，不手写）
 
 ```
-  24710  SKILL.md                              9 必填 frontmatter + 双路线 description / 定位与边界 / 两种模式对照 /
-                                                A–G 七路路由 / 7 步工作流 / 8 条核心规则 / 输出格式（两块必带）/
-                                                12 条反模式 / 防幻觉 / 完成判据 / 降级 / 速查表
-   7556  references/tianyin-controls.md         登录态实测控件全表（placeholder 原文 + maxlength 实测值）·
-                                                18 标签单选实证 · 参考音频弹层 · 虚拟歌手与「创建我的音色」·
-                                                AI作词页 · 交付前必做界面动作清单 · 6 项未实测项
+  26699  SKILL.md                              9 必填 frontmatter + 三语 description（高级模式默认口径）/
+                                                定位与边界 / 两种模式对照（含三平台同构说明）/ A–G 七路路由 /
+                                                7 步工作流 / 8 条核心规则 / 输出格式（高级转正、简易为变体）/
+                                                13 条反模式 / 防幻觉 / 完成判据 / 降级 / 速查表
+  10389  references/tianyin-controls.md         登录态实测控件全表（placeholder 原文 + maxlength 实测值）·
+                                                三平台高级模式同构对照表 · 创作灵感页/我的资产页澄清 ·
+                                                18 标签单选实证 · 副歌前置实测（默认不勾选）· 参考音频弹层 ·
+                                                虚拟歌手与「创建我的音色」· AI作词页 · 交付前必做界面动作清单 · 6 项未实测项
    6206  references/singer-cookbook.md          18 位虚拟歌手全表（名字/声线/性别气质/官方描述/适合标签）·
                                                 三步选歌手法 · 标签→首选/次选适配矩阵 · 声音克隆平台路径口径
    5012  references/style-tags.md               风格描述四要素范式（拆自官方 placeholder）· 18 标签逐个画像 · 正反例
-   3563  references/lyrics-craft.md             天音场景歌词预设（完整规则以 joy2know-lyric-design 为准）·
-                                                段落标记约定 / 语言声明 / 重复位置显式 / 与副歌前置配合
+   3920  references/lyrics-craft.md             天音场景歌词预设（完整规则以 joy2know-lyric-design 为准）·
+                                                段落标记约定 / 语言声明 / 重复位置显式 / 与副歌前置的关系（默认不勾选）
   24406  scripts/tianyin_check.mjs              结构校验器（M/S/L/I/T/V/G/C/P 九组检查 + --selftest 24 项内置正反样本）
 ```
 
@@ -207,3 +209,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-musician-v1.0
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建技能「晓得·天音音乐人」：SKILL.md（两种模式对照 / A–G 七路路由 / 7 步工作流 / 8 条核心规则 / 12 条反模式 / 防幻觉）+ 4 references（实测控件 / 18 标签画像 / 18 歌手谱 / 歌词预设）+ `tianyin_check.mjs`（九组检查 + 24 项自检）。**源目录自检 9 项全过**（venv 完整 YAML 解析）；`description` 329 入系列区间、`description_en` 906/1000（计数法先用 mureka 复算校准）；**CLI 真跑抓到校验器 4 处自身问题**（长重复标注段名被吞 → SECTION_RE 20→40；缺 `--mode` 退出码不一致 → 统一 EXIT=2；空文件守卫语义；I1 在简易模式误发 → 加 advanced 条件），当轮修复并补回归用例，自检 20 → 24 项；**反向验证 7/7 全抓到**（含放水变异 V1 降级 info）；合规门禁通过 4 · 提示 1 · 失败 0（唯一提示人工确认：两处「生成」均在否定声明内，覆盖）；R6 跨包审计零候选。⭐ **遵守铁律 14：无真头像不打包** —— 未构建 zip、platformcheck 未跑、未提交平台，记 5 项未覆盖 + 2 项弱项。 |
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第二轮：真头像到位 → 构建 → 交付形态复检**（版本未动：包内容零改动，仅头像就位）。小乐亲手画好 `avatars/joy2know-tianyin-musician.png`（512×512 / 408 KB / sha1 `e1ec4322…`），铁律 14 占位台账随之清零（全仓 64 张无占位）。**构建通过门禁**：`dist/joy2know-tianyin-musician-v1.0.0.zip`（31.2 KB）；**platformcheck --zip 判 Skill ✅ 通过**，描述长度回显 en 906/1000 · description 329 · description_zh 130，与第一节实测逐字一致；被 tianyin-maestro 内嵌的 `skills/joy2know-tianyin-musician/icon.png` sha1 已核等于源图。未覆盖项由 5 条缩到 4 条（平台结构预检转正），弱项不变；**发布待小乐确认**。 |
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第三轮：提交平台（小乐点头后执行）**。`pub.mjs publish` 首次提交（action=create）：market=content-creation + service=tools:office；上传校验 ok（warnings/errors 均空）；技能图标随提交接口单独上传（coverUrl 回执 ok）。**回读核对 version=1.0.0 / versionId=55343 / status=under_review（②）** —— assetId `os_1e363b57718f60c9`。未覆盖项「平台侧真实上传」改写为「审核结果未定」（附铁律 7/11 的驳回处置口径）。剩 4 项未覆盖（生成效果 / 审核结果 / 参考音频真传 / 6 项界面）+ 2 项弱项。 |
+| 2026-10-18 | 1.0.1 | ⚠️ 有条件通过 | **第四轮：高级模式转正为默认路径（小乐三条口径）**。① 天音高级模式与 Suno／Mureka 高级模式同构，**平常应使用此模式写歌**；② 副歌前置 2026-10-17 实测「先唱几句副歌再进正歌、质量下降（疑似 beta 未调好）」→ **默认不勾选**；③ 创作灵感页=简易模式提示词模板陈列、我的资产页=已生成歌曲存放处，与写歌输入无关。改动面：路由表 A 默认改高级模式两栏+控件组（B 改「一段话快速出歌」才走简易）；规则 7 整条翻转（含用户坚持开启的降级路径）；输出格式高级转正第 1 节、简易降为变体；反模式清单加第 13 条；lyrics-craft 第五节重写；controls 加三平台同构对照表 + 两页导航澄清；description/zh/en 三段重写（合规口径「只产出提示词与操作建议，不生成歌曲」）。**门禁真跑**：合规门禁首轮抓 1 处必改（description_en「produces…audio」的否定词落在 40 字符窗口外一寸 → 换非高危动词 writes 消掉配对）+ en 1105 超 1000 硬限、description 402 超 390 软线 → 收紧至 en 982 / desc 389 复测**通过 0 失败**；selfcheck + platformcheck --zip 双过（判 **Skill ✅**）；`tianyin_check.mjs --selftest` 24/24；内嵌图标 3 处 sha1 归零。内容实质改动 → **patch 抬 1.0.1**；⭐ **R8 联动**：`joy2know-tianyin-maestro` 同轮抬 1.0.1 并重建（plugin.json 描述 / agent 流程 / 控件块同步）。⚠️ 平台侧 1.0.0（vid 55343，② 在审）未动 —— withdraw + 提 1.0.1 或等 1.0.0 过审后再提，**等小乐定**（已写入发布清单待办）。 |
