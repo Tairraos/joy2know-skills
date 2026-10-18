@@ -343,14 +343,14 @@
       "categoryConfirmed": false,
       "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-humanize` / `joy2know-viral-topic` 同族（产出只有文本，不接任何生成接口，不带账号与密钥）。⚠️ 本包属音乐域（歌词）——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**；客服放行后仅抬版本号重提（属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` / `joy2know-mureka-maestro` / `joy2know-tianyin-maestro` 三个专家与 `joy2know-lyricist` / `joy2know-album-planner` 两个单飞专家内嵌——若本包类目或内容被打回，引用方需同轮重建。2026-10-17 建包；**2026-10-18 15:2x 已提交平台（② 审核中）**。",
       "note": "技能包。作词 + 提示词全流程：七项信息收集 → 体裁押韵表（17 体裁）→ 四阶段出稿（框景/主歌/钩子/副歌）→ 段落标签与风格栏；lyric_check.py 把六条纪律机检化（31 项以内零依赖）。",
-      "submitted": {
+      "platformNote": "✅ **图标已是真图**（2026-10-18 小乐亲手画，381.5 KB；sha1 `8fc6ccf9…`）；已重跑构建（28.4 KB，铁律 14 门禁放行）并通过 `platformcheck --zip`（判 Skill ✅；回显 description 395 / en 891，已订正首轮报告测错的 388/883）。**已提交平台，② 审核中**（assetId `os_f33827d21a4a5108` · versionId 55344）。",
+      "approved": {
         "version": "1.0.0",
         "assetId": "os_f33827d21a4a5108",
         "versionId": 55344,
         "date": "2026-10-18",
-        "note": "2026-10-18 15:2x `pub.mjs publish` 提交（首次，action=create）：market=content-creation + service=tools:office；上传校验 ok；技能图标已随提交接口单独上传。回读核对 version=1.0.0 / versionId=55344 / status=under_review（②）。⚠️ 本包被 3 个专家内嵌（tianyin-maestro / lyricist / album-planner）—— 若本包类目被打回，按 R8 查引用方同轮对齐。"
-      },
-      "platformNote": "✅ **图标已是真图**（2026-10-18 小乐亲手画，381.5 KB；sha1 `8fc6ccf9…`）；已重跑构建（28.4 KB，铁律 14 门禁放行）并通过 `platformcheck --zip`（判 Skill ✅；回显 description 395 / en 891，已订正首轮报告测错的 388/883）。**已提交平台，② 审核中**（assetId `os_f33827d21a4a5108` · versionId 55344）。"
+        "note": "2026-10-18 15:5x `ow.mjs state` 直读：**审核已过、待发布（④）**（`status=approved` / currentVersion.status=approved / `updatedAt` 2026-10-18T15:54:12+08:00）—— 提交约 30~35 分钟后过审。⚠️ **过审 ≠ 上架**：需在发布管理页点一次「发布」，或跑 `pub.mjs release os_f33827d21a4a5108`（body=`{\"versionId\":55344}`）。"
+      }
     },
     "joy2know-musician": {
       "suggestedCategory": "工具 > 办公",
@@ -660,14 +660,14 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **06-ContentCreative**。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（同上口径）。⚠️ **内嵌两个技能**：`joy2know-album-design` 1.1.0（③在架，10-17 上架）与 `joy2know-lyric-design` 1.0.0（②审核中，10-18 15:2x 提交）——任一后续单独上架抬版，按 R8 查引用方同轮对齐。2026-10-17 建包；**2026-10-18 15:2x 已提交平台（② 审核中）**。",
       "note": "专家包。单专家「晓得·音乐专辑设计师」：专辑层 + 作词层两条路径，交付专辑规划文档与逐首粘贴清单两份 md，差异矩阵六轴防撞车，G7 判据保证交付目录不多给文件。",
-      "submitted": {
+      "platformNote": "✅ **图标已是真图**（2026-10-18 小乐亲手画，373.0 KB）；已重跑构建（1187.2 KB，铁律 14 门禁放行）并通过 `platformcheck --zip`（判 Expert ✅）、两组内嵌副本 diff 零差异。**已提交平台，② 审核中**（assetId `oe_aa0fac56211ea44f` · versionId 55765）。",
+      "approved": {
         "version": "1.0.0",
         "assetId": "oe_aa0fac56211ea44f",
         "versionId": 55765,
         "date": "2026-10-18",
-        "note": "2026-10-18 15:2x `pub.mjs publish` 提交（首次，action=create，category-type=expert）：market=06-ContentCreative + service=tools:office；上传校验 ok；专家头像由平台从包内 avatars/ 自动上传。回读核对 version=1.0.0 / versionId=55765 / status=under_review（②）。"
-      },
-      "platformNote": "✅ **图标已是真图**（2026-10-18 小乐亲手画，373.0 KB）；已重跑构建（1187.2 KB，铁律 14 门禁放行）并通过 `platformcheck --zip`（判 Expert ✅）、两组内嵌副本 diff 零差异。**已提交平台，② 审核中**（assetId `oe_aa0fac56211ea44f` · versionId 55765）。"
+        "note": "2026-10-18 15:5x `ow.mjs state` 直读：**审核已过、待发布（④）**（`status=approved` / currentVersion.status=approved / `updatedAt` 2026-10-18T15:55:16+08:00）—— 提交约 30~35 分钟后过审。⚠️ **过审 ≠ 上架**：需在发布管理页点一次「发布」，或跑 `pub.mjs release oe_aa0fac56211ea44f`（body=`{\"versionId\":55765}`）。"
+      }
     },
     "joy2know-tianyin-musician": {
       "suggestedCategory": "内容创作 > 文案",
@@ -688,17 +688,18 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **06-ContentCreative**（与 `joy2know-suno-maestro` / `joy2know-mureka-maestro` 同类）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（同上口径）。⚠️ **内嵌三个技能**：`joy2know-tianyin-musician` 1.0.0（②审核中）、`joy2know-album-design` 1.1.0（③在架）、`joy2know-lyric-design` 1.0.0（②审核中）——后两者 2026-10-18 15:1x~15:2x 已提交；任一后续单独上架抬版，按 R8 查引用方同轮对齐。2026-10-18 建包；**2026-10-18 15:2x 已提交平台（② 审核中）**。",
       "note": "专家包。单专家「晓得·天音音乐大师」：单曲输入包 / 作词 / 整张专辑三条路径，内嵌技能 3 个，交付天音输入文本 + 控件设置块。",
-      "submitted": {
+      "platformNote": "✅ **图标已是真图**（2026-10-18 小乐亲手画，388.3 KB；sha1 `fe745ec2…`）；已重跑构建（1643.9 KB，铁律 14 门禁放行）并通过 `platformcheck --zip`（判 Expert ✅）、三组内嵌副本 diff 零差异、四张图标 sha1 全等。**已提交平台，② 审核中**（assetId `oe_72344c227aff1bb1` · versionId 55766）。",
+      "approved": {
         "version": "1.0.0",
         "assetId": "oe_72344c227aff1bb1",
         "versionId": 55766,
         "date": "2026-10-18",
-        "note": "2026-10-18 15:2x `pub.mjs publish` 提交（首次，action=create，category-type=expert）：market=06-ContentCreative + service=tools:office；上传校验 ok；专家头像由平台从包内 avatars/ 自动上传（coverUrl 已回填，列表接口可见 COS 真图）。回读核对 version=1.0.0 / versionId=55766 / status=under_review（②）。"
-      },
-      "platformNote": "✅ **图标已是真图**（2026-10-18 小乐亲手画，388.3 KB；sha1 `fe745ec2…`）；已重跑构建（1643.9 KB，铁律 14 门禁放行）并通过 `platformcheck --zip`（判 Expert ✅）、三组内嵌副本 diff 零差异、四张图标 sha1 全等。**已提交平台，② 审核中**（assetId `oe_72344c227aff1bb1` · versionId 55766）。"
+        "note": "2026-10-18 15:5x `ow.mjs state` 直读：**审核已过、待发布（④）**（`status=approved` / currentVersion.status=approved / `updatedAt` 2026-10-18T15:52:09+08:00）—— 提交约 30~35 分钟后过审。⚠️ **过审 ≠ 上架**：需在发布管理页点一次「发布」，或跑 `pub.mjs release oe_72344c227aff1bb1`（body=`{\"versionId\":55766}`）。"
+      }
     }
   },
   "submittedBatches": [
+    "**2026-10-18 16:0x 直读（提交轮后约 40 分钟）：本轮五包中三个已过审，转 ④ 待发布。** `tianyin-maestro` 1.0.0（15:52:09）、`lyric-design` 1.0.0（15:54:12）、`album-planner` 1.0.0（15:55:16）相继 `status=approved` —— **提交约 30~35 分钟即过审**（本仓新包过审速度的新基线）。⚠️ **过审 ≠ 上架**：三包现停在「待发布」，**需在发布管理页点一次「发布」**（或 `pub.mjs release <assetId>`，body=`{\"versionId\":<数字>}`：55344 / 55765 / 55766）。仍在审 2 个：`tianyin-musician` 1.0.0（本轮新提）、`mureka-maestro` 1.2.2（10-16 提交）；`lyricist` 1.0.0 仍 ⑤（等管理页驳回原文）。全貌：**③ 35 · ④ 3 · ② 6 · ⑤ 1 · ① 0**。",
     "**2026-10-18 15:5x 全量订正（提交轮顺带做的一次总对账）：揪出 15 包「`submitted` 没移入 `platform`」的存量漂移。** 提交完五个包后做全量直读（list 接口逐条 `updatedAt`），发现 **10-13 中文名重取轮那批 12 包 + 10-16 三个包全部早已上架**，但 `release.config.json` 的 `submitted` 块从没清过 —— 自动表一直把它们显示成 ②（18 个技能 ② vs 平台实际 6），与人工节长期自相矛盾。逐包订正：`clarify` / `cmdforge` / `dashboard` / `asset-ledger` / `humanize` / `viral-topic` / `wordplay` / `asset-compose` / `asset-gate` / `asset-maint` / `mr`（均 10-13T21:03~22:48）、`code-scholar`（10-14T16:19:53）、`asset-spec` / `asset-trace` / `asset-smith`（10-16T18:12:24~46）—— 按对账铁律 `submitted` 删除、在架版本改写，15 包重跑构建后**自动表 ② 行数与平台实况（9）完全对齐**，剩余 `submitted` 恰好 9 个 = 平台 ② 名单。⭐ 副产品：`asset-smith` 1.0.7 被驳「等邮件」案**实际已了结**（合规二轮版 1.0.10 于 10-16 18:12:24 过审上架，在架 1.0.6 → 1.0.10）。⭐ 教训：**人工节从 `ow.mjs` 读所以一直对，自动表从配置生成所以一直错** —— 两节矛盾能存活五天，说明「每次发布后只更人工节」不够，**订正必须落到配置层，并且要全量比对一个都不能漏**（10-16 晚那次只抓了 mureka-maestro 等三个，漏了这批）。",
     "**2026-10-18 15:0x~15:1x 提交轮（小乐两次指示「现在就提交」；`pub.mjs` 纯接口，全程未开浏览器）：五个包全部提交平台，① 首次清零。** dry-run 五包均判「新资产 → 首次创建」（`action=create`）；分类沿用已实证口径（技能 market=`content-creation` + service=`tools:office`；专家 market=`06-ContentCreative` + service=`tools:office`）；技能包显式传 `--avatar` 单独上传图标，专家包头像由平台自动上传包内 `avatars/`。**② 在审 4 个**：`lyric-design` 1.0.0（`os_f33827d21a4a5108` / vid 55344）、`tianyin-musician` 1.0.0（`os_1e363b57718f60c9` / vid 55343）、`album-planner` 1.0.0（`oe_aa0fac56211ea44f` / vid 55765）、`tianyin-maestro` 1.0.0（`oe_72344c227aff1bb1` / vid 55766）。🚫 **`lyricist` 1.0.0（`oe_e8fa2e6d40b020c9` / vid 55764）提交约 1 分钟后被机器审核驳回（⑤）** —— 驳回原文 API 两端点均不返回、邮箱未开通，**待小乐去发布管理页看原文**（2026-10-03 先例同此）；`nextSubmitAt` 15:32:01 前不让重提交；按铁律 7 三类口径拿到原文前**不猜不重传**。平台全貌（15:26 直读）：**③ 35 · ② 9 · ⑤ 1 · ④ 0 · ① 0**。",
     "**2026-10-08 13:5x 二次同步（小乐点完「发布」后复读）：③ 已上架 28/ 28 —— 全仓首次实现「零待办」。** 唯一变化：`cine-team` 由 ④ 待发布 → **③ 已上架**（在架版本 1.3.0 → **1.6.1**，本包长期悬案闭环）。**② 0 · ④ 0 · ⑤ 0 · ① 0**。⭐ 同轮**问明了驳回的真实原因**：机器审核按「生成式 AI 需资质」判定「调用了 LLM 以外的 AI 做内容生成」，而我们**只产出文本提示词、只用 LLM 与本地工具**；小乐向客服说明后**由客服人工审核放行，无需补资质、无需加类目**。→ 由此确立通用处置顺序：**先找客服人工复审 → 通过则零改动抬版本 → 不要为迎合机器去补资质或加类目**。",
