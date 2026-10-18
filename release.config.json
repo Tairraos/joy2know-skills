@@ -128,17 +128,12 @@
       "categoryConfirmed": true,
       "categoryNote": "2026-09-23 首次提交被打回，驳回原文：「至少应包含工具 > 图片处理类目」",
       "platform": {
-        "version": "1.2.0",
         "skillId": "skill_2104157920229318656",
-        "date": "2026-09-28",
-        "assetId": "os_25b93ef8fc7d24cd"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "os_25b93ef8fc7d24cd",
-        "versionId": 47429,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47429,
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:47:40+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47429）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.2.1。"
       }
     },
     "joy2know-character": {
@@ -163,34 +158,24 @@
       "suggestedCategory": "效率 > 表达与写作",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.2.0",
         "skillId": "skill_2099154350141239296",
-        "date": "2026-09-30",
-        "assetId": "os_36cdeff4eff0914e"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "os_36cdeff4eff0914e",
-        "versionId": 47417,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47417,
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T21:03:21+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47417）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.2.1。"
       }
     },
     "joy2know-cmdforge": {
       "suggestedCategory": "工具 > 开发工具",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.2.0",
         "skillId": "skill_2102019463359930368",
-        "date": "2026-09-30",
-        "assetId": "os_0b971c83da02a521"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "os_0b971c83da02a521",
-        "versionId": 47425,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47425,
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T21:03:11+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47425）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.2.1。"
       }
     },
     "joy2know-code-scholar": {
@@ -198,17 +183,11 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目写在包内 plugin.json 的 categoryId，清单直接读该字段，此处留空",
       "platform": {
-        "version": "1.2.0",
-        "assetId": "oe_5574ee7b30d046de",
-        "date": "2026-10-02",
-        "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审的 1.2.0 已过审，覆盖旧的 1.1.0。（**专家包也能被接口读到**，此前「专家不在检索范围、只能人工记」的局限已不成立。）"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "oe_5574ee7b30d046de",
+        "date": "2026-10-14",
         "versionId": 44789,
-        "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审的 1.2.0 已过审，覆盖旧的 1.1.0。（**专家包也能被接口读到**，此前「专家不在检索范围、只能人工记」的局限已不成立。） 2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-14T16:19:53+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 44789）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.2.1。"
       }
     },
     "joy2know-codebase": {
@@ -236,17 +215,12 @@
       "suggestedCategory": "工具 > 数据与表格",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.2.0",
         "skillId": "skill_2101578699018956800",
-        "date": "2026-09-30",
-        "assetId": "os_cc23da54ba259c0d"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "os_cc23da54ba259c0d",
-        "versionId": 47430,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47430,
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:48:01+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47430）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.2.1。"
       }
     },
     "joy2know-deck": {
@@ -291,17 +265,12 @@
       "suggestedCategory": "内容创作 > 文案",
       "categoryConfirmed": false,
       "platform": {
-        "version": "1.1.0",
         "skillId": "skill_2102571934082871296",
-        "date": "2026-09-23",
-        "assetId": "os_5e9356f928882d4b"
-      },
-      "submitted": {
         "version": "1.1.1",
         "assetId": "os_5e9356f928882d4b",
-        "versionId": 47420,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47420,
+        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:48:19+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47420）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.1.1。"
       }
     },
     "joy2know-logdetective": {
@@ -319,17 +288,11 @@
       "categoryConfirmed": false,
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative）",
       "platform": {
-        "version": "1.2.0",
-        "assetId": "oe_376ee759f0c7d86d",
-        "date": "2026-10-02",
-        "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审 1.2.0 已过审。⚠️ 保留的旧约束：**`name` 不可改**（平台驳回原文「name 是资产的唯一标识，不允许修改」）。"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "oe_376ee759f0c7d86d",
-        "versionId": 44787,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 44787,
+        "note": "2026-10-02 开发者接口直读：**已发布** · v1.2.0 —— 在审 1.2.0 已过审。⚠️ 保留的旧约束：**`name` 不可改**（平台驳回原文「name 是资产的唯一标识，不允许修改」）。 2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:47:15+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 44787）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.2.1。"
       }
     },
     "joy2know-mureka-maestro": {
@@ -511,17 +474,11 @@
       "categoryConfirmed": false,
       "categoryNote": "技能包，产出**只有文本与一份打分结果**（无音频 / 图像 / 视频产物，不接任何生成接口，不带账号与密钥）—— 按「内容创作 > 文案」推断，与**已过审**的 `joy2know-humanize` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训（该类目只对企业开发者开放），**绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类**；本包是选题判据与打分，属写作 / 策划而非生成。⚠️ **内嵌关系**：被 `joy2know-topic-planner` 内嵌 —— 若本包改类目被打回，要连带看引用方是否需同轮重建。2026-09-30 建包；**2026-10-02 首次提交，审核中**（开发者接口直读）。",
       "platform": {
-        "version": "1.0.0",
-        "assetId": "os_6a8bf8d9bd203d60",
-        "date": "2026-10-04",
-        "note": "2026-10-04 15:15 开发者接口直读：**已发布**（`status=published` / currentVersion 1.0.0 approved / `visibleScope=ALL`）—— 10-02 22:34 提交的 1.0.0 已过审上架。⚠️ 本包是 `joy2know-topic-planner` 的内嵌技能，它 10-08 上架 1.0.1 时本技能已在架，无连带重提。"
-      },
-      "submitted": {
         "version": "1.0.1",
         "assetId": "os_6a8bf8d9bd203d60",
-        "versionId": 47422,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47422,
+        "note": "2026-10-04 15:15 开发者接口直读：**已发布**（`status=published` / currentVersion 1.0.0 approved / `visibleScope=ALL`）—— 10-02 22:34 提交的 1.0.0 已过审上架。⚠️ 本包是 `joy2know-topic-planner` 的内嵌技能，它 10-08 上架 1.0.1 时本技能已在架，无连带重提。 2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:48:11+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47422）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.1。"
       }
     },
     "joy2know-wordplay": {
@@ -529,17 +486,11 @@
       "categoryConfirmed": false,
       "categoryNote": "产出**只有文本**（一句释义 + 一段可直接粘贴的 SVG 文本），无音频 / 图像 / 视频产物、不接入任何生成接口、不带账号与密钥 —— 按「内容创作 > 文案」推断，与**已过审**的 `joy2know-humanize` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训（该类目只对企业开发者开放），**绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类**；本包是「词卡 / 段子 / 一句话解释」，属写作而非生成。2026-09-29 建包；**2026-10-02 首次提交并过审上架 1.0.0**（开发者接口直读）。",
       "platform": {
-        "version": "1.0.0",
-        "assetId": "os_ab3d5b87eacd1dc4",
-        "date": "2026-10-02",
-        "note": "2026-10-02 开发者接口直读：**已发布**（status=published / version=approved）· 公开 · v1.0.0。**此前人工记「从未提交」有误** —— 它已于 2026-10-02 11:33 过审上架。"
-      },
-      "submitted": {
         "version": "1.0.1",
         "assetId": "os_ab3d5b87eacd1dc4",
-        "versionId": 47428,
         "date": "2026-10-13",
-        "note": "2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。"
+        "versionId": 47428,
+        "note": "2026-10-02 开发者接口直读：**已发布**（status=published / version=approved）· 公开 · v1.0.0。**此前人工记「从未提交」有误** —— 它已于 2026-10-02 11:33 过审上架。 2026-10-13 中文名重取轮：`pub.mjs` 纯接口 republish（沿用原分类），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:48:06+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47428）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.1。"
       }
     },
     "joy2know-harness": {
@@ -568,37 +519,37 @@
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有字段校验报告文本**（跑 fieldcheck.py 的退出码与报告），不生成音频/图像/视频、不接入任何生成接口、不带账号与密钥 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包（grep 确认引用方）。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "displayNameZh": "晓得·技能专家规范审核",
+      "platform": {
         "version": "1.0.2",
         "assetId": "os_b6caec8896b5d936",
-        "versionId": 51883,
         "date": "2026-10-16",
-        "note": "2026-10-16 **合规二轮**：URL/路径层面本已 0 处，本轮清**语境** —— 把正文里\"暗示可以去调接口\"的表述全改为「看页面」（接口特征→页面特征、用平台接口反证→去平台页面核对、从 chunk 挖出接口→逐项核对页面）。剩余「接口」字样均为否定式声明或平台规则引用。"
-      },
-      "displayNameZh": "晓得·技能专家规范审核"
+        "versionId": 51883,
+        "note": "2026-10-16 **合规二轮**：URL/路径层面本已 0 处，本轮清**语境** —— 把正文里\"暗示可以去调接口\"的表述全改为「看页面」（接口特征→页面特征、用平台接口反证→去平台页面核对、从 chunk 挖出接口→逐项核对页面）。剩余「接口」字样均为否定式声明或平台规则引用。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-16T18:12:41+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 51883）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.2。"
+      }
     },
     "joy2know-asset-gate": {
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有门禁判定文本与退出码**（跑 gatecheck.py），不生成音频/图像/视频、不接入任何生成接口、不带账号与密钥 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "os_702c1630a38bd2cf",
-        "versionId": 47440,
         "date": "2026-10-13",
-        "note": "2026-10-13 **更名后重发**（用户要求把展示名改直白）。因该资产当时是 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 用原版本号当新包发。"
+        "versionId": 47440,
+        "note": "2026-10-13 **更名后重发**（用户要求把展示名改直白）。因该资产当时是 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 用原版本号当新包发。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:47:35+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47440）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.0。"
       }
     },
     "joy2know-asset-compose": {
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有文本判定与对账报告**（跑自带脚本），不生成音频/图像/视频、不接入任何生成接口、不带账号与凭证 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.1",
         "assetId": "os_e1b99befed40cb20",
-        "versionId": 47410,
         "date": "2026-10-13",
-        "note": "2026-10-13 用 `pub.mjs` **纯接口发布**（全程未开浏览器），status=under_review。"
+        "versionId": 47410,
+        "note": "2026-10-13 用 `pub.mjs` **纯接口发布**（全程未开浏览器），status=under_review。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T21:03:05+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47410）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.1。"
       }
     },
     "joy2know-asset-publish": {
@@ -624,19 +575,12 @@
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有文本判定与对账报告**（跑自带脚本），不生成音频/图像/视频、不接入任何生成接口、不带账号与凭证 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.3",
         "assetId": "os_35410e1b71668a22",
-        "versionId": 51887,
         "date": "2026-10-16",
-        "note": "2026-10-16 **合规二轮**：URL/路径层面本已 0 处，本轮清**语境** —— 把正文里\"暗示可以去调接口\"的表述全改为「看页面」（接口特征→页面特征、用平台接口反证→去平台页面核对、从 chunk 挖出接口→逐项核对页面）。剩余「接口」字样均为否定式声明或平台规则引用。"
-      },
-      "platform": {
-        "version": "1.0.0",
-        "assetId": "os_35410e1b71668a22",
-        "date": "2026-10-15",
-        "versionId": 47443,
-        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47443}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
+        "versionId": 51887,
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47443}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。 2026-10-16 **合规二轮**：URL/路径层面本已 0 处，本轮清**语境** —— 把正文里\"暗示可以去调接口\"的表述全改为「看页面」（接口特征→页面特征、用平台接口反证→去平台页面核对、从 chunk 挖出接口→逐项核对页面）。剩余「接口」字样均为否定式声明或平台规则引用。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-16T18:12:46+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 51887）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.3。"
       },
       "displayNameZh": "晓得·技能专家状态追踪"
     },
@@ -644,31 +588,24 @@
       "suggestedCategory": "development-tools（市场展示分类）+ tools:office（服务类目）",
       "categoryConfirmed": false,
       "categoryNote": "**发布时两个分类要分开填（2026-10-13 平台实测，此前的『工具 > 开发工具』写法是错的）**：①「市场展示分类\\*」取**技能市场分类**（13 个扁平 slug），本包 = `development-tools`（开发工具）；②「服务类目\\*」取**服务类目树**（9 个一级，1~5 个），本包 = `tools:office`（工具 > 办公）—— 注意「开发工具」**不在**服务类目里，它只是市场展示分类的一个值。两套字典用 `node ~/.workbuddy/skills/开放平台发布/scripts/pub.mjs dicts` 导出。⚠️ 另：平台专家分类实为 **16 类**（多出 `17-CampusGuide` 高校新生攻略），不是 15 类。 技能包，产出**只有文本判定与对账报告**（跑自带脚本），不生成音频/图像/视频、不接入任何生成接口、不带账号与凭证 —— 按「工具 > 开发工具」推断，与已过审的 `joy2know-harness-rules` 同族。⚠️ 按 `joy2know-musician` 被按「深度合成 > AI创作」驳回的教训，绝不选任何带「AI 生成 / AI 创作 / 深度合成」语义的子类。⚠️ **内嵌关系**：将由 `joy2know-asset-smith` 专家包内嵌 —— 本包升版本必须连带重建该专家包。2026-10-12 建包，**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.0",
         "assetId": "os_86a2185bb770d786",
-        "versionId": 47444,
         "date": "2026-10-13",
-        "note": "2026-10-13 **更名后重发**（用户要求把展示名改直白）。因该资产当时是 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 用原版本号当新包发。"
+        "versionId": 47444,
+        "note": "2026-10-13 **更名后重发**（用户要求把展示名改直白）。因该资产当时是 `under_review`（**未被审核过**）→ 按平台规则**不需要抬版本**，走 withdraw → delete → 用原版本号当新包发。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-13T22:47:28+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 47444）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.0。"
       }
     },
     "joy2know-asset-smith": {
       "suggestedCategory": "02-Engineering（专家 categoryId，写死在包内）",
       "categoryConfirmed": false,
       "categoryNote": "专家包，`expertType: agent` 单飞专家，**内嵌 6 个 asset-* 技能**。专家发布表单比技能少一步：**头像从包内 avatars/ 自动上传**，只需选「市场展示分类」（16 类）+「服务类目」（1~5 个）。⚠️ **内嵌联动**：6 个内嵌技能任一升版本，本包必须连带重建（zip 内是副本）。2026-10-13 建包（含头像制作能力：两条路线 + crop-avatar.py）**尚未提交平台**（① 待提交）。",
-      "submitted": {
+      "platform": {
         "version": "1.0.10",
         "assetId": "oe_d00ce19381afbdfb",
-        "versionId": 50576,
         "date": "2026-10-16",
-        "note": "2026-10-16 **合规二轮**：URL/路径层面本已 0 处，本轮清**语境** —— 把正文里\"暗示可以去调接口\"的表述全改为「看页面」（接口特征→页面特征、用平台接口反证→去平台页面核对、从 chunk 挖出接口→逐项核对页面）。剩余「接口」字样均为否定式声明或平台规则引用。"
-      },
-      "platform": {
-        "version": "1.0.6",
-        "assetId": "oe_d00ce19381afbdfb",
-        "date": "2026-10-15",
-        "versionId": 47713,
-        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47713}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。"
+        "versionId": 50576,
+        "note": "2026-10-15 `pub.mjs release` 上架（④→③，body={\\\"versionId\\\":47713}，**release 能力当日实测打通**——bundle 推导的 visibleScope body 是错的）。 2026-10-16 **合规二轮**：URL/路径层面本已 0 处，本轮清**语境** —— 把正文里\"暗示可以去调接口\"的表述全改为「看页面」（接口特征→页面特征、用平台接口反证→去平台页面核对、从 chunk 挖出接口→逐项核对页面）。剩余「接口」字样均为否定式声明或平台规则引用。 ⭐ **2026-10-18 15:5x 订正**：全量直读（list 接口 `updatedAt`）确认本版本 **2026-10-16T18:12:24+08:00 已过审上架**（`status=published` / `currentVersion.status=approved` / versionId 50576）—— 提交轮的 `submitted` 块一直没移入 `platform`（10-16 晚与 10-18 上午的订正都漏了它），按对账铁律本轮补齐：删除 `submitted`，在架版本改写为 1.0.10。"
       },
       "displayNameZh": "晓得·技能专家构建师"
     },
@@ -762,6 +699,8 @@
     }
   },
   "submittedBatches": [
+    "**2026-10-18 15:5x 全量订正（提交轮顺带做的一次总对账）：揪出 15 包「`submitted` 没移入 `platform`」的存量漂移。** 提交完五个包后做全量直读（list 接口逐条 `updatedAt`），发现 **10-13 中文名重取轮那批 12 包 + 10-16 三个包全部早已上架**，但 `release.config.json` 的 `submitted` 块从没清过 —— 自动表一直把它们显示成 ②（18 个技能 ② vs 平台实际 6），与人工节长期自相矛盾。逐包订正：`clarify` / `cmdforge` / `dashboard` / `asset-ledger` / `humanize` / `viral-topic` / `wordplay` / `asset-compose` / `asset-gate` / `asset-maint` / `mr`（均 10-13T21:03~22:48）、`code-scholar`（10-14T16:19:53）、`asset-spec` / `asset-trace` / `asset-smith`（10-16T18:12:24~46）—— 按对账铁律 `submitted` 删除、在架版本改写，15 包重跑构建后**自动表 ② 行数与平台实况（9）完全对齐**，剩余 `submitted` 恰好 9 个 = 平台 ② 名单。⭐ 副产品：`asset-smith` 1.0.7 被驳「等邮件」案**实际已了结**（合规二轮版 1.0.10 于 10-16 18:12:24 过审上架，在架 1.0.6 → 1.0.10）。⭐ 教训：**人工节从 `ow.mjs` 读所以一直对，自动表从配置生成所以一直错** —— 两节矛盾能存活五天，说明「每次发布后只更人工节」不够，**订正必须落到配置层，并且要全量比对一个都不能漏**（10-16 晚那次只抓了 mureka-maestro 等三个，漏了这批）。",
+    "**2026-10-18 15:0x~15:1x 提交轮（小乐两次指示「现在就提交」；`pub.mjs` 纯接口，全程未开浏览器）：五个包全部提交平台，① 首次清零。** dry-run 五包均判「新资产 → 首次创建」（`action=create`）；分类沿用已实证口径（技能 market=`content-creation` + service=`tools:office`；专家 market=`06-ContentCreative` + service=`tools:office`）；技能包显式传 `--avatar` 单独上传图标，专家包头像由平台自动上传包内 `avatars/`。**② 在审 4 个**：`lyric-design` 1.0.0（`os_f33827d21a4a5108` / vid 55344）、`tianyin-musician` 1.0.0（`os_1e363b57718f60c9` / vid 55343）、`album-planner` 1.0.0（`oe_aa0fac56211ea44f` / vid 55765）、`tianyin-maestro` 1.0.0（`oe_72344c227aff1bb1` / vid 55766）。🚫 **`lyricist` 1.0.0（`oe_e8fa2e6d40b020c9` / vid 55764）提交约 1 分钟后被机器审核驳回（⑤）** —— 驳回原文 API 两端点均不返回、邮箱未开通，**待小乐去发布管理页看原文**（2026-10-03 先例同此）；`nextSubmitAt` 15:32:01 前不让重提交；按铁律 7 三类口径拿到原文前**不猜不重传**。平台全貌（15:26 直读）：**③ 35 · ② 9 · ⑤ 1 · ④ 0 · ① 0**。",
     "**2026-10-08 13:5x 二次同步（小乐点完「发布」后复读）：③ 已上架 28/ 28 —— 全仓首次实现「零待办」。** 唯一变化：`cine-team` 由 ④ 待发布 → **③ 已上架**（在架版本 1.3.0 → **1.6.1**，本包长期悬案闭环）。**② 0 · ④ 0 · ⑤ 0 · ① 0**。⭐ 同轮**问明了驳回的真实原因**：机器审核按「生成式 AI 需资质」判定「调用了 LLM 以外的 AI 做内容生成」，而我们**只产出文本提示词、只用 LLM 与本地工具**；小乐向客服说明后**由客服人工审核放行，无需补资质、无需加类目**。→ 由此确立通用处置顺序：**先找客服人工复审 → 通过则零改动抬版本 → 不要为迎合机器去补资质或加类目**。",
     "**2026-10-08 13:3x 手工同步（小乐重新发布后；开发者接口直读，`ow.mjs` 纯 curl 2 秒读回 28 个资产）：② 审核中与 ⑤ 已驳回**双双清零**，本仓首次达到「无在审、无驳回」。** 实况 —— **③ 已上架 27 · ④ 待发布 1 · ② 0 · ⑤ 0 · ① 0**（= 28 ✓）。本轮 **4 处推进**：① 技能 `viral-topic` 1.0.0、`harness-rules` 1.0.0 由 ② 转 ③（**过审日期 10-04 15:15 / 15:16**，此前记「审核中」已过期）；② 专家 `topic-planner` **1.0.1 由 ⑤ 转 ③**（10-08 13:29，**驳回 → 抬版本重提 → 当日过审直接上架**，本仓首次「首次上架失败后一次成功」）；③ 专家团 `cine-team` 1.6.0 的 ⑤ 被 **1.6.1 的 ④ 待发布取代**（10-08 13:36 过审，**在架仍是 1.3.0**，待小乐手动点「发布」）。⭐ **本轮是最强的一次规律验证：三个包（`musician` 1.6.1 / `topic-planner` 1.0.1 / `cine-team` 1.6.1）都是「包内内容零改动、只抬版本号」就过审** —— 此前被驳的根因是**类目 / 提交口径**，不是包内容；驳回后正确处置是**先查类目、其次才是改内容**。",
     "**2026-10-03 13:5x 手工同步（小乐提交后；开发者接口直读 + 发布管理页交叉核对）：5 个资产上架、2 个被驳回（⑤，本仓首次遇到该档）。** 实况 —— **③ 已上架 24 · ② 审核中 2 · ⑤ 已驳回 2**（= 28 ✓，① 为零）。① **新上架 5 个**：`market-scout` 1.0.0（13:14 —— 它曾是本仓第一个 **④ 待发布**，小乐当天点了「发布」才进 ③）、`harness` 1.0.0（13:24）、`positioning` / `copywriter` / `reviewer` 各 1.0.0（13:41 三连过审）。② **被驳回 2 个**：`cine-team` 1.6.0（13:26，**在架仍是 1.3.0**）、`topic-planner` 1.0.0（13:38，**首次上架失败**，13:48 起可再提交）—— **驳回原文待小乐去发布管理页看**。③ **仍在审**：技能 `harness-rules` 1.0.0、`viral-topic` 1.0.0。",
