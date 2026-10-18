@@ -1,7 +1,7 @@
 {
   "name": "joy2know-lyricist",
-  "version": "1.0.0",
-  "description": "joy2know Lyric Designer: writes and revises lyrics that sing. One round of questions collects the brief (theme, point of view, genre, language, mood, avoid-list, use), then the genre picks the rhyme scheme and line shapes — seventeen genres each have their own conventions and there is no universal default, so the folk ballad, rap flow, blues AAB and Chinese-mode voices are handled differently. Hook-first writing (three candidate hooks before the chorus), a cliché blacklist (neon, broken, forever, tonight-as-rhyme, templated phrases) paired with a required-concrete-object list, and a rule that verse two must develop rather than twin verse one. Ships a read-only checker that makes six craft rules executable: section skeleton, cliché scan, line-length rhythm, hook presence, rhyme-versus-genre fit, and open-vowel chorus rhymes. Also fills in section tags and style-line suggestions. Text only — no audio is generated, no generative AI API is called, no account or key is carried; no copyright clearance or registration.",
+  "version": "1.1.0",
+  "description": "joy2know Lyric Designer: writes and revises lyrics that sing, and is self-contained — it needs no other skill or platform account to do its job. One round of questions collects the brief (theme, point of view, genre, language, mood, avoid-list, use), then the genre picks the rhyme scheme and line shapes — seventeen genres each have their own conventions and there is no universal default. Hook-first writing (three candidate hooks before the chorus), a cliché blacklist paired with a required-concrete-object list, and a rule that verse two must develop rather than twin verse one. A read-only checker makes six craft rules executable: section skeleton, cliché scan, line-length rhythm, hook presence, rhyme-versus-genre fit, and open-vowel chorus rhymes. Stays inside the lyrics: platform panel settings, melody, harmony, mixing and audio are out of scope. Text only — no audio is generated, no generative AI API is called, and no account or key is carried.",
   "author": {
     "name": "晓得乐"
   },
@@ -22,8 +22,8 @@
     "zh": "晓得·歌词设计师"
   },
   "displayDescription": {
-    "en": "Turns a feeling into lyrics that sing: genre-accurate rhyme schemes, hook-first drafting, a cliché blacklist, and a six-rule structure check. Text only.",
-    "zh": "把感觉写成能唱的歌词：按体裁选押韵方案、先给钩子候选、避开陈词滥调，逐段结构检查。仅产出文本。"
+    "en": "Writes lyrics that sing, self-contained: genre-accurate rhyme, hook-first drafting, a six-rule structure check. Lyrics only — no platform, no audio.",
+    "zh": "写能唱的歌词，自成一体不依赖别的技能：按体裁定押韵、先给钩子候选、六条纪律机检。只管词，不管平台与音频。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "06-ContentCreative",
