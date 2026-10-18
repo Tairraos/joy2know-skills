@@ -366,19 +366,19 @@
     "joy2know-album-design": {
       "suggestedCategory": "内容创作 > 文案",
       "categoryConfirmed": false,
-      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-musician` / `joy2know-mureka-musician` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 musician 系列同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` 与 `joy2know-mureka-maestro` 两个专家内嵌（这两个专家在架 1.0.1/ 1.0.0）——若本包类目或内容被打回，两个引用方需同轮重建。2026-10-16 建包，从未提交。",
+      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-musician` / `joy2know-mureka-musician` 同族（产出只有文本，无音频产物，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 musician 系列同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` / `joy2know-mureka-maestro` / `joy2know-tianyin-maestro` 三个专家与 `joy2know-lyricist` / `joy2know-album-planner` 两个单飞专家内嵌——若本包类目或内容被打回，引用方需同轮重建。2026-10-16 建包；2026-10-17 过审上架（见 platform）。",
       "note": "技能包。专辑层技能：九项信息收集 + 0–8 章节骨架 + 六条门禁（album_check.py，28 项内置自检）+ 唯一真源渲染（build_album.py，9 项内置自检）。两份 md 由脚本渲染以避免文档漂移。",
-      "submitted": {
+      "platform": {
         "version": "1.1.0",
         "assetId": "os_c599c9f9e3383d68",
-        "date": "2026-10-16",
-        "note": "2026-10-16 20:1x 走 `开放平台发布`（pub.mjs）接口提交（`action=create`，新 assetId）。market=content-creation + service=tools:office（沿用 musician / mureka-musician 的过审口径）。上传 + 校验 ok（warnings/errors 均空）+ 头像已传。回读核对：version=1.1.0 / versionId=53185 / status=under_review（② 审核中）。⚠️ 技能包无图标槽位，头像已随接口单独上传。⚠️ 本包属音乐域，若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**。"
+        "date": "2026-10-17",
+        "note": "2026-10-18 11:2x `ow.mjs state` 直读订正：原记 `submitted` 1.1.0（②在审，2026-10-16 20:1x 提交、versionId=53185），实际 `status=published`、currentVersion 1.1.0 approved（`updatedAt` 2026-10-17T09:20:02+08:00）→ **已过审并上架**，`submitted` 移入 `platform`。提交口径：market=content-creation + service=tools:office；技能包无图标槽位，头像已随提交接口单独上传（coverUrl 为 COS 真图）。"
       }
     },
     "joy2know-lyric-design": {
       "suggestedCategory": "内容创作 > 文案",
       "categoryConfirmed": false,
-      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-humanize` / `joy2know-viral-topic` 同族（产出只有文本，不接任何生成接口，不带账号与密钥）。⚠️ 本包属音乐域（歌词）——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**；客服放行后仅抬版本号重提（属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` 与 `joy2know-mureka-maestro` 两个专家内嵌——若本包类目或内容被打回，两个引用方需同轮重建。2026-10-17 建包，从未提交。",
+      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-humanize` / `joy2know-viral-topic` 同族（产出只有文本，不接任何生成接口，不带账号与密钥）。⚠️ 本包属音乐域（歌词）——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**；客服放行后仅抬版本号重提（属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-suno-maestro` / `joy2know-mureka-maestro` / `joy2know-tianyin-maestro` 三个专家与 `joy2know-lyricist` / `joy2know-album-planner` 两个单飞专家内嵌——若本包类目或内容被打回，引用方需同轮重建。2026-10-17 建包，从未提交。",
       "note": "技能包。作词 + 提示词全流程：七项信息收集 → 体裁押韵表（17 体裁）→ 四阶段出稿（框景/主歌/钩子/副歌）→ 段落标签与风格栏；lyric_check.py 把六条纪律机检化（31 项以内零依赖）。",
       "platformNote": "图标当前是占位图，等小乐亲手画；技能图标不进 zip，发布时需单独上传。"
     },
@@ -691,17 +691,10 @@
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId（06-ContentCreative，与同门 joy2know-mureka-maestro 同类，内容创作向）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（2026-10-08 客服口径；cine-team 1.6.1 内容零改动过审为证）。⚠️ **内嵌的是在架技能** joy2know-musician 1.6.1（平台 ③ published）——与 asset-smith 1.0.7 因「内嵌未过审版本」被驳的疑点不同，本包结构性避开；musician 后续升级时必查本包连带重建。",
       "note": "单专家，内嵌 joy2know-musician（Suno 口径）。用户口径：与 mureka-maestro 对应，强调仅生产提示词。",
       "platform": {
-        "version": "1.0.1",
-        "assetId": "oe_f4f465b268a90e6f",
-        "date": "2026-10-15",
-        "note": " ⚠️ 2026-10-16 20:00 接口直读订正：`submitted` 原记 1.0.1（②在审），实际 `status=published`（`updatedAt` 2026-10-16T09:23:37）→ 1.0.1 **已过审并上架**，移入 `platform`。"
-      },
-      "submitted": {
         "version": "1.2.1",
         "assetId": "oe_f4f465b268a90e6f",
-        "versionId": "52554",
-        "date": "2026-10-16",
-        "note": "2026-10-16 20:1x 走 pub.mjs 接口 republish（同名更新版本，`action=republish`）。上传 + 校验 ok；专家头像由平台自动上传包内 avatars/。回读核对：version=1.2.1 / versionId=52554 / status=under_review。**在架版本仍是 1.0.1**（`platform` 字段未动）—— 审核通过后会转 `approved`（待发布），**还需在发布管理页点一次「发布」才真正上架**。"
+        "date": "2026-10-17",
+        "note": "2026-10-18 11:2x `ow.mjs state` 直读订正：原记 `platform` 1.0.1 + `submitted` 1.2.1（②在审，2026-10-16 20:1x republish、versionId=52554），实际 `status=published`、currentVersion **1.2.1** approved（`updatedAt` 2026-10-17T09:19:46+08:00）→ 1.2.1 **已过审并上架**（在架 1.0.1 → 1.2.1），`submitted` 清除。首提交履历：2026-10-15 首提即过审上架 1.0.1；本次为「内嵌 lyric-design 抬版」轮（本地 1.3.0 含作词路径，尚未提交）。"
       }
     },
     "joy2know-lyricist": {
@@ -717,6 +710,20 @@
       "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **06-ContentCreative**。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（同上口径）。⚠️ **内嵌两个技能**：`joy2know-album-design` 1.1.0（②在审）与 `joy2know-lyric-design` 1.0.0（②在审）——任一被打回，本包需同轮重建。2026-10-17 建包，**从未提交**。",
       "note": "专家包。单专家「晓得·音乐专辑设计师」：专辑层 + 作词层两条路径，交付专辑规划文档与逐首粘贴清单两份 md，差异矩阵六轴防撞车，G7 判据保证交付目录不多给文件。",
       "platformNote": "⚠️ **图标为占位图，等小乐亲手画**；画完重跑构建才可提交平台。"
+    },
+    "joy2know-tianyin-musician": {
+      "suggestedCategory": "内容创作 > 文案",
+      "categoryConfirmed": false,
+      "categoryNote": "按「内容创作 > 文案」推断，与已过审的 `joy2know-mureka-musician` 同族（产出只有文本，不接任何生成接口，不带账号与密钥）。⚠️ 本包与 musician 系列同属音乐域——若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**；客服放行后仅抬版本号重提（⚠️ 该情况属提交成功后的审核驳回，版本号会被平台占用）。⚠️ 内嵌关系：被 `joy2know-tianyin-maestro` 内嵌——若本包类目被打回，要连带看引用方是否需同轮重建。2026-10-18 建包，从未提交。",
+      "note": "技能包。网易天音「AI作歌」输入写作：两种模式（简易灵感一段话 / 高级风格描述 + 歌词双栏 + 控件组）、18 风格标签 × 18 虚拟歌手适配、纯音乐与参考音频两条路线；tianyin_check.mjs 把核心规则机检化（24 项自检 + 反向验证 7/7）。",
+      "platformNote": "⚠️ **图标为占位图，等小乐亲手画**（铁律 14：真实头像才能打包和发布——画完重跑构建才可提交平台）；技能图标不进 zip，发布时需单独上传。"
+    },
+    "joy2know-tianyin-maestro": {
+      "suggestedCategory": null,
+      "categoryConfirmed": false,
+      "categoryNote": "专家包：类目读包内 plugin.json 的 categoryId = **06-ContentCreative**（与 `joy2know-suno-maestro` / `joy2know-mureka-maestro` 同类）。⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（同上口径）。⚠️ **内嵌三个技能**：`joy2know-tianyin-musician` 1.0.0（①未提交）、`joy2know-album-design` 1.1.0（③在架）、`joy2know-lyric-design` 1.0.0（①未提交）——内嵌未上架技能随包进 zip；任一后续单独上架抬版，按 R8 查引用方同轮对齐。2026-10-18 建包，**从未提交**。",
+      "note": "专家包。单专家「晓得·天音音乐大师」：单曲输入包 / 作词 / 整张专辑三条路径，内嵌技能 3 个，交付天音输入文本 + 控件设置块。",
+      "platformNote": "⚠️ **图标为占位图，等小乐亲手画**；画完重跑构建才可提交平台（铁律 14）。"
     }
   },
   "submittedBatches": [
