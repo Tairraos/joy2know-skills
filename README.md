@@ -174,9 +174,10 @@ avatars/
 
 **文件名必须与 `plugin.json` 里 `members[].avatar` 逐字对应**，否则构建时找不到，只会告警不会报错 —— 上传时才发现头像空了。
 
-> ✅ **状态（2026-10-18 复核）**：64 张中 **59 张已是真图、占位图 5 张**
-> （`joy2know-album-planner` · `joy2know-lyric-design` · `joy2know-lyricist` · `joy2know-tianyin-musician` ·
-> `joy2know-tianyin-maestro`，等小乐亲手画），全部 512×512、单张 ≤500KB，**规格零不合规**。
+> ✅ **状态（2026-10-18 午后复核）**：64 张中 **64 张已是真图、占位图 0 张** ——
+> 当日午后小乐亲手画好了最后 5 张（`joy2know-album-planner` · `joy2know-lyric-design` · `joy2know-lyricist` ·
+> `joy2know-tianyin-musician` · `joy2know-tianyin-maestro`，画面描述见 `avatars/README.md`），
+> `avatars/.placeholders.json` 台账随之清空。全部 512×512、单张 ≤500KB，**规格零不合规**。
 > （张数增长史：09-17 晚首次全量落地 30 张 → 09-29 加 `wordplay` 后 31 张 → 09-30 加 5 专家 1 技能后 45 张
 > → 10-02 加两个 harness 包后 47 张 → 10-13 加 7 个 asset-smith 系列技能图标后 59 张
 > → 10-17/18 加 `lyric-design` / `album-planner` / `lyricist` / `tianyin-musician` / `tianyin-maestro` 后 64 张。
@@ -233,7 +234,7 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-asset-maint` | 晓得·技能专家包维护 | 1.0.0 | 内嵌联动 R8、派生信息漂移、检测报告失真、头像三处同步 | 9.1 KB | ② 待审核（首次上架） |
 | `joy2know-asset-insight` | 晓得·技能专家数据洞察 | 1.0.2 | 把平台运营数据（安装/调用/活跃/频次/次周留存）按「集中度·粘性·留存·加速」四把尺子算成一页可决策报告；纯接口直读，含三个接口坑与口径边界 | 6.7 KB | ② 待审核（在架 1.0.0） |
 | `joy2know-mureka-musician` | 晓得·Mureka音乐人 | 1.2.1 | 按 Mureka「自定义」双栏真机实测规范产出可直接粘贴的提示词包：风格栏英文 token 七要素（含场景位与官方鼓励的风格融合）+ 歌词栏中文（语言声明 / 段落标签 / 重复位置）+ 粘贴前界面设置；擅长爵士、蓝调、民谣及融合，默认治愈文风，含纯器乐与循环路径；实测纠偏写进包内（面板无时长 / 版本 / 人声参数滑杆） | 36.1 KB | ③ 审核完成 · 已上架 |
-| `joy2know-tianyin-musician` | 晓得·天音音乐人 | 1.0.0 | 把想法写成可直接粘贴进网易天音「AI作歌」的输入：简易模式创作灵感一段话（四要素、≤1000 字）或高级模式风格描述 + 歌词两栏 + 控件组（人声性别 / 18 风格标签 / 18 位虚拟歌手 / 副歌前置 / 歌名 ≤30 字）；纯音乐走简易开关、参考音频走平台上传路径；tianyin_check.mjs 把核心规则机检化（24 项自检） | — | ① 开发完待提交 |
+| `joy2know-tianyin-musician` | 晓得·天音音乐人 | 1.0.0 | 把想法写成可直接粘贴进网易天音「AI作歌」的输入：简易模式创作灵感一段话（四要素、≤1000 字）或高级模式风格描述 + 歌词两栏 + 控件组（人声性别 / 18 风格标签 / 18 位虚拟歌手 / 副歌前置 / 歌名 ≤30 字）；纯音乐走简易开关、参考音频走平台上传路径；tianyin_check.mjs 把核心规则机检化（24 项自检） | 31.2 KB | ① 开发完待提交 |
 | `joy2know-album-design` | 晓得·专辑设计 | 1.1.0 | 先用一轮问答收集专辑信息（专辑名 / 用途 / 集数 / 主题 / 歌词主题 / 歌词风格 / 风格锚点 / 听感 / 曲名），再按固定章节骨架产出**专辑规划文档 + 逐首粘贴清单 + 生成脚本**三份文本：音色口径落到具体英文 token、专辑结构、曲目表（十列）、差异矩阵（N 首互不撞：拍号 / 调式 / 主奏乐器 / 编制 / 音区 / BPM，BPM 全不同、任意两首≤2 根轴）、拍号与调式逐项解释、逐首风格栏与歌词栏、封面提示词；两份 md 由生成脚本渲染、校验脚本把六条纪律做成可执行门禁 | 47.3 KB | ③ 审核完成 · 已上架 |
 | `joy2know-lyric-design` | 晓得·歌词设计 | 1.0.0 | 写与改歌词：七项信息收集 → 按体裁选押韵方案与句式 → 分阶段出稿（框景 / 主歌 / 钩子 / 副歌）→ 配段落标签与风格栏。**17 体裁各自一套押韵约定**（没有普适默认，写前必查体裁表）、陈词滥调禁用清单（霓虹 / 破碎 / 永恒类）、钩子四型与三种框景、中文句式与顿点（四五六七言）；附只读校验脚本把六条纪律机检化（段落骨架 / 禁用词 / 句长 / 钩子 / 押韵与体裁 / 副歌开口韵） | 28.4 KB | ① 开发完待提交 |
 
@@ -310,9 +311,9 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.10 | `joy2know-asset-spec` 1.0.2、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.3、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.2 | — | 2703.2 KB | ② 待审核（在架 1.0.6） |
 | `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.3.0 | `joy2know-mureka-musician` 1.2.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1269.1 KB | ② 待审核（交 1.2.2，在架 1.2.1）+【本地升级】 |
 | `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.3.0 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1216.9 KB | ③ 已上架（在架 1.2.1）+【本地升级】 |
-| `joy2know-tianyin-maestro` | 晓得·天音音乐大师 | 专家 | 1.0.0 | `joy2know-tianyin-musician` 1.0.0、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | — | ① 开发完待提交 |
-| `joy2know-lyricist` | 晓得·歌词设计师 | 专家 | 1.0.0 | `joy2know-lyric-design` 1.0.0 | — | 57.6 KB | ① 开发完待提交 |
-| `joy2know-album-planner` | 晓得·音乐专辑设计师 | 专家 | 1.0.0 | `joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 453.2 KB | ① 开发完待提交 |
+| `joy2know-tianyin-maestro` | 晓得·天音音乐大师 | 专家 | 1.0.0 | `joy2know-tianyin-musician` 1.0.0、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1643.9 KB | ① 开发完待提交 |
+| `joy2know-lyricist` | 晓得·歌词设计师 | 专家 | 1.0.0 | `joy2know-lyric-design` 1.0.0 | — | 793.9 KB | ① 开发完待提交 |
+| `joy2know-album-planner` | 晓得·音乐专辑设计师 | 专家 | 1.0.0 | `joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1187.2 KB | ① 开发完待提交 |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 
@@ -414,6 +415,15 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `release.config.json` | 配置 | 新增两条 ① 态条目（platformNote 注明等真头像）；**平台状态同步**：`album-design` 与 `suno-maestro` 由 ② 移入 ③（10-17 过审上架，`ow.mjs` 直读订正）；`album-design` / `lyric-design` 的内嵌关系补至 5 个引用方 |
 | `README.md` | 文档 | 包数 40 → **45**（28 技能 / 14 专家 / 3 团）、图标 59 → **64**、内嵌引用 30 → **35 处 / 15 方 / 21 技能**；资产总表加两行（均 ① 等头像）；平台快照刷新为 **③ 35 · ② 5 · ① 5** |
 | `avatars/` | 图标 | 补两张占位图（`tianyin-musician` / `tianyin-maestro`，sha1 已入台账）；占位图总数 1 → **5**（另 3 张：`album-planner` / `lyric-design` / `lyricist`） |
+
+**同日午后 · 第二轮（头像到位 → 五个包过齐发布前门禁，均未提交）**：
+
+| 对象 | 类型 | 变更 |
+|---|---|---|
+| `avatars/` | 图标 | **小乐亲手画好最后 5 张真图**（`lyricist` 374.6 KB 长衫折扇歌篇 / `album-planner` 373.0 KB 礼服设计台 / `lyric-design` 381.5 KB 课前写谱 / `tianyin-musician` 408.4 KB 调音台 / `tianyin-maestro` 388.3 KB 围巾小合成器），**64 张全真图、占位 0**；`.placeholders.json` 清空（含往轮 34 条失效条目——sha1 早已对不上，留着等于台账谎称占位） |
+| `packages/` 五包 | 构建 | `tianyin-musician` / `tianyin-maestro` / `lyricist` / `album-planner` / `lyric-design` **全部重跑构建通过铁律 14 门禁**（zip 落 `dist/`，不入库）；`platformcheck --zip` 逐包判各自类型 ✅（两技能判 Skill ✅ · 三专家判 Expert ✅）；专家包内嵌技能图标 sha1 六处全部核等于源图，内嵌副本与主源 `diff -r` 零内容差异 |
+| 五份检测报告 | 文档 | 「未构建 zip / 头像占位」未覆盖项全部转正，履历各追加第二轮记录；**订正 `lyric-design` 一处首轮测错的数字**：description 388 → **395**、en 883 → **891**（源文件零改动，以交付 zip 实测归真；395 略超系列区间上限 390，无硬限、不单独抬版本） |
+| `release.config.json` | 配置 | 五包 platformNote 去掉「等真头像」警告（图标已就位，待提交平台） |
 
 ### 2026-10-16（文档同步专项 · 新增铁律 12 / 13）
 
