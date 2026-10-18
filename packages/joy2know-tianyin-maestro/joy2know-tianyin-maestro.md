@@ -12,7 +12,7 @@
 - **类型**：单专家（`expertType: "agent"`）
 - **对应版本**：1.0.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-18（**当日两轮**：首次建包检测 + 真头像到位后的构建与交付形态复检 —— 详见第七节履历）
+- **最后检测**：2026-10-18（**当日三轮**：首次建包检测 + 头像到位后的构建复检 + 提交平台 —— 详见第七节履历）
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -151,8 +151,11 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-maestro-v1.0.
 
 1. **卡片文案与真实开场未实测**：`defaultInitPrompt` / `quickPrompts` 能否顺滑触发六步流程、
    控件配得准不准，需在 WorkBuddy 里真实装载本专家跑至少两轮（一句全默认 + 一个指定标签的主题）。
-2. **平台侧真实上传未做**：从未提交（①）；`categoryId=06-ContentCreative` 是推断值。
-   若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（铁律 11）。
+2. **平台侧真实上传未做**：**已提交平台**（2026-10-18 15:2x，② 审核中 —— assetId `oe_72344c227aff1bb1` ·
+   versionId 55766，market=06-ContentCreative + service=tools:office，头像由平台从包内自动上传）。
+   `categoryId=06-ContentCreative` 是推断值，首次实证中。
+   若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包也别补资质**（铁律 11）；
+   若报「所选类目与应用类目不符」→ 版本号已被平台占用，**抬 minor 重传**（铁律 7）。
 3. **内嵌技能专辑字段的天音适配只在 agent 层声明**：album-design 的 F 路线「按目标平台改写」
    由本专家的专辑纪律承接，但「天音字段下的专辑粘贴清单长什么样」没有真实样例验证过——
    需在真实装载后跑一张小天音专辑确认两份 md 的字段口径站得住。
@@ -166,9 +169,9 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-maestro-v1.0.
 
 **待办**：
 
-- ~~小乐画 `avatars/joy2know-tianyin-maestro.png`~~ → ~~重跑构建~~ → ~~platformcheck --zip + 解压自检 + 内嵌 diff~~
-  **均已完成（2026-10-18，见履历第二轮）**；剩「按**专家入口**提交平台」一步
-  （技能入口必报「未找到 SKILL.md」）—— **发布由人确认后进行，AI 不自动发布**。
+- ~~小乐画头像~~ → ~~重跑构建~~ → ~~platformcheck --zip + 解压自检 + 内嵌 diff~~ → ~~提交平台~~
+  **均已完成（2026-10-18，见履历）**。当前 ② 审核中：过审后若停在 ④「待发布」，
+  需去发布管理页点「发布」（或 `pub.mjs release`）才上架。
 - 真实装载跑两轮开场，评估未覆盖项 1；跑一张小天音专辑，评估未覆盖项 3。
 
 ---
@@ -179,3 +182,4 @@ $V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-maestro-v1.0.
 |---|---|---|---|
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建单专家「晓得·天音音乐大师」，内嵌同步新建的技能包 `joy2know-tianyin-musician`（两种模式方法论 + 18 标签 × 18 歌手适配 + 结构校验器）+ `joy2know-album-design` 1.1.0 + `joy2know-lyric-design` 1.0.0。**源目录自检通过 11 项**（displayDescription.zh 实测 48 汉字——初稿 51 超限 1，当轮删「与控件」三字回区间；defaultInitPrompt==quickPrompts[0] 逐字相同；tags/quickPrompts 各 3；categoryId=06-ContentCreative；agent 名三处一致）；**selfcheck 首轮报 avatar 缺失**，补两张占位图（placeholders.py，sha1 入台账）后复检归零；合规门禁**通过 7 · 提示 0 · 失败 0**；R6 全仓审计 24 条历史候选**零命中本包**；内嵌校验器继承技能包报告证据（24 项自检 + 反向验证 7/7）。⭐ **遵守铁律 14：无真头像不打包** —— 未构建 zip，交付形态层五项（platformcheck / 解压自检 / zip 第一层 / 内嵌 diff / 头像注入校验）与真实开场、平台上传记入未覆盖项，共 5 项未覆盖 + 2 项弱项。 |
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第二轮：真头像到位 → 重跑构建 → 交付形态层补齐**（版本未动：包内容零改动，仅头像就位）。小乐亲手画好 `avatars/joy2know-tianyin-maestro.png`（512×512 / 388 KB / sha1 `fe745ec2…`）；铁律 14 占位台账清零。**重跑构建通过**：`dist/joy2know-tianyin-maestro-v1.0.0.zip`（1643.9 KB，`通过 内嵌 3`，构建暂存自检通过）。**交付形态层五项全部转正**：platformcheck --zip 判 **Expert ✅ 通过**（Skill ❌ 属预期）；解压后 zip 第一层恰为 `joy2know-tianyin-maestro/`；**三组内嵌逐个 `diff -r` 对源包零内容差异**（仅 zip 内多个注入 icon.png、源目录多个检测报告两处预期差异）；四张相关图标（自身 + 三内嵌技能）sha1 全部等于 avatars/ 源图。未覆盖项由 5 条缩到 3 条（交付形态五项 + 头像占位一条全部转正），弱项不变；**发布待小乐确认**。 |
+| 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第三轮：提交平台（小乐点头后执行）**。`pub.mjs publish` 首次提交（action=create，category-type=expert）：market=06-ContentCreative + service=tools:office；上传校验 ok；专家头像由平台从包内 `avatars/` 自动上传（列表接口回读 coverUrl 为 COS 真图）。**回读核对 version=1.0.0 / versionId=55766 / status=under_review（②）** —— assetId `oe_72344c227aff1bb1`。未覆盖项「平台侧真实上传」改写为「已提交、审核结果未定」（附铁律 7/11 口径）。剩 3 项未覆盖（真实开场 / 审核结果 / 天音专辑字段无真实样例）+ 2 项弱项。 |
