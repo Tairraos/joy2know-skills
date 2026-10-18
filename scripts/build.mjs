@@ -48,6 +48,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import crypto from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -197,6 +198,66 @@ function checkIcon(file, label) {
   }
   if (info.format !== 'PNG') {
     warnings.push(`${rel}（${label}）是 ${info.format}，官方推荐 PNG`);
+  }
+  return { problems, warnings };
+}
+
+// ---------------------------------------------------------------- 铁律 14：真实头像门禁
+
+/**
+ * 铁律 14（2026-10-18 立）：任何技能或专家必须有**真实头像**才能打包和发布。
+ * 占位图只是「提醒该画谁」的标记，不是可交付资产 —— 反面实例：mureka-musician
+ * republish 忘传 --avatar，coverUrl 回落 letter:auto，在架真图被顶成字母图。
+ *
+ * 「是不是占位图」不靠文件名猜，靠 avatars/.placeholders.json 的 sha1 台账
+ * （placeholders.py 每次生成占位图时记账；同名文件被真图覆盖后 sha1 变化即为真图）。
+ */
+const PLACEHOLDER_LEDGER_FILE = path.join(AVATARS, '.placeholders.json');
+
+function loadPlaceholderLedger() {
+  try {
+    const d = JSON.parse(fs.readFileSync(PLACEHOLDER_LEDGER_FILE, 'utf8'));
+    return new Set(Object.values(d));
+  } catch {
+    return new Set(); // 台账不在（如全新克隆未跑过 placeholders.py）时不误伤
+  }
+}
+
+function isPlaceholderIcon(file) {
+  try {
+    const sha1 = crypto.createHash('sha1').update(fs.readFileSync(file)).digest('hex');
+    return loadPlaceholderLedger().has(sha1);
+  } catch {
+    return false; // 读不到不当占位 —— 「文件缺失」由 resolveAvatars / embedSkills 既有检查报
+  }
+}
+
+/**
+ * 打包前核查三处头像是否为占位图：
+ *   ① 技能包自身图标 avatars/<技能名>.png（后台发布技能时上传用）
+ *   ② 专家 / 团自身头像 avatars/<包名>.png（进 zip 的 avatars/expert.png）
+ *   ③ 专家内嵌技能图标 avatars/<技能名>.png（构建注入 skills/<技能名>/icon.png）
+ * 占位图 → problem（构建中止）；--allow-placeholder-avatar 显式豁免（降为 warning）。
+ */
+function checkRealAvatars(pkg, opts) {
+  const problems = [];
+  const warnings = [];
+  const targets = [];
+  if (pkg.isSkill) {
+    targets.push({ file: findIcon(pkg.name), what: `技能图标 avatars/${pkg.name}.png` });
+  }
+  if (pkg.isExpert) {
+    targets.push({ file: findIcon(pkg.name), what: `专家自身头像 avatars/${pkg.name}.png` });
+    for (const sname of pkg.embed || []) {
+      targets.push({ file: findIcon(sname), what: `内嵌技能图标 avatars/${sname}.png` });
+    }
+  }
+  for (const t of targets) {
+    if (!t.file || !isPlaceholderIcon(t.file)) continue;
+    const msg =
+      `铁律 14：${t.what} 仍是占位图 —— 换真实头像才能打包和发布（例外：--allow-placeholder-avatar）`;
+    if (opts.allowPlaceholderAvatar) warnings.push(`${msg}（本轮已显式豁免）`);
+    else problems.push(msg);
   }
   return { problems, warnings };
 }
@@ -629,6 +690,11 @@ function buildOne(pkg, opts) {
       return { problems, warnings, check: null, published: false, zipName };
     }
 
+    // 0b) 铁律 14：真实头像门禁 —— 占位图不许打包（见 AGENT.md 铁律 14）
+    const avatarGate = checkRealAvatars(pkg, opts);
+    problems.push(...avatarGate.problems);
+    warnings.push(...avatarGate.warnings);
+
     // 1) 内嵌技能：从唯一真源复制
     const emb = embedSkills(pkg, stageDir, opts);
     problems.push(...emb.problems);
@@ -710,6 +776,7 @@ ${C.bold('晓得 / joy2know 打包工具')}
     --no-skill-icons   不把技能图标写进内嵌技能目录
     --keep-old-zips    保留 dist/ 里同包的旧版本 zip（默认清理）
     --no-manifest      不重写仓库根的 发布清单.md
+    --allow-placeholder-avatar  豁免铁律 14：允许拿占位图打包（需在提交信息里写明原因）
     --list             等价于 pnpm list
     --help             显示本帮助
 
@@ -719,6 +786,8 @@ ${C.bold('晓得 / joy2know 打包工具')}
   ${C.bold('内嵌技能')}  写在包根 ${EMBED_MANIFEST} 里，构建时从 packages/<技能名>/ 复制
   ${C.bold('图标')}      avatars/<包名>.png（自身）· avatars/<包名>/<文件名>.png（团队成员）
               avatars/<技能名>.png（技能图标，唯一真源）
+              ⚠ 铁律 14：占位图不许打包（python3 scripts/placeholders.py --check 查看），
+                例外需 --allow-placeholder-avatar 并在提交信息里写明原因
 `);
 }
 
@@ -1177,6 +1246,7 @@ function main() {
     skillIcons: !argv.includes('--no-skill-icons'),
     keepOldZips: argv.includes('--keep-old-zips'),
     noManifest: argv.includes('--no-manifest'),
+    allowPlaceholderAvatar: argv.includes('--allow-placeholder-avatar'),
   };
 
   if (argv.includes('--help') || argv.includes('-h')) return usage();
