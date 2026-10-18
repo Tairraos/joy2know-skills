@@ -12,7 +12,7 @@
 - **类型**：技能（Skill）
 - **对应版本**：1.0.0
 - **检测状态**：⚠️ 有条件通过
-- **最后检测**：2026-10-18（**首次建包 + 首次检测** —— 详见第七节履历）
+- **最后检测**：2026-10-18（**当日两轮**：首次建包检测 + 真头像到位后的构建与交付形态复检 —— 详见第七节履历）
 - **检测方式**：功能测试 + 完整性对照 + 合理性检查 + 反向验证
 
 ---
@@ -41,11 +41,13 @@
 源包体（六个源文件，**不含本报告**）**71,453 字节 ≈ 69.8 KB**。
 
 **描述字段长度（platformcheck 同款 `len()` 口径实测）**：`description` **329**（系列经验区间 240–390 内）；
-`description_en` **906/1000**；`description_zh` 95 汉字（平台不查中文长度，只报不拦）。
+`description_en` **906/1000**；`description_zh` 95 汉字 / len 口径 **130**（平台不查中文长度，只报不拦；
+本轮 `platformcheck --zip` 回显与上述 len 口径三个数逐字一致）。
 
-**图标**：`avatars/joy2know-tianyin-musician.png` **缺失** —— 按 2026-10-18 新立铁律 14
-（任何技能或专家必须有真实头像才能打包和发布），本包**未构建 zip、未提交平台**，待小乐画真头像。
-技能图标不进 zip（后台发布时上传）；被内嵌进专家包时由构建注入 `skills/<技能名>/icon.png`。
+**图标（真图，2026-10-18 小乐亲手画）**：`avatars/joy2know-tianyin-musician.png` = 512×512 / **408 KB**
+（sha1 `e1ec4322…`；铁律 14 占位图台账已随之清零 —— 全仓 64 张图标无一张占位图）。
+技能图标不进 zip（后台发布技能时上传）；被 `joy2know-tianyin-maestro` 内嵌时由构建注入
+`skills/joy2know-tianyin-musician/icon.png`，本轮已核该注入文件 sha1 与源图一致（见第二节）。
 
 ---
 
@@ -63,7 +65,7 @@
 | 合规用词门禁 | `python3 scripts/compliance_wording.py packages/joy2know-tianyin-musician` | ✅ 通过（1 条人工确认已核） | **通过 4 · 提示 1 · 失败 0**；唯一提示为 `description_zh` 的「生成→媒体词」——两处 `生成` 均在否定式声明内（「不生成音频」「不调用任何生成接口」），**人工确认：声明覆盖，无需修改** |
 | R6 跨包审计 | `python3 scripts/series_audit.py packages/joy2know-tianyin-musician` | ✅ 通过 | 三类候选（R4 / R2 / R1）**均不含本包** |
 | 实际粘贴到天音的生成效果 | — | **未覆盖** | 本报告验的是文本结构与判据，不验生成质量；需真跑生成试听，见第六节 |
-| 平台侧结构预检（platformcheck --zip） | — | **未覆盖** | 遵守铁律 14：无真头像不构建 zip，故无 zip 可检；头像就绪后补跑，见第六节 |
+| 平台侧结构预检（platformcheck --zip） | `$V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-musician-v1.0.0.zip` | ✅ 通过 | 判 **Skill ✅ 通过**（Expert ❌ 属预期——技能包不走专家入口）；描述长度回显 `description_en=906/1000 · description=329 · description_zh=130`，与第一节实测一致 |
 
 **复现命令**
 
@@ -73,7 +75,7 @@ $V/bin/python scripts/selfcheck.py packages/joy2know-tianyin-musician
 node packages/joy2know-tianyin-musician/scripts/tianyin_check.mjs --selftest
 $V/bin/python scripts/compliance_wording.py packages/joy2know-tianyin-musician
 $V/bin/python scripts/series_audit.py packages/joy2know-tianyin-musician
-# platformcheck --zip：铁律 14 拦下（无真头像不打包），头像就绪后补
+$V/bin/python scripts/platformcheck.py --zip dist/joy2know-tianyin-musician-v1.0.0.zip
 ```
 
 ---
@@ -124,7 +126,7 @@ $V/bin/python scripts/series_audit.py packages/joy2know-tianyin-musician
 - [x] 1. 只跑 happy path，没跑边界 —— **否**：CLI 真跑含坏样本（缺语言声明 / 段行数超限 / 超长歌名 → FAIL）
   与两类用法错误（缺 `--mode`、文件不存在 → EXIT=2）
 - [x] 2. 只看「没报错 / 退出码 0」，没核对输出内容 —— **否**：逐条核对了 FAIL/WARN/INFO 的 id 与措辞是否指向正确检查项
-- [x] 3. 把「文档写了」当成「已验证」 —— **否**：「实际生成效果」「平台上传」「platformcheck」三项明确列入第六节
+- [x] 3. 把「文档写了」当成「已验证」 —— **否**：「实际生成效果」「平台上传」两项明确列入第六节；platformcheck 本轮已真跑通过（不再挂账）
 - [x] 4. 自造理想样本（比真实产物干净） —— **否**：CLI 样本含「长重复标注段名」这类真实歌词常见形态
   （`[副歌 – 重复上面的副歌，末句改成「比相爱更勇敢」]` 25 字）——正是它暴露了 SECTION_RE 吞段名的误报
 - [x] 5. 跳过失败项、不记录 —— **否**：校验器首轮真跑暴露的 4 处自身问题全部记录在案并当轮修复
@@ -162,7 +164,7 @@ $V/bin/python scripts/series_audit.py packages/joy2know-tianyin-musician
 → 字段层（frontmatter / 引用 / 凭证）坏了 → `selfcheck.py` 亮红灯。
 → 判据层（阈值改坏 / 检查项失效 / 误报回潮）坏了 → `tianyin_check.mjs --selftest` 亮红灯（24 项）。
 → 交付形态层（zip 第一层 / 描述长度 / 入口类型）坏了 → `platformcheck.py --zip` 亮红灯
-（**本轮未跑**：铁律 14 拦下打包，见第六节）。
+（**本轮已跑**：Skill ✅，见第二节）。
 → **有两类不会亮红灯**：输入文本的**内容质量**（四要素叙事是否成立、歌手配得准不准）与
 **平台生成效果**——前者靠人读，后者要真跑生成试听（见第六节）。
 
@@ -172,15 +174,12 @@ $V/bin/python scripts/series_audit.py packages/joy2know-tianyin-musician
 
 **未覆盖项**（下次检测优先消掉）：
 
-1. **未构建 zip、platformcheck --zip 未跑**：按 2026-10-18 新立铁律 14（真实头像才能打包和发布），
-   本包无真头像 → 不打包。`avatars/joy2know-tianyin-musician.png` 就绪后：补构建 →
-   跑 `platformcheck.py --zip`（预期判 `Skill ✅` / `Expert ❌`）→ 按技能入口提交。
-2. **实际生成效果未验证**：本报告验的是文本结构与判据，输入贴进天音后的实际命中率未测。
+1. **实际生成效果未验证**：本报告验的是文本结构与判据，输入贴进天音后的实际命中率未测。
    需至少真跑三组（简易有人声 / 高级有人声 / 纯音乐）试听评估。
-3. **平台侧真实上传未做**：本包从未提交（① 开发完待提交），入口与类目建议（writing）均未实证。
+2. **平台侧真实上传未做**：本包从未提交（① 开发完待提交），入口与类目建议（writing）均未实证。
    ⚠️ 若被机器判「深度合成 > AI创作」：**先找客服人工复审，别改包**（铁律 11）。
-4. **参考音频上传路径未真上传**：格式/时长/体积/授权勾选均为界面实测转述，未走完整上传流程。
-5. **6 项未实测界面项**（controls.md 末节列名）：AI作词页「生成」按钮行为、参考音频上传后的实际效果、
+3. **参考音频上传路径未真上传**：格式/时长/体积/授权勾选均为界面实测转述，未走完整上传流程。
+4. **6 项未实测界面项**（controls.md 末节列名）：AI作词页「生成」按钮行为、参考音频上传后的实际效果、
    「创建我的音色」完整流程、副歌前置的实际听感差异、生成次数与账号侧表现、页面 A/B 变体。
    均不阻断交付（口径已写「以用户当前界面为准」），下次登录态实测逐项消。
 
@@ -193,9 +192,10 @@ $V/bin/python scripts/series_audit.py packages/joy2know-tianyin-musician
 
 **待办**：
 
-- 小乐画 `avatars/joy2know-tianyin-musician.png`（512×512 真头像）→ 重跑构建 →
-  `platformcheck --zip` → 按技能入口提交平台（**发布由人确认后进行，AI 不自动发布**）。
-- 真跑三组生成试听，评估未覆盖项 2。
+- ~~小乐画 `avatars/joy2know-tianyin-musician.png`~~ → ~~重跑构建~~ → ~~`platformcheck --zip`~~
+  **均已完成（2026-10-18，见履历第二轮）**；剩「按技能入口提交平台」一步 ——
+  **发布由人确认后进行，AI 不自动发布**。
+- 真跑三组生成试听，评估未覆盖项 1。
 
 ---
 
@@ -204,3 +204,4 @@ $V/bin/python scripts/series_audit.py packages/joy2know-tianyin-musician
 | 日期 | 版本 | 状态 | 摘要（本轮测了什么、改了什么） |
 |---|---|---|---|
 | 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **首次建包 + 首次检测**。新建技能「晓得·天音音乐人」：SKILL.md（两种模式对照 / A–G 七路路由 / 7 步工作流 / 8 条核心规则 / 12 条反模式 / 防幻觉）+ 4 references（实测控件 / 18 标签画像 / 18 歌手谱 / 歌词预设）+ `tianyin_check.mjs`（九组检查 + 24 项自检）。**源目录自检 9 项全过**（venv 完整 YAML 解析）；`description` 329 入系列区间、`description_en` 906/1000（计数法先用 mureka 复算校准）；**CLI 真跑抓到校验器 4 处自身问题**（长重复标注段名被吞 → SECTION_RE 20→40；缺 `--mode` 退出码不一致 → 统一 EXIT=2；空文件守卫语义；I1 在简易模式误发 → 加 advanced 条件），当轮修复并补回归用例，自检 20 → 24 项；**反向验证 7/7 全抓到**（含放水变异 V1 降级 info）；合规门禁通过 4 · 提示 1 · 失败 0（唯一提示人工确认：两处「生成」均在否定声明内，覆盖）；R6 跨包审计零候选。⭐ **遵守铁律 14：无真头像不打包** —— 未构建 zip、platformcheck 未跑、未提交平台，记 5 项未覆盖 + 2 项弱项。 |
+| 2026-10-18 | 1.0.0 | ⚠️ 有条件通过 | **第二轮：真头像到位 → 构建 → 交付形态复检**（版本未动：包内容零改动，仅头像就位）。小乐亲手画好 `avatars/joy2know-tianyin-musician.png`（512×512 / 408 KB / sha1 `e1ec4322…`），铁律 14 占位台账随之清零（全仓 64 张无占位）。**构建通过门禁**：`dist/joy2know-tianyin-musician-v1.0.0.zip`（31.2 KB）；**platformcheck --zip 判 Skill ✅ 通过**，描述长度回显 en 906/1000 · description 329 · description_zh 130，与第一节实测逐字一致；被 tianyin-maestro 内嵌的 `skills/joy2know-tianyin-musician/icon.png` sha1 已核等于源图。未覆盖项由 5 条缩到 4 条（平台结构预检转正），弱项不变；**发布待小乐确认**。 |
