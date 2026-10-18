@@ -1,0 +1,65 @@
+{
+  "name": "joy2know-tianyin-maestro",
+  "version": "1.0.0",
+  "description": "joy2know Tianyin Music Maestro: turns a rough idea into ready-to-paste input for NetEase Tianyin's AI song composer — a simple-mode inspiration paragraph, or an advanced-mode pair of a style description plus section-tagged lyrics — matched to one of 18 style tags and one of 18 virtual-singer timbres, with the panel picks (vocal gender, chorus-first toggle, song title) and the pure-music and reference-audio routes covered. Also writes lyrics from scratch (hook-first, genre-accurate rhyme schemes, a cliche blacklist) and designs whole albums (one Q&A round to an album plan document plus a per-song paste list, with timbre anchors, a difference matrix and per-song cover prompts). Text only — no audio is generated, no generative AI API is called, no account or key is carried.",
+  "author": {
+    "name": "晓得乐"
+  },
+  "agents": [
+    "./agents/joy2know-tianyin-maestro.md"
+  ],
+  "skills": [
+    "./skills/joy2know-tianyin-musician",
+    "./skills/joy2know-album-design",
+    "./skills/joy2know-lyric-design"
+  ],
+  "expertType": "agent",
+  "agentName": "joy2know-tianyin-maestro",
+  "displayName": {
+    "en": "joy2know",
+    "zh": "晓得乐"
+  },
+  "profession": {
+    "en": "joy2know Tianyin Music Maestro",
+    "zh": "晓得·天音音乐大师"
+  },
+  "displayDescription": {
+    "en": "Turns ideas into ready-to-paste Tianyin input, writes lyrics that sing, and designs whole albums. Text only.",
+    "zh": "把想法写成能粘进网易天音的输入：灵感一段话或风格描述加歌词两栏，配 18 位虚拟歌手。也写歌词、设计专辑。仅产文本。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "06-ContentCreative",
+  "defaultInitPrompt": {
+    "zh": "给我写一首能粘进网易天音的歌",
+    "en": "Write me a song input pack for Tianyin"
+  },
+  "plugin": "joy2know-tianyin-maestro",
+  "tags": [
+    {
+      "en": "Tianyin Song Input",
+      "zh": "天音作歌输入"
+    },
+    {
+      "en": "Lyrics & Album Design",
+      "zh": "作词与专辑设计"
+    },
+    {
+      "en": "Virtual Singer Matching",
+      "zh": "虚拟歌手选配"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Write me a song input pack for Tianyin",
+      "zh": "给我写一首能粘进网易天音的歌"
+    },
+    {
+      "en": "Write or tighten my lyrics for me",
+      "zh": "帮我写或打磨这首歌的词"
+    },
+    {
+      "en": "Design a full album plan for me",
+      "zh": "帮我规划一张专辑"
+    }
+  ]
+}
