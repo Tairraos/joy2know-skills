@@ -1395,6 +1395,37 @@ function main() {
     }
   }
 
+  // ---- 内嵌引用门禁（audit_refs.py）----
+  // 为什么它必须**硬拦 --strict**：平台会扫 agent 正文里出现的技能包名，
+  // 把它们当成「引用」并要求必须内嵌 —— 缺了就直接判「资产包缺少必需资源」驳回
+  // （2026-10-18 实证：joy2know-lyricist 1.0.0 因此被驳）。人眼扫不出来，
+  // 所以必须每次构建都查；且因为后果是「提交后才被驳、版本号被占用」，
+  // 拦在构建这一步最省事（普通模式只警告，--strict 直接失败）。
+  {
+    const gate = path.join(ROOT, 'scripts/audit_refs.py');
+    const py = PY_CANDIDATES.find((p) => p === 'python3' || exists(p));
+    if (py && exists(gate)) {
+      const r = spawnSync(py, [gate], { encoding: 'utf8' });
+      const out = (r.stdout || '') + (r.stderr || '');
+      const bad = (out.match(/^\[(FAIL)\]/gm) || []).length;
+      if (bad) {
+        console.log('');
+        console.log(C.yellow('内嵌引用') + C.dim('（agent 正文引用了未内嵌的技能 / 平台交叉）'));
+        for (const l of out.split('\n').filter((l) => /^\[(FAIL|WARN)\]/.test(l))) console.log(C.yellow(l));
+        console.log(C.dim('  口径与改法：R1 引用未内嵌 → 内嵌它，或改 agent 措辞去掉点名（若本包应自成一体）；'
+          + 'R2 平台交叉 → 三个音乐大师只提自己的技能包名，不许并列写「A / B」。'
+          + '平台驳回原文会写「资产包缺少必需资源」。'));
+        if (STRICT) {
+          console.log(C.yellow('  --strict：内嵌引用门禁未通过 → 失败'));
+          process.exitCode = 1;
+        }
+      } else {
+        console.log('');
+        console.log(C.dim('  内嵌引用  通过（无引用缺失、无平台交叉）'));
+      }
+    }
+  }
+
   // ---- 旧产物清理明细 ----
   const prunedAll = results.flatMap((x) => (x.r.pruned || []).map((f) => ({ pkg: x.pkg.name, f })));
   if (prunedAll.length) {

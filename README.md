@@ -234,9 +234,9 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-asset-maint` | 晓得·技能专家包维护 | 1.0.0 | 内嵌联动 R8、派生信息漂移、检测报告失真、头像三处同步 | 9.1 KB | ③ 审核完成 · 已上架 |
 | `joy2know-asset-insight` | 晓得·技能专家数据洞察 | 1.0.2 | 把平台运营数据（安装/调用/活跃/频次/次周留存）按「集中度·粘性·留存·加速」四把尺子算成一页可决策报告；纯接口直读，含三个接口坑与口径边界 | 6.7 KB | ② 待审核（在架 1.0.0） |
 | `joy2know-mureka-musician` | 晓得·Mureka音乐人 | 1.2.1 | 按 Mureka「自定义」双栏真机实测规范产出可直接粘贴的提示词包：风格栏英文 token 七要素（含场景位与官方鼓励的风格融合）+ 歌词栏中文（语言声明 / 段落标签 / 重复位置）+ 粘贴前界面设置；擅长爵士、蓝调、民谣及融合，默认治愈文风，含纯器乐与循环路径；实测纠偏写进包内（面板无时长 / 版本 / 人声参数滑杆） | 36.1 KB | ③ 审核完成 · 已上架 |
-| `joy2know-tianyin-musician` | 晓得·天音音乐人 | 1.0.0 | 把想法写成可直接粘贴进网易天音「AI作歌」的输入：简易模式创作灵感一段话（四要素、≤1000 字）或高级模式风格描述 + 歌词两栏 + 控件组（人声性别 / 18 风格标签 / 18 位虚拟歌手 / 副歌前置 / 歌名 ≤30 字）；纯音乐走简易开关、参考音频走平台上传路径；tianyin_check.mjs 把核心规则机检化（24 项自检） | 31.2 KB | ② 待审核（首次上架） |
+| `joy2know-tianyin-musician` | 晓得·天音音乐人 | 1.0.1 | 把想法写成可直接粘贴进网易天音「AI作歌」的输入：简易模式创作灵感一段话（四要素、≤1000 字）或高级模式风格描述 + 歌词两栏 + 控件组（人声性别 / 18 风格标签 / 18 位虚拟歌手 / 副歌前置 / 歌名 ≤30 字）；纯音乐走简易开关、参考音频走平台上传路径；tianyin_check.mjs 把核心规则机检化（24 项自检） | 33.1 KB | ② 待审核（交 1.0.0，首次上架）+【本地升级】 |
 | `joy2know-album-design` | 晓得·专辑设计 | 1.1.0 | 先用一轮问答收集专辑信息（专辑名 / 用途 / 集数 / 主题 / 歌词主题 / 歌词风格 / 风格锚点 / 听感 / 曲名），再按固定章节骨架产出**专辑规划文档 + 逐首粘贴清单 + 生成脚本**三份文本：音色口径落到具体英文 token、专辑结构、曲目表（十列）、差异矩阵（N 首互不撞：拍号 / 调式 / 主奏乐器 / 编制 / 音区 / BPM，BPM 全不同、任意两首≤2 根轴）、拍号与调式逐项解释、逐首风格栏与歌词栏、封面提示词；两份 md 由生成脚本渲染、校验脚本把六条纪律做成可执行门禁 | 47.3 KB | ③ 审核完成 · 已上架 |
-| `joy2know-lyric-design` | 晓得·歌词设计 | 1.0.0 | 写与改歌词：七项信息收集 → 按体裁选押韵方案与句式 → 分阶段出稿（框景 / 主歌 / 钩子 / 副歌）→ 配段落标签与风格栏。**17 体裁各自一套押韵约定**（没有普适默认，写前必查体裁表）、陈词滥调禁用清单（霓虹 / 破碎 / 永恒类）、钩子四型与三种框景、中文句式与顿点（四五六七言）；附只读校验脚本把六条纪律机检化（段落骨架 / 禁用词 / 句长 / 钩子 / 押韵与体裁 / 副歌开口韵） | 28.4 KB | ④ 待发布（审核已过，待手动点「发布」） |
+| `joy2know-lyric-design` | 晓得·歌词设计 | 1.1.0 | 写与改歌词：七项信息收集 → 按体裁选押韵方案与句式 → 分阶段出稿（框景 / 主歌 / 钩子 / 副歌）→ 配段落标签与风格栏。**17 体裁各自一套押韵约定**（没有普适默认，写前必查体裁表）、陈词滥调禁用清单（霓虹 / 破碎 / 永恒类）、钩子四型与三种框景、中文句式与顿点（四五六七言）；附只读校验脚本把六条纪律机检化（段落骨架 / 禁用词 / 句长 / 钩子 / 押韵与体裁 / 副歌开口韵） | 28.5 KB | ④ 待发布（待发 1.0.0，首次上架）+【本地升级】 |
 
 > **状态列的口径（2026-09-25 立三态；2026-10-03 补第四档 ⑤，2026-10-16 补全五档）**：一个资产有五种状态 ——
 > **① 开发完待提交** → **② 提交完待审核**（**用户端看不到**）→ **④ 待发布**（**审核已过、还没上架**）→ **③ 审核完成**（上架，用户端可见）；**⑤ 已驳回**（审核没过，**在架版本不变**，改包后可重提）。
@@ -312,11 +312,11 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `joy2know-reviewer` | 晓得·投放效果复盘专家 | 专家 | 1.0.1 | `joy2know-dashboard` 1.2.1 | — | 793.8 KB | ③ 已上架（在架 1.0.0）+【本地升级】 |
 | `joy2know-harness` | 晓得·harness 工程专家 | 专家 | 1.0.0 | `joy2know-harness-rules` 1.0.0 | — | 900.8 KB | ③ 审核完成 · 已上架 |
 | `joy2know-asset-smith` | 晓得·技能专家构建师 | 专家 | 1.0.10 | `joy2know-asset-spec` 1.0.2、`joy2know-asset-compose` 1.0.1、`joy2know-asset-gate` 1.0.0、`joy2know-asset-publish` 1.0.7、`joy2know-asset-trace` 1.0.3、`joy2know-asset-maint` 1.0.0、`joy2know-asset-insight` 1.0.2 | — | 2703.2 KB | ③ 审核完成 · 已上架 |
-| `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.3.0 | `joy2know-mureka-musician` 1.2.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1640.7 KB | ② 待审核（交 1.2.2，在架 1.2.1）+【本地升级】 |
-| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.3.0 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1588.4 KB | ③ 已上架（在架 1.2.1）+【本地升级】 |
-| `joy2know-tianyin-maestro` | 晓得·天音音乐大师 | 专家 | 1.0.0 | `joy2know-tianyin-musician` 1.0.0、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1643.9 KB | ④ 待发布（审核已过，待手动点「发布」） |
-| `joy2know-lyricist` | 晓得·歌词设计师 | 专家 | 1.0.0 | `joy2know-lyric-design` 1.0.0 | — | 793.9 KB | ⑤ 已驳回（首次上架，待改后重提） |
-| `joy2know-album-planner` | 晓得·音乐专辑设计师 | 专家 | 1.0.0 | `joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.0.0 | — | 1187.2 KB | ④ 待发布（审核已过，待手动点「发布」） |
+| `joy2know-mureka-maestro` | 晓得·Mureka音乐大师 | 专家 | 1.3.1 | `joy2know-mureka-musician` 1.2.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.1.0 | — | 1640.8 KB | ② 待审核（交 1.2.2，在架 1.2.1）+【本地升级】 |
+| `joy2know-suno-maestro` | 晓得·Suno音乐大师 | 专家 | 1.3.1 | `joy2know-musician` 1.6.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.1.0 | — | 1588.5 KB | ③ 已上架（在架 1.2.1）+【本地升级】 |
+| `joy2know-tianyin-maestro` | 晓得·天音音乐大师 | 专家 | 1.0.2 | `joy2know-tianyin-musician` 1.0.1、`joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.1.0 | — | 1646.2 KB | ④ 待发布（待发 1.0.0，首次上架）+【本地升级】 |
+| `joy2know-lyricist` | 晓得·歌词设计师 | 专家 | 1.1.0 | `joy2know-lyric-design` 1.1.0 | — | 794.1 KB | ⑤ 已驳回（驳 1.0.0，首次上架）+【本地升级】 |
+| `joy2know-album-planner` | 晓得·音乐专辑设计师 | 专家 | 1.0.0 | `joy2know-album-design` 1.1.0、`joy2know-lyric-design` 1.1.0 | — | 1187.3 KB | ④ 待发布（审核已过，待手动点「发布」） |
 
 > 两个团队的分工边界：`cine-team` 管**从零产出**（一个创意 → 能开拍的方案）；`polish-team` 管**已有材料的收尾**（稿子/数据 → 能交出去的版本）。前者是生产端，后者是加工端。
 
@@ -467,6 +467,15 @@ python3 scripts/placeholders.py           # 补齐缺失的 512×512 占位图�
 | `temp/` 与临时文件 | 清理 | **`temp/` 目录撤销**（重发报告-2026-10-16.md 内容已被发布清单覆盖）；11 个 `.DS_Store`（含 `.workbuddy/` 下 3 个、包内 4 个）全删；`private/产物/` 5 个一次性脚本删除（`smith-updatedat` / `dump-updatedat` / `detail` / `extract-names` / `sync-h1`）；未采用的 `头像生成/…00-14-09.png`（sha1 不命中任何真头像）删除 |
 | 过时文档 | 清理 | `设计稿/市场扫描-2026-10-13.md`（无引用）、`设计稿/设计稿.md`（结论已被 asset-smith 报告覆盖）、`运营报告/` 两个 10-13 HTML（过期快照）删除 |
 | `private/` | 保留 | 余 7 个文件**全部有据可查**：`refs/毛毡小人-参考图.jpg`（头像唯一真源）、`Mureka音乐人提示词指南.md`、`中文名重构方案.html`、`产物/天音调研报告.md`、`产物/audit-docs.mjs` + `产物/sync-zh-names.mjs`（README:14 引用的 sanctioned 工具）、`产物/头像草稿/joy2know-album-design-AI草稿.png`（avatars/README:45 明确记载留档） |
+
+**同日 16:5x · 天音口径修订轮（高级模式转正为默认路径，两包本地抬 1.0.1 未提交）**：
+
+| 对象 | 类型 | 变更 |
+|---|---|---|
+| `packages/joy2know-tianyin-musician/` | 技能 | **小乐三条口径落进技能**：① 天音高级模式与 Suno／Mureka 高级模式同构（「全局风格栏 + 歌词栏 + 显式控件组」的分栏结构化输入，对照表进 `references/tianyin-controls.md` 第一节），**平常默认走高级模式**——路由表 A 默认改高级两栏+控件组，简易灵感一段话降为「一段话快速出歌」专用；② **副歌前置默认不勾选**——2026-10-17 实测开启后先唱几句副歌再进正歌、质量下降（疑似 beta 未调好），规则 7 整条翻转（用户坚持开启须标注已知悉）；③ 创作灵感页=简易模式提示词模板陈列、我的资产页=已生成歌曲存放处，两页与写歌输入无关（写进 controls 导航段）。description/zh/en 三语重写，统一合规口径「**只产出提示词与操作建议，不生成歌曲**」；输出格式高级转正第 1 节、简易降为变体；反模式清单加第 13 条；lyrics-craft 第五节重写。**patch 抬 1.0.1**（33.1 KB） |
+| `packages/joy2know-tianyin-maestro/` | 专家 | **R8 内嵌联动同轮抬 1.0.1**（1646.1 KB）：plugin.json version + description + displayDescription（zh 49 汉字守 40–50 门禁，en 加 "no songs are generated"）；agent 文件流程②「默认高级」、控件块/自检清单「副歌前置不勾选」、默认值行、产出格式第 1 块高级转正 |
+| 门禁 | 工具 | 双门禁 + 合规门禁 + 24 项自检全过。⭐ 合规门禁首轮抓 1 处必改：description_en「produces…audio」的否定词落在 `_in_negative_ctx` 40 字符窗口外一寸 → 换非高危动词 `writes` 从根上消掉配对；另 en 1105 超 1000 硬限、desc 402 超 390 软线 → 收紧至 en 982 / desc 389 复测通过 |
+| 平台 | 发布 | **零平台动作**：musician 1.0.0（vid 55343）仍 ② 在审、maestro 1.0.0（vid 55766）仍 ④ 待发布。withdraw+提 1.0.1（推荐，省一轮审核）还是等过审/上架后再升级，**等小乐定**——两条路已写进两包 platformNote 与发布清单待办第 6 条。平台全貌不变：**③ 35 · ④ 3 · ② 6 · ⑤ 1 · ① 0** |
 
 ### 2026-10-16（文档同步专项 · 新增铁律 12 / 13）
 
